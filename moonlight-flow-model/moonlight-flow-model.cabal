@@ -1,0 +1,65 @@
+cabal-version:       3.0
+name:                moonlight-flow-model
+version:             0.1.0.0
+synopsis:            Relational model deltas and schema vocabulary.
+description:
+  Row patches, model deltas, relation families, schema boundaries, and schema
+  morphisms. Stable keys and digests live in moonlight-flow-key.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+
+library moonlight-flow-model-delta
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-delta
+  ghc-options:
+    -fomit-interface-pragmas
+  exposed-modules:
+    Moonlight.Flow.Model.Delta
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-flow-key
+
+library moonlight-flow-model-schema
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-schema
+  ghc-options:
+    -fomit-interface-pragmas
+  exposed-modules:
+    Moonlight.Flow.Model.Event
+    Moonlight.Flow.Model.Family
+    Moonlight.Flow.Model.RowIdentity
+    Moonlight.Flow.Model.Schema
+    Moonlight.Flow.Model.Schema.Boundary
+    Moonlight.Flow.Model.Schema.Morphism
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-core
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-key

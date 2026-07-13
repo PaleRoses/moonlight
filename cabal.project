@@ -1,0 +1,35 @@
+-- Standalone build project for the public Moonlight mirror.
+-- Package directories are flat here; the monorepo's compiler/foundation/ layout
+-- is erased by josh. Keep this free of monorepo-specific settings; anything a
+-- package genuinely needs belongs in its own .cabal, not here.
+
+packages:
+  moonlight-category
+  moonlight-core
+  moonlight-discrete
+  moonlight-pale
+  moonlight-linalg
+  moonlight-differential
+  moonlight-delta
+  moonlight-control
+  moonlight-algebra
+  moonlight-flow-key
+  moonlight-probability
+  moonlight-egraph-core
+  moonlight-egraph
+  moonlight-flow-model
+  moonlight-flow-plan
+  moonlight-homology
+  moonlight-flow-storage
+  moonlight-flow-execution
+  moonlight-sheaf
+  moonlight-derived
+  moonlight-saturation
+  moonlight-rewrite
+  moonlight-egraph-fuzzy
+  moonlight-geometry
+  moonlight-analysis
+  moonlight-egraph-introspection
+  melusine-nebula
+
+allow-newer: all

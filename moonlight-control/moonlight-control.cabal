@@ -1,0 +1,210 @@
+cabal-version: 3.8
+name: moonlight-control
+version: 0.1.0.0
+synopsis: Typed control algebra for gates, scheduling, and deterministic engines.
+description:
+    A small canonical Program algebra with O(1) construction, law-tested
+    machine semantics, scoped gate and priority modalities, deterministic
+    scheduler rounds, and a type-stated engine interpreter.
+license: MIT
+author: Blue Rose
+maintainer: bluerose@example.com
+category: Foundation
+tested-with: GHC == 9.14.1
+build-type: Simple
+extra-doc-files:
+    README.md
+
+common language
+  default-language: GHC2024
+  default-extensions:
+      DerivingStrategies
+      ImportQualifiedPost
+  ghc-options:
+      -Wall
+      -Wcompat
+      -Wincomplete-record-updates
+      -Wincomplete-uni-patterns
+      -Wredundant-constraints
+
+library
+  import: language
+  hs-source-dirs: src-core
+  exposed-modules:
+      Moonlight.Control
+      Moonlight.Control.Candidate
+      Moonlight.Control.Class
+      Moonlight.Control.Count
+      Moonlight.Control.Engine.Evidence
+      Moonlight.Control.Engine.Parallel
+      Moonlight.Control.Engine.Plan
+      Moonlight.Control.Engine.Report
+      Moonlight.Control.Engine.Run
+      Moonlight.Control.Engine.Spec
+      Moonlight.Control.Engine.Symbolic
+      Moonlight.Control.Engine.Work
+      Moonlight.Control.Gate
+      Moonlight.Control.Interpret.Pretty
+      Moonlight.Control.Interpret.Stats
+      Moonlight.Control.Machine
+      Moonlight.Control.Modality
+      Moonlight.Control.Program
+      Moonlight.Control.Program.Internal
+      Moonlight.Control.Schedule
+      Moonlight.Control.Schedule.Round
+      Moonlight.Control.Trace
+      Moonlight.Control.Trace.RoundLog
+      Moonlight.Control.Weight
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-core >= 0.1 && < 0.2
+    , scheduler >= 2.0.1 && < 2.1
+
+library moonlight-control-laws
+  import: language
+  visibility: public
+  hs-source-dirs: src-laws
+  exposed-modules:
+      Moonlight.Control.Laws
+      Moonlight.Control.Laws.Gen
+  build-depends:
+      base >= 4.18 && < 5
+    , moonlight-control
+    , QuickCheck >= 2.14 && < 2.16
+
+library moonlight-control-support
+  import: language
+  visibility: public
+  hs-source-dirs: src-support
+  exposed-modules:
+      Moonlight.Control.Scheduling.Support
+      Moonlight.Control.Scheduling.Support.Feedback
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-control
+    , moonlight-core >= 0.1 && < 0.2
+
+library moonlight-control-diagnostics
+  import: language
+  visibility: public
+  hs-source-dirs: src-diagnostics
+  exposed-modules:
+      Moonlight.Control.Diagnostics.Trace
+      Moonlight.Control.Diagnostics.Pale
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-control
+    , moonlight-pale:diagnostic >= 0.1 && < 0.2
+
+library moonlight-control-homology
+  import: language
+  visibility: public
+  hs-source-dirs: src-homology
+  exposed-modules:
+      Moonlight.Control.Scheduling.Perturbation
+      Moonlight.Control.Scheduling.Successor
+      Moonlight.Control.Scheduling.Successor.Runtime
+      Moonlight.Control.Scheduling.Tower
+  build-depends:
+      algebraic-graphs >= 0.8 && < 0.9
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-control
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-discrete:graph >= 0.1 && < 0.2
+    , moonlight-homology >= 0.1 && < 0.2
+
+library moonlight-control-numerical
+  import: language
+  visibility: public
+  hs-source-dirs: src-numerical
+  exposed-modules:
+      Moonlight.Control.Fixpoint.Numerical
+  build-depends:
+      base >= 4.18 && < 5
+
+library moonlight-control-feedback
+  import: language
+  visibility: public
+  hs-source-dirs: src-feedback
+  exposed-modules:
+      Moonlight.Control.Feedback
+  build-depends:
+      base >= 4.18 && < 5
+
+benchmark moonlight-control-execution-bench
+  import: language
+  type: exitcode-stdio-1.0
+  hs-source-dirs: bench
+  main-is: Main.hs
+  ghc-options: -threaded -rtsopts
+  build-depends:
+      base >= 4.18 && < 5
+    , moonlight-control
+    , scheduler >= 2.0.1 && < 2.1
+    , tasty-bench >= 0.3
+
+test-suite moonlight-control-core-test
+  import: language
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: CoreMain.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+      Moonlight.Control.CompileFailSpec
+      Moonlight.Control.Engine.ParallelSpec
+      Moonlight.Control.EngineRunSpec
+      Moonlight.Control.GateSpec
+      Moonlight.Control.LawSpec
+      Moonlight.Control.MachineSpec
+      Moonlight.Control.ProgramSpec
+      Moonlight.Control.ScheduleSpec
+      Moonlight.Control.StarForge.Engine
+      Moonlight.Control.StarForge.Model
+      Moonlight.Control.StarForge.Plan
+      Moonlight.Control.StarForge.Render
+      Moonlight.Control.StarForgeSpec
+      Moonlight.Control.SymbolicSpec
+      Moonlight.Control.WeightCountSpec
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , filepath >= 1.4
+    , moonlight-control
+    , moonlight-control:moonlight-control-laws
+    , moonlight-pale:diagnostic-ghc
+    , QuickCheck >= 2.14 && < 2.16
+    , scheduler >= 2.0.1 && < 2.1
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+
+test-suite moonlight-control-test
+  import: language
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+      Moonlight.Control.FeedbackSpec
+      Moonlight.Control.NumericalSpec
+      Moonlight.Control.PerturbationSpec
+      Moonlight.Control.SuccessorSpec
+      Moonlight.Control.SupportSpec
+  build-depends:
+      algebraic-graphs >= 0.8 && < 0.9
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-control
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-control:moonlight-control-feedback
+    , moonlight-control:moonlight-control-homology
+    , moonlight-control:moonlight-control-numerical
+    , moonlight-control:moonlight-control-support
+    , moonlight-homology >= 0.1 && < 0.2
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10

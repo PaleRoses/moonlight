@@ -1,0 +1,55 @@
+module Moonlight.Derived.Matrix
+  ( DenseMat
+  , mkDenseMat
+  , denseMatRows
+  , denseMatCols
+  , matShape
+  , transposeMatChecked
+  , matAddChecked
+  , matMulChecked
+  , isZeroMat
+  , hcatChecked
+  , vcatChecked
+  , blockCatChecked
+  , denseFromEntriesWithChecked
+  , entriesToBlockedMatGF2Checked
+  , GroupedAxis
+  , groupedAxisOrder
+  , groupedAxisMultiplicities
+  , emptyAxis
+  , fromLabels
+  , axisLabelsExpanded
+  , axisMultiplicity
+  , axisSize
+  , axisSlices
+  , BlockedMat
+  , blockedMatRows
+  , blockedMatCols
+  , zeroBlocked
+  , axisEmpty
+  , transposeBlockedMat
+  , fromExpandedChecked
+  , expandBlocked
+  , collapseBlockedDense
+  , RankBackend (..)
+  , DenseMatStableDigest
+  , denseMatStableDigest
+  , precomputeStableRankCache
+  , stableDigestRankBackend
+  , rankDenseWith
+  , fieldRankBackend
+  , gf2PackedRankBackend
+  , smithDense
+  , rankDense
+  , kernelDense
+  , leftKernelDense
+  , inverseDense
+  , solveDense
+  , leftSolveDense
+  , gradedKernelImageDims
+  ) where
+
+import Moonlight.Derived.Pure.Dimension
+import Moonlight.Derived.Pure.LinAlg.Interpreter
+import Moonlight.Derived.Pure.LinAlg.Rank
+import Moonlight.Derived.Pure.Site.LabeledMatrix

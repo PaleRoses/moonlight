@@ -1,0 +1,89 @@
+cabal-version:       3.0
+name:                moonlight-egraph-fuzzy
+version:             0.1.0.0
+synopsis:            Optional fuzzy and simplicial refinement layers for Moonlight e-graphs.
+description:         Foundation package extracting non-exact refinement machinery from
+                     moonlight-egraph. It currently owns the simplicial and homotopic
+                     matching surface while preserving the exact kernel boundary.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    ConstraintKinds
+    QuantifiedConstraints
+    StandaloneDeriving
+    UndecidableInstances
+    UndecidableSuperClasses
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.EGraph.Fuzzy
+    Moonlight.EGraph.Fuzzy.Core
+    Moonlight.EGraph.Fuzzy.Rank
+    Moonlight.EGraph.Fuzzy.Refiner
+    Moonlight.EGraph.Fuzzy.Simplicial
+  other-modules:
+    Moonlight.EGraph.Fuzzy.Simplicial.Backend.Internal
+    Moonlight.EGraph.Fuzzy.Simplicial.Shape
+    Moonlight.EGraph.Fuzzy.Simplicial.Complex.Internal
+    Moonlight.EGraph.Fuzzy.Simplicial.Pattern.Internal
+    Moonlight.EGraph.Fuzzy.Simplicial.Graph.Internal
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-egraph-core
+    , moonlight-rewrite:core
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:system
+    , moonlight-core
+    , moonlight-category:simplicial
+    , transformers >= 0.6 && < 0.7
+
+test-suite moonlight-egraph-fuzzy-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    Moonlight.EGraph.Fuzzy.CoreSpec
+    Moonlight.EGraph.Fuzzy.SimplicialSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-egraph-core
+    , moonlight-egraph:pure-saturation
+    , moonlight-rewrite:core
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:system
+    , moonlight-rewrite:front
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:relational-front
+    , moonlight-egraph:test-algebras
+    , moonlight-egraph-fuzzy
+    , moonlight-saturation
+    , moonlight-saturation:core
+    , moonlight-pale:test
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , transformers >= 0.6 && < 0.7
+    , moonlight-saturation:protocol

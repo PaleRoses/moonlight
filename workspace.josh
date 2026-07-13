@@ -1,0 +1,36 @@
+# Public Moonlight mirror: melusine-nebula plus its full local dependency
+# closure.
+#
+# josh assembles a flat, self-contained public repository from the private
+# Pale-Meridian monorepo: each line maps an output directory in the mirror to a
+# subtree of the monorepo.
+#
+# Regenerate with mirror/regenerate.sh; see mirror/MIRRORING.md.
+
+moonlight-category                 = :/compiler/foundation/moonlight-category
+moonlight-core                     = :/compiler/foundation/moonlight-core
+moonlight-discrete                 = :/compiler/foundation/moonlight-discrete
+moonlight-pale                     = :/compiler/foundation/moonlight-pale
+moonlight-linalg                   = :/compiler/foundation/moonlight-linalg
+moonlight-differential             = :/compiler/foundation/moonlight-differential
+moonlight-delta                    = :/compiler/foundation/moonlight-delta
+moonlight-control                  = :/compiler/foundation/moonlight-control
+moonlight-algebra                  = :/compiler/foundation/moonlight-algebra
+moonlight-flow-key                 = :/compiler/foundation/moonlight-flow/key
+moonlight-probability              = :/compiler/foundation/moonlight-probability
+moonlight-egraph-core              = :/compiler/foundation/moonlight-egraph/core
+moonlight-egraph                   = :/compiler/foundation/moonlight-egraph:exclude[::core]
+moonlight-flow-model               = :/compiler/foundation/moonlight-flow/model
+moonlight-flow-plan                = :/compiler/foundation/moonlight-flow/plan
+moonlight-homology                 = :/compiler/foundation/moonlight-homology
+moonlight-flow-storage             = :/compiler/foundation/moonlight-flow/storage
+moonlight-flow-execution           = :/compiler/foundation/moonlight-flow/execution
+moonlight-sheaf                    = :/compiler/foundation/moonlight-sheaf
+moonlight-derived                  = :/compiler/foundation/moonlight-derived
+moonlight-saturation               = :/compiler/foundation/moonlight-saturation
+moonlight-egraph-fuzzy             = :/compiler/foundation/moonlight-egraph-fuzzy
+moonlight-rewrite                  = :/compiler/foundation/moonlight-rewrite
+moonlight-geometry                 = :/compiler/foundation/moonlight-geometry
+moonlight-analysis                 = :/compiler/foundation/moonlight-analysis
+moonlight-egraph-introspection     = :/compiler/foundation/moonlight-egraph-introspection
+melusine-nebula                    = :/compiler/engine/melusine-nebula

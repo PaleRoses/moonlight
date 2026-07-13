@@ -1,0 +1,40 @@
+{-# LANGUAGE DataKinds #-}
+
+module Moonlight.LinAlg.Operator
+  ( OperatorSymmetry (..),
+    LinearOperator,
+    operatorShape,
+    operatorDimension,
+    mkVectorLinearOperator,
+    declaredSelfAdjointVectorLinearOperator,
+    runOperatorU,
+    csrLinearOperator,
+    selfAdjointCSRLinearOperator,
+    diagonalLinearOperator,
+    pathLaplacianLinearOperator,
+    symmetricTridiagonalLinearOperator,
+    packedSparseLinearOperator,
+    scaleLinearOperator,
+    addScaledIdentity,
+    sigmaIdentityMinus,
+  )
+where
+
+import Moonlight.LinAlg.Pure.Operator
+  ( LinearOperator,
+    OperatorSymmetry (..),
+    addScaledIdentity,
+    csrLinearOperator,
+    declaredSelfAdjointVectorLinearOperator,
+    diagonalLinearOperator,
+    mkVectorLinearOperator,
+    operatorDimension,
+    operatorShape,
+    packedSparseLinearOperator,
+    pathLaplacianLinearOperator,
+    runOperatorU,
+    scaleLinearOperator,
+    selfAdjointCSRLinearOperator,
+    sigmaIdentityMinus,
+    symmetricTridiagonalLinearOperator,
+  )

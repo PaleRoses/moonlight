@@ -1,0 +1,703 @@
+cabal-version:       3.0
+name:                moonlight-sheaf
+version:             0.1.0.0
+synopsis:            Generic sheaf toolkit for cellular sheaves on finite complexes.
+description:         Foundation-tier package providing domain-agnostic sheaf
+                     infrastructure: phase-gated pure types, stalk algebra,
+                     typed restriction registries, coboundary operators,
+                     DataKinds-indexed Laplacians, typed propagation registries,
+                     and composable type-state pipelines.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    FunctionalDependencies
+    TypeFamilies
+
+library core
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-core
+  exposed-modules:
+    Moonlight.Sheaf.Section.Stalk
+    Moonlight.Sheaf.Section.Stalk.Discrete
+    Moonlight.Sheaf.Section.Stalk.Geometric
+    Moonlight.Sheaf.Section.Stalk.Groupoid
+    Moonlight.Sheaf.Section.Morphism
+    Moonlight.Sheaf.Section.Model
+    Moonlight.Sheaf.Section.ObjectIndex
+    Moonlight.Sheaf.Section.Plan
+    Moonlight.Sheaf.Section.Certified
+    Moonlight.Sheaf.Kernel.Basis
+    Moonlight.Sheaf.Index.Dense
+    Moonlight.Sheaf.Section.Repair
+    Moonlight.Sheaf.Section.Restriction
+    Moonlight.Sheaf.Section.Restriction.Reachability
+    Moonlight.Sheaf.Section.Restriction.Witness
+    Moonlight.Sheaf.Section.Restriction.Law
+    Moonlight.Sheaf.Section.Linearize
+    Moonlight.Sheaf.Operator.BuildError
+    Moonlight.Sheaf.Operator.LinearBasis
+    Moonlight.Sheaf.Operator.GradedComplex
+    Moonlight.Sheaf.Operator.Sparse
+    Moonlight.Sheaf.Footprint
+    Moonlight.Sheaf.Pruning
+    Moonlight.Sheaf.Query.Restriction
+    Moonlight.Sheaf.Verdict
+    Moonlight.Sheaf.Section.Congruence.Equivalence.Canonicalization
+    Moonlight.Sheaf.Section.Congruence.Equivalence.Domain
+    Moonlight.Sheaf.Section.Congruence.Equivalence.Relation
+    Moonlight.Sheaf.Section.Stalk.Congruence.Carrier
+    Moonlight.Sheaf.Section.Stalk.Congruence.Mismatch
+    Moonlight.Sheaf.Section.Stalk.Congruence.Model
+    Moonlight.Sheaf.Section.Store.Descent.Execute
+    Moonlight.Sheaf.Section.Store.Descent.FastPath
+    Moonlight.Sheaf.Section.Store.Descent.Frontier
+    Moonlight.Sheaf.Section.Store.Descent.Prepare
+    Moonlight.Sheaf.Section.Store.Descent.Rows
+    Moonlight.Sheaf.Section.Store.State
+    Moonlight.Sheaf.Section.Store.Types
+  other-modules:
+    Moonlight.Sheaf.Section.Condition
+    Moonlight.Sheaf.Section.Store.Internal
+  build-depends:
+    algebraic-graphs >= 0.8 && < 0.9
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-algebra
+    , moonlight-category
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-homology
+    , moonlight-linalg
+    , vector
+
+library site
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-site
+  exposed-modules:
+    Moonlight.Sheaf.Site
+    Moonlight.Sheaf.Site.System
+    Moonlight.Sheaf.Site.Context
+    Moonlight.Sheaf.Site.Context.GeneratorCover
+    Moonlight.Sheaf.Site.Analysis.Scaffold
+    Moonlight.Sheaf.Site.Analysis.Microsupport
+    Moonlight.Sheaf.Site.Analysis.Microsupport.Footprint
+    Moonlight.Sheaf.Site.Context.Cover
+    Moonlight.Sheaf.Site.Context.Presentation
+    Moonlight.Sheaf.Site.Context.Pairs
+    Moonlight.Sheaf.Site.Class
+    Moonlight.Sheaf.Site.Class.Validation
+    Moonlight.Sheaf.Site.CoverBasis.Finite
+    Moonlight.Sheaf.Site.Plan
+    Moonlight.Sheaf.Site.Phase
+    Moonlight.Sheaf.Site.System.Polynomial
+    Moonlight.Sheaf.Site.System.Execution
+    Moonlight.Sheaf.Site.Construction.FiniteMeet
+    Moonlight.Sheaf.Site.Construction.Map
+    Moonlight.Sheaf.Site.Construction.Nerve
+    Moonlight.Sheaf.Site.Skeleton.RowSource
+    Moonlight.Sheaf.Site.Skeleton.Window
+    Moonlight.Sheaf.Site.Grothendieck
+    Moonlight.Sheaf.Site.Grothendieck.Category
+    Moonlight.Sheaf.Site.Grothendieck.Summary
+    Moonlight.Sheaf.Site.Internal.Face
+    Moonlight.Sheaf.Site.Interface.Types
+    Moonlight.Sheaf.Site.Stalk.Interface
+    Moonlight.Sheaf.Site.Stalk.Interface.Linearization
+    Moonlight.Sheaf.Site.Stalk.Restriction
+  other-modules:
+    Moonlight.Sheaf.Site.Internal.Skeleton
+  build-depends:
+    algebraic-graphs >= 0.8 && < 0.9
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-algebra
+    , moonlight-category
+    , moonlight-core
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-derived
+    , moonlight-homology
+    , moonlight-category:simplicial
+    , moonlight-pale:diagnostic
+    , text
+    , vector
+    , moonlight-sheaf:core
+
+library cosheaf
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-cosheaf
+  exposed-modules:
+    Moonlight.Cosheaf
+    Moonlight.Cosheaf.Core
+    Moonlight.Cosheaf.Finite
+    Moonlight.Cosheaf.Linear
+    Moonlight.Cosheaf.Support
+    Moonlight.Cosheaf.Support.Linear
+    Moonlight.Cosheaf.SiteIndex
+    Moonlight.Cosheaf.Cosection
+    Moonlight.Cosheaf.Colimit
+    Moonlight.Cosheaf.Chain
+    Moonlight.Cosheaf.Chain.Linear
+    Moonlight.Cosheaf.Chain.Cover
+    Moonlight.Cosheaf.Homology
+    Moonlight.Cosheaf.Homology.H0
+    Moonlight.Cosheaf.Homology.Linear
+    Moonlight.Cosheaf.Homology.Cover
+    Moonlight.Cosheaf.Homology.Tropical
+    Moonlight.Cosheaf.Cover.Coequalizer
+    Moonlight.Cosheaf.Reduction.Morse
+    Moonlight.Cosheaf.Reduction.BlockSchur
+    Moonlight.Cosheaf.Tropical.Cost
+  other-modules:
+    Moonlight.Cosheaf.Chain.Coefficient
+    Moonlight.Cosheaf.Chain.Finite.Types
+    Moonlight.Cosheaf.Chain.Internal.Dense
+    Moonlight.Cosheaf.Chain.Prepared
+    Moonlight.Cosheaf.Chain.Provenance
+    Moonlight.Cosheaf.Linear.Types
+    Moonlight.Cosheaf.Support.Carrier
+    Moonlight.Cosheaf.Support.Footprint
+    Moonlight.Cosheaf.Tropical.Cost.MinPlus
+    Moonlight.Cosheaf.Tropical.Cost.Types
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-homology
+    , moonlight-linalg
+    , moonlight-sheaf:core
+    , moonlight-sheaf:site
+    , text
+    , vector
+
+library cochain
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-cochain
+  exposed-modules:
+    Moonlight.Sheaf.Cochain.Coboundary
+    Moonlight.Sheaf.Cochain.Laplacian
+    Moonlight.Sheaf.Cochain.Cohomology
+    Moonlight.Sheaf.Cochain.PreparedDenseNerve
+    Moonlight.Sheaf.Cochain.Preparation
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-category
+    , moonlight-homology
+    , moonlight-linalg
+    , moonlight-category:simplicial
+    , moonlight-pale:diagnostic
+    , vector
+    , moonlight-core
+    , moonlight-sheaf:core
+    , moonlight-sheaf:site
+
+library descent
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-descent
+  exposed-modules:
+    Moonlight.Sheaf.Context.Core
+    Moonlight.Sheaf.Context.Algebra
+    Moonlight.Sheaf.Context.Site
+    Moonlight.Sheaf.Context.Region
+    Moonlight.Sheaf.Context.Section
+    Moonlight.Sheaf.Context.Witness
+    Moonlight.Sheaf.Section.Context.Payload
+    Moonlight.Sheaf.Descent.Core
+    Moonlight.Sheaf.Descent.Kernel
+    Moonlight.Sheaf.Descent.Quotient
+    Moonlight.Sheaf.Descent.Assignment
+    Moonlight.Sheaf.Descent.Context
+    Moonlight.Sheaf.Descent.Context.Support
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-algebra:finite-lattice
+    , moonlight-sheaf:core
+
+library runtime
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-runtime
+  exposed-modules:
+    Moonlight.Sheaf.Context.Runtime
+    Moonlight.Sheaf.Runtime.Compile
+    Moonlight.Sheaf.Context.Schema
+    Moonlight.Sheaf.Proof
+    Moonlight.Sheaf.Twist.Cost
+    Moonlight.Sheaf.Twist.Report
+    Moonlight.Sheaf.Twist.Program
+    Moonlight.Sheaf.Twist.SupportedRuleSpec
+    Moonlight.Sheaf.Twist.FactClosure
+    Moonlight.Sheaf.Twist.Schedule
+    Moonlight.Sheaf.Twist.SiteProgram
+    Moonlight.Sheaf.Twist.Extraction
+    Moonlight.Sheaf.Twist.Config
+    Moonlight.Sheaf.Twist.Compile
+    Moonlight.Sheaf.Twist.Execute
+    Moonlight.Sheaf.Twist.Main
+    Moonlight.Sheaf.Twist.Apply
+    Moonlight.Sheaf.Inference
+    Moonlight.Sheaf.TypeState
+  other-modules:
+    Moonlight.Sheaf.Context.Schema.Types
+    Moonlight.Sheaf.Inference.Types
+    Moonlight.Sheaf.Inference.Bootstrap
+    Moonlight.Sheaf.Inference.Query
+    Moonlight.Sheaf.Inference.Algebra
+    Moonlight.Sheaf.Runtime.Compile.Internal
+  build-depends:
+    base >= 4.18 && < 5
+    , aeson
+    , bytestring
+    , containers >= 0.6 && < 0.8
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-runtime
+    , template-haskell
+    , transformers
+    , vector
+    , moonlight-sheaf:core
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:site
+    , moonlight-sheaf:cochain
+
+library obstruction
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-obstruction
+  exposed-modules:
+    Moonlight.Sheaf.Obstruction
+    Moonlight.Sheaf.Obstruction.Contextual
+    Moonlight.Sheaf.Obstruction.Cohomological.Types
+    Moonlight.Sheaf.Obstruction.Cohomological.Core.Carrier
+    Moonlight.Sheaf.Obstruction.Cohomological.Core.Environment
+    Moonlight.Sheaf.Obstruction.Cohomological.Core.Policy
+    Moonlight.Sheaf.Obstruction.Cohomological.Core.Cache
+    Moonlight.Sheaf.Obstruction.Cohomological.Algebra
+    Moonlight.Sheaf.Obstruction.Cohomological.Algebra.Observation
+    Moonlight.Sheaf.Obstruction.Cohomological.Section
+    Moonlight.Sheaf.Obstruction.Cohomological.Section.Projection
+    Moonlight.Sheaf.Obstruction.Cohomological.Section.Exact
+    Moonlight.Sheaf.Obstruction.Cohomological.Section.Region
+    Moonlight.Sheaf.Obstruction.Cohomological.Evidence.Pruning
+    Moonlight.Sheaf.Obstruction.Cohomological.Evidence.Microsupport
+    Moonlight.Sheaf.Obstruction.Cohomological.Evidence.LivePruning
+    Moonlight.Sheaf.Obstruction.Cohomological.Evidence.Certification
+    Moonlight.Sheaf.Obstruction.Cohomological.Modality
+    Moonlight.Sheaf.Obstruction.Cohomological.Modality.Standard
+    Moonlight.Sheaf.Obstruction.Cohomological.Modality.Lowering
+    Moonlight.Sheaf.Obstruction.Cohomological.Substrate
+    Moonlight.Sheaf.Obstruction.Cohomological.Analysis
+    Moonlight.Sheaf.Obstruction.Cohomological.Analysis.Support
+    Moonlight.Sheaf.Obstruction.Cohomological.Analysis.Lift
+    Moonlight.Sheaf.Obstruction.Cohomological.Analysis.Exact
+  other-modules:
+    Moonlight.Sheaf.Obstruction.Cohomological.Types.Core
+    Moonlight.Sheaf.Obstruction.Cohomological.Types.Fact
+    Moonlight.Sheaf.Obstruction.Cohomological.Types.Provenance
+    Moonlight.Sheaf.Obstruction.Cohomological.Types.Witness
+    Moonlight.Sheaf.Obstruction.Cohomological.Types.Proof
+    Moonlight.Sheaf.Obstruction.Cohomological.Types.Capability
+  build-depends:
+    algebraic-graphs >= 0.8 && < 0.9
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , dependent-map >= 0.4 && < 0.6
+    , dependent-sum >= 0.7 && < 0.8
+    , moonlight-core
+    , moonlight-derived
+    , moonlight-homology
+    , moonlight-pale:diagnostic
+    , some >= 1.1 && < 1.2
+    , vector
+    , moonlight-sheaf:core
+    , moonlight-sheaf:site
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:descent
+
+library
+  import: shared-properties
+  hs-source-dirs:
+    src-public
+    src-presheaf
+  exposed-modules:
+    Moonlight.Sheaf
+    Moonlight.Sheaf.Presentation
+    Moonlight.Sheaf.Stalk
+  other-modules:
+    Moonlight.Sheaf.Internal.PublicModel
+    Moonlight.Sheaf.Image.Adjunction
+    Moonlight.Sheaf.Image.ContextGalois
+    Moonlight.Sheaf.Image.Direct
+    Moonlight.Sheaf.Image.Restrict
+    Moonlight.Sheaf.Presheaf.Congruence
+    Moonlight.Sheaf.Presheaf.Core
+    Moonlight.Sheaf.Presheaf.Enumeration
+    Moonlight.Sheaf.Presheaf.Finite
+    Moonlight.Sheaf.Presheaf.Morphism
+    Moonlight.Sheaf.Presheaf.Plus
+    Moonlight.Sheaf.Presheaf.Separation
+    Moonlight.Sheaf.Presheaf.Stalk.Colimit
+    Moonlight.Sheaf.Presheaf.Transport
+    Moonlight.Sheaf.Sheaf.Gluing
+    Moonlight.Sheaf.Sheafification.Finite
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , moonlight-algebra
+    , moonlight-category
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-algebra:finite-lattice
+    , text
+    , vector
+    , moonlight-sheaf:core
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:site
+
+test-suite moonlight-sheaf-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test
+    src-public
+    src-presheaf
+  main-is: InternalMain.hs
+  ghc-options: -Wall -Wcompat -rtsopts -with-rtsopts=-T
+  other-modules:
+    Moonlight.Cosheaf.Chain.CoreSpec
+    Moonlight.Cosheaf.Chain.GradedComplexSpec
+    Moonlight.Cosheaf.Chain.LinearSpec
+    Moonlight.Cosheaf.Core.ComputedExampleSpec
+    Moonlight.Cosheaf.Core.FiniteSpec
+    Moonlight.Cosheaf.Core.LawSpec
+    Moonlight.Cosheaf.Core.LinearSpec
+    Moonlight.Cosheaf.Core.SupportSpec
+    Moonlight.Cosheaf.Homology.CoverSpec
+    Moonlight.Cosheaf.Homology.Examples.H1CyclicGroupSpec
+    Moonlight.Cosheaf.Homology.Examples.H1TriangleSpec
+    Moonlight.Cosheaf.Homology.Examples.H2TetrahedronBoundarySpec
+    Moonlight.Cosheaf.Homology.LiftSpec
+    Moonlight.Cosheaf.Homology.TropicalSpec
+    Moonlight.Cosheaf.Suite
+    Moonlight.Cosheaf.Surface.RootSpec
+    Moonlight.Cosheaf.Test.Fixture
+    Moonlight.Cosheaf.Test.Fixture.ConstantSingleton
+    Moonlight.Cosheaf.Test.Fixture.Representative
+    Moonlight.Cosheaf.Test.Homology.Expect
+    Moonlight.Cosheaf.Test.Homology.Performance
+    Moonlight.Cosheaf.Test.Site.CyclicGroup
+    Moonlight.Cosheaf.Test.Site.FacePoset
+    Moonlight.Cosheaf.Test.Support
+    Moonlight.Sheaf
+    Moonlight.Sheaf.Cochain.CoboundaryNilpotenceSpec
+    Moonlight.Sheaf.Cochain.CoboundarySpec
+    Moonlight.Sheaf.Cochain.LaplacianSpec
+    Moonlight.Sheaf.Cochain.SiteCohomologySpec
+    Moonlight.Sheaf.Cochain.StressSpec
+    Moonlight.Sheaf.Cochain.Suite
+    Moonlight.Sheaf.Core.CertifiedSpec
+    Moonlight.Sheaf.Core.ContainerSpec
+    Moonlight.Sheaf.Core.FootprintSpec
+    Moonlight.Sheaf.Core.LinearizeSpec
+    Moonlight.Sheaf.Core.OperatorSpec
+    Moonlight.Sheaf.Core.PruningSpec
+    Moonlight.Sheaf.Core.RestrictionIndexSpec
+    Moonlight.Sheaf.Core.RestrictionLaws
+    Moonlight.Sheaf.Core.Section.Congruence.EquivalenceSpec
+    Moonlight.Sheaf.Core.Section.RepairSpec
+    Moonlight.Sheaf.Core.Section.Stalk.CongruenceSpec
+    Moonlight.Sheaf.Core.StalkLawSpec
+    Moonlight.Sheaf.Core.StalkSpec
+    Moonlight.Sheaf.Core.Suite
+    Moonlight.Sheaf.Core.VerdictSpec
+    Moonlight.Sheaf.Descent.ContextRegionSpec
+    Moonlight.Sheaf.Descent.ContextSitePowersetSpec
+    Moonlight.Sheaf.Descent.ContextSiteSpec
+    Moonlight.Sheaf.Descent.DescentSpec
+    Moonlight.Sheaf.Descent.Suite
+    Moonlight.Sheaf.Effect.Harness
+    Moonlight.Sheaf.Effect.LawNames
+    Moonlight.Sheaf.Effect.Laws
+    Moonlight.Sheaf.Image.Adjunction
+    Moonlight.Sheaf.Image.ContextGalois
+    Moonlight.Sheaf.Image.Direct
+    Moonlight.Sheaf.Image.Restrict
+    Moonlight.Sheaf.Internal.PublicModel
+    Moonlight.Sheaf.Obstruction.AssignmentWitnessSpec
+    Moonlight.Sheaf.Obstruction.CertificationSpec
+    Moonlight.Sheaf.Obstruction.Cohomological.AlgebraSpec
+    Moonlight.Sheaf.Obstruction.Cohomological.EnvironmentSpec
+    Moonlight.Sheaf.Obstruction.Cohomological.LivePruningSpec
+    Moonlight.Sheaf.Obstruction.Cohomological.MicrosupportSpec
+    Moonlight.Sheaf.Obstruction.Cohomological.SubstrateSpec
+    Moonlight.Sheaf.Obstruction.ModalitySpec
+    Moonlight.Sheaf.Obstruction.PruningSpec
+    Moonlight.Sheaf.Obstruction.SectionSpec
+    Moonlight.Sheaf.Obstruction.Suite
+    Moonlight.Sheaf.Presheaf.ClaimsSpec
+    Moonlight.Sheaf.Presheaf.Congruence
+    Moonlight.Sheaf.Presheaf.Core
+    Moonlight.Sheaf.Presheaf.Enumeration
+    Moonlight.Sheaf.Presheaf.Finite
+    Moonlight.Sheaf.Presheaf.GluingSpec
+    Moonlight.Sheaf.Presheaf.GoldenConstructionSpec
+    Moonlight.Sheaf.Presheaf.GoldenOperationSpec
+    Moonlight.Sheaf.Presheaf.Image.AdjunctionSpec
+    Moonlight.Sheaf.Presheaf.Image.ContextGaloisSpec
+    Moonlight.Sheaf.Presheaf.Image.DirectSpec
+    Moonlight.Sheaf.Presheaf.Morphism
+    Moonlight.Sheaf.Presheaf.MorphismCategorySpec
+    Moonlight.Sheaf.Presheaf.Plus
+    Moonlight.Sheaf.Presheaf.PlusSpec
+    Moonlight.Sheaf.Presheaf.PreparedCongruenceSheafificationSpec
+    Moonlight.Sheaf.Presheaf.Separation
+    Moonlight.Sheaf.Presheaf.SiteMapSpec
+    Moonlight.Sheaf.Presheaf.Stalk.Colimit
+    Moonlight.Sheaf.Presheaf.StalkColimitSpec
+    Moonlight.Sheaf.Presheaf.Suite
+    Moonlight.Sheaf.Presheaf.Transport
+    Moonlight.Sheaf.Propagation.Suite
+    Moonlight.Sheaf.Propagation.ToySpec
+    Moonlight.Sheaf.Query.PresheafSpec
+    Moonlight.Sheaf.Query.Suite
+    Moonlight.Sheaf.Runtime.InferenceSpec
+    Moonlight.Sheaf.Runtime.LocalFactLaws
+    Moonlight.Sheaf.Runtime.SchemaSpec
+    Moonlight.Sheaf.Runtime.Suite
+    Moonlight.Sheaf.Runtime.TwistSpec
+    Moonlight.Sheaf.Sheaf.Gluing
+    Moonlight.Sheaf.Sheafification.Finite
+    Moonlight.Sheaf.Site.AdversarialSpec
+    Moonlight.Sheaf.Site.Analysis.Microsupport.SheafSubstrateSpec
+    Moonlight.Sheaf.Site.Analysis.MicrosupportSpec
+    Moonlight.Sheaf.Site.Suite
+    Moonlight.Sheaf.Stalk
+    Moonlight.Sheaf.Surface.ApiSurfaceSpec
+    Moonlight.Sheaf.Surface.MiniSiteFixture
+    Moonlight.Sheaf.Surface.ObstructionSurfaceSpec
+    Moonlight.Sheaf.Surface.OwnerForgerySpec
+    Moonlight.Sheaf.Surface.PublicSpec
+    Moonlight.Sheaf.Surface.SiteSurfaceSpec
+    Moonlight.Sheaf.Surface.Suite
+    Moonlight.Sheaf.Surface.Support
+    Moonlight.Sheaf.TestFixture.Assertions
+    Moonlight.Sheaf.TestFixture.Branch
+    Moonlight.Sheaf.TestFixture.Branch.Presheaf
+    Moonlight.Sheaf.TestFixture.Branch.Site
+    Moonlight.Sheaf.TestFixture.Mini
+    Moonlight.Sheaf.TestFixture.PropagationToy
+    Moonlight.Sheaf.TestFixture.PropagationToy.Audit
+    Moonlight.Sheaf.TestFixture.SheafClassLaws
+    Moonlight.Sheaf.TestFixture.Site
+    Moonlight.Sheaf.TestFixture.Triangle
+  build-depends:
+    QuickCheck >= 2.14
+    , aeson
+    , base >= 4.18 && < 5
+    , bytestring
+    , containers >= 0.6 && < 0.8
+    , deepseq
+    , dependent-map >= 0.4 && < 0.6
+    , dependent-sum >= 0.7 && < 0.8
+    , directory
+    , hedgehog
+    , moonlight-algebra
+    , moonlight-category
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-delta:moonlight-delta-epoch
+    , moonlight-derived
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-algebra:finite-lattice
+    , moonlight-discrete:repair-index
+    , moonlight-homology
+    , moonlight-homology:moonlight-homology-laws
+    , moonlight-linalg
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:core
+    , moonlight-sheaf:cosheaf
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:obstruction
+    , moonlight-sheaf:runtime
+    , moonlight-sheaf:site
+    , moonlight-category:simplicial
+    , moonlight-pale:diagnostic
+    , moonlight-pale:test-laws
+    , some >= 1.1 && < 1.2
+    , tasty >= 1.4
+    , tasty-hedgehog
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , text
+    , time >= 1.9
+    , unordered-containers
+    , vector >= 0.12 && < 0.14
+
+test-suite moonlight-sheaf-public-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: PublicMain.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    Moonlight.Sheaf.Surface.ApiSurfaceSpec
+    Moonlight.Sheaf.Surface.MiniSiteFixture
+    Moonlight.Sheaf.Surface.ObstructionSurfaceSpec
+    Moonlight.Sheaf.Surface.PresentationSpec
+    Moonlight.Sheaf.Surface.PublicSpec
+    Moonlight.Sheaf.Surface.SiteSurfaceSpec
+    Moonlight.Sheaf.Surface.Suite
+    Moonlight.Sheaf.Surface.Support
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , directory
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-sheaf
+    , moonlight-sheaf:obstruction
+    , moonlight-sheaf:site
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , vector >= 0.12 && < 0.14
+
+benchmark moonlight-sheaf-bench-quick
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench
+    src-public
+    src-presheaf
+  main-is: QuickMain.hs
+  other-modules:
+    Moonlight.Sheaf.Bench.Operation
+    Moonlight.Sheaf.Bench.StoreDescent
+    Moonlight.Sheaf
+    Moonlight.Sheaf.Internal.PublicModel
+    Moonlight.Sheaf.Presentation
+    Moonlight.Sheaf.Image.Adjunction
+    Moonlight.Sheaf.Image.ContextGalois
+    Moonlight.Sheaf.Image.Direct
+    Moonlight.Sheaf.Image.Restrict
+    Moonlight.Sheaf.Presheaf.Core
+    Moonlight.Sheaf.Presheaf.Enumeration
+    Moonlight.Sheaf.Presheaf.Finite
+    Moonlight.Sheaf.Presheaf.Morphism
+    Moonlight.Sheaf.Presheaf.Plus
+    Moonlight.Sheaf.Presheaf.Separation
+    Moonlight.Sheaf.Presheaf.Stalk.Colimit
+    Moonlight.Sheaf.Presheaf.Transport
+    Moonlight.Sheaf.Sheaf.Gluing
+    Moonlight.Sheaf.Sheafification.Finite
+    Moonlight.Sheaf.Stalk
+  ghc-options: -Wall -Wcompat -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , deepseq
+    , moonlight-algebra
+    , moonlight-category
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-algebra:finite-lattice
+    , moonlight-homology
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:core
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:site
+    , tasty-bench >= 0.3 && < 0.6
+    , text
+    , vector >= 0.12 && < 0.14
+
+benchmark moonlight-sheaf-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench
+    test
+    src-public
+    src-presheaf
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Sheaf.Bench.Cochain
+    Moonlight.Sheaf.Bench.Cosheaf
+    Moonlight.Sheaf.Bench.Operation
+    Moonlight.Sheaf.Bench.PropagationAudit
+    Moonlight.Sheaf.Bench.PropagationToy
+    Moonlight.Sheaf.Bench.Query
+    Moonlight.Sheaf.Bench.QueryTrianglePowerLaw
+    Moonlight.Sheaf.Bench.SitePreparation
+    Moonlight.Sheaf.Bench.StoreDescent
+    Moonlight.Sheaf
+    Moonlight.Sheaf.Internal.PublicModel
+    Moonlight.Sheaf.Image.Adjunction
+    Moonlight.Sheaf.Image.ContextGalois
+    Moonlight.Sheaf.Image.Direct
+    Moonlight.Sheaf.Image.Restrict
+    Moonlight.Sheaf.Presheaf.Core
+    Moonlight.Sheaf.Presheaf.Enumeration
+    Moonlight.Sheaf.Presheaf.Finite
+    Moonlight.Sheaf.Presheaf.Morphism
+    Moonlight.Sheaf.Presheaf.Plus
+    Moonlight.Sheaf.Presheaf.Separation
+    Moonlight.Sheaf.Presheaf.Stalk.Colimit
+    Moonlight.Sheaf.Presheaf.Transport
+    Moonlight.Sheaf.Sheaf.Gluing
+    Moonlight.Sheaf.Sheafification.Finite
+    Moonlight.Sheaf.Stalk
+    Moonlight.Sheaf.TestFixture.PropagationToy
+    Moonlight.Sheaf.TestFixture.PropagationToy.Audit
+  ghc-options: -Wall -Wcompat -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.8
+    , deepseq
+    , moonlight-algebra
+    , moonlight-category
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-algebra:finite-lattice
+    , moonlight-homology
+    , moonlight-linalg
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:core
+    , moonlight-sheaf:cosheaf
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:site
+    , moonlight-category:simplicial
+    , tasty-bench >= 0.3 && < 0.6
+    , text
+    , unordered-containers
+    , vector >= 0.12 && < 0.14

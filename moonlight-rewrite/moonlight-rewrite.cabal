@@ -1,0 +1,533 @@
+cabal-version:       3.0
+name:                moonlight-rewrite
+version:             0.1.0.0
+synopsis:            Canonical rewrite algebra, runtime, DSL, proof context, and relational front.
+description:
+  The single canonical rewrite package for Pale Meridian. Named public
+  sublibraries expose the algebra, runtime core, checked system, DSL front end,
+  proof-context integration, relational execution, and the egraph-backed
+  relational front.
+license:             MIT
+license-file:        LICENSE
+author:              Blue Rose
+maintainer:          rosaliafialkova@gmail.com
+category:            Foundation
+build-type:          Simple
+tested-with:         GHC == 9.14.1
+extra-doc-files:
+  README.md
+
+flag warnings-as-errors
+  description: Treat compiler warnings as errors in package validation.
+  default: False
+  manual: True
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  if flag(warnings-as-errors)
+    ghc-options: -Werror
+  default-extensions:
+    ConstraintKinds
+    QuantifiedConstraints
+    StandaloneDeriving
+    TypeFamilies
+    UndecidableInstances
+
+library algebra
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src-algebra
+  exposed-modules:
+      Moonlight.Rewrite.Algebra
+  other-modules:
+      Moonlight.Rewrite.Algebra.Category.Core
+      Moonlight.Rewrite.Algebra.Category.Finite
+      Moonlight.Rewrite.Algebra.Nerve.Core
+      Moonlight.Rewrite.Algebra.Nerve.Simplex
+      Moonlight.Rewrite.Algebra.PBPO
+      Moonlight.Rewrite.Algebra.PBPO.Derive
+      Moonlight.Rewrite.Algebra.PBPO.Rule
+      Moonlight.Rewrite.Algebra.PBPO.Step
+      Moonlight.Rewrite.Kernel.Query
+      Moonlight.Rewrite.Kernel.Condition
+      Moonlight.Rewrite.Kernel.Compose
+      Moonlight.Rewrite.Kernel.Rewrite
+      Moonlight.Rewrite.Kernel.Decoration
+      Moonlight.Rewrite.Kernel.Unify
+      Moonlight.Rewrite.Algebra.Term.Category
+      Moonlight.Rewrite.Kernel.Decoration.Product
+      Moonlight.Rewrite.Kernel.Rewrite.Internal
+      Moonlight.Rewrite.Kernel.SpanModel
+      Moonlight.Rewrite.Kernel.Subst
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-category
+    , moonlight-discrete:constraint
+    , moonlight-core
+    , moonlight-derived
+    , moonlight-sheaf:site
+    , moonlight-category:simplicial
+    , mtl >= 2.2 && < 2.4
+    , selective >= 0.7 && < 0.8
+    , vector >= 0.13 && < 0.14
+
+library core
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src-core
+  exposed-modules:
+      Moonlight.Rewrite.Runtime
+  other-modules:
+      Moonlight.Rewrite.Runtime.Capabilities
+      Moonlight.Rewrite.Runtime.Condition
+      Moonlight.Rewrite.Runtime.Exec
+      Moonlight.Rewrite.Runtime.PostMatch
+      Moonlight.Rewrite.Runtime.Rhs
+      Moonlight.Rewrite.Runtime.RulePlan
+      Moonlight.Rewrite.Runtime.Exec.Internal
+      Moonlight.Rewrite.Runtime.Rhs.Internal
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , moonlight-discrete:constraint
+    , moonlight-core
+    , moonlight-core:moonlight-core-egraph-program
+    , moonlight-rewrite:algebra
+    , selective >= 0.7 && < 0.8
+    , transformers >= 0.6 && < 1
+
+library system
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src-system
+  exposed-modules:
+      Moonlight.Rewrite.System
+  other-modules:
+      Moonlight.Rewrite.System.Check
+      Moonlight.Rewrite.System.Checked
+      Moonlight.Rewrite.System.Compose
+      Moonlight.Rewrite.System.Logic.Decoration
+      Moonlight.Rewrite.System.Logic.Guard
+      Moonlight.Rewrite.System.Logic.Rule
+      Moonlight.Rewrite.System.Logic.SemiNaive
+      Moonlight.Rewrite.System.Logic.SemiNaive.Config
+      Moonlight.Rewrite.System.Logic.SemiNaive.Engine
+      Moonlight.Rewrite.System.Logic.SemiNaive.Input
+      Moonlight.Rewrite.System.Logic.Store
+      Moonlight.Rewrite.System.Law
+      Moonlight.Rewrite.System.Origin
+      Moonlight.Rewrite.System.Plan
+      Moonlight.Rewrite.System.Proof.Retention
+      Moonlight.Rewrite.System.Rule.Check
+      Moonlight.Rewrite.System.Rule.Elaborate
+      Moonlight.Rewrite.System.RuleName
+      Moonlight.Rewrite.System.RuleSpec
+      Moonlight.Rewrite.System.Support
+      Moonlight.Rewrite.System.Logic.Delta
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-control
+    , moonlight-discrete:constraint
+    , moonlight-core
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , semialign >= 1.3 && < 1.4
+    , text >= 2.0 && < 2.2
+    , these >= 1.2 && < 1.3
+
+library front
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src-front
+  exposed-modules:
+      Moonlight.Rewrite.DSL
+  other-modules:
+      Moonlight.Rewrite.DSL.Compile
+      Moonlight.Rewrite.DSL.Error
+      Moonlight.Rewrite.DSL.Program
+      Moonlight.Rewrite.DSL.Rule
+      Moonlight.Rewrite.DSL.Signature
+      Moonlight.Rewrite.DSL.Term
+      Moonlight.Rewrite.Signature.TH
+      Moonlight.Rewrite.DSL.Elaborate
+      Moonlight.Rewrite.DSL.Support
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-discrete:constraint
+    , moonlight-core
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , moonlight-rewrite:system
+    , template-haskell
+    , text >= 2.0 && < 2.2
+    , transformers >= 0.6 && < 1
+
+library proof-context
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+      src-proof-context
+  exposed-modules:
+      Moonlight.Rewrite.ProofContext
+  other-modules:
+      Moonlight.Rewrite.ContextualSupport
+      Moonlight.Rewrite.Proof
+      Moonlight.Rewrite.Proof.Boundary
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , moonlight-algebra
+    , moonlight-control
+    , moonlight-core
+    , moonlight-algebra:finite-lattice
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , moonlight-rewrite:system
+    , moonlight-sheaf:runtime
+
+library relational
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+    src-relational
+  exposed-modules:
+    Moonlight.Rewrite.Relational
+  other-modules:
+    Moonlight.Rewrite.Relational.Backend
+    Moonlight.Rewrite.Relational.Compile
+    Moonlight.Rewrite.Relational.Limits
+    Moonlight.Rewrite.Relational.Output
+    Moonlight.Rewrite.Relational.Run
+  build-depends:
+    base >= 4.18 && < 5
+    , barbies >= 2.1 && < 2.2
+    , containers >= 0.6 && < 0.9
+    , moonlight-control
+    , moonlight-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-storage
+    , moonlight-rewrite:system
+    , unordered-containers
+    , vector
+
+library relational-front
+  import: shared-properties
+  visibility: public
+  hs-source-dirs:
+    src-relational-front
+  exposed-modules:
+    Moonlight.Rewrite.Relational.Front
+  other-modules:
+    Moonlight.Rewrite.Relational.Front.Error
+    Moonlight.Rewrite.Relational.Front.Extraction
+    Moonlight.Rewrite.Relational.Front.Host
+    Moonlight.Rewrite.Relational.Front.Saturation
+    Moonlight.Rewrite.Relational.Front.ApplicationCondition
+    Moonlight.Rewrite.Relational.Front.Internal.GuardDigest
+    Moonlight.Rewrite.Relational.Front.Saturation.Error
+    Moonlight.Rewrite.Relational.Front.Saturation.Substrate
+    Moonlight.Rewrite.Relational.Front.Saturation.Types
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , moonlight-algebra
+    , moonlight-discrete:constraint
+    , moonlight-control
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-control:moonlight-control-homology
+    , moonlight-control:moonlight-control-support
+    , moonlight-core
+    , moonlight-core:moonlight-core-egraph-program
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-egraph-core
+    , moonlight-algebra:finite-lattice
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-storage
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , moonlight-rewrite:front
+    , moonlight-rewrite:proof-context
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:system
+    , moonlight-saturation
+    , moonlight-saturation:protocol
+    , moonlight-saturation:core
+    , moonlight-sheaf:descent
+    , transformers >= 0.5 && < 0.7
+    , vector
+
+library
+  import: shared-properties
+  hs-source-dirs:
+    src-public
+  exposed-modules:
+    Moonlight.Rewrite
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , moonlight-rewrite:front
+    , moonlight-rewrite:proof-context
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:relational-front
+    , moonlight-rewrite:system
+
+test-suite moonlight-rewrite-algebra-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      test/algebra
+      src-algebra
+  main-is: Main.hs
+  other-modules:
+      Moonlight.Rewrite.Algebra
+      Moonlight.Rewrite.Algebra.Category.Core
+      Moonlight.Rewrite.Algebra.Category.Finite
+      Moonlight.Rewrite.Algebra.Nerve.Core
+      Moonlight.Rewrite.Algebra.Nerve.Simplex
+      Moonlight.Rewrite.Algebra.PBPO
+      Moonlight.Rewrite.Algebra.PBPO.Derive
+      Moonlight.Rewrite.Algebra.PBPO.Rule
+      Moonlight.Rewrite.Algebra.PBPO.Step
+      RefCat
+      Moonlight.Rewrite.Algebra.Term.Category
+      Moonlight.Rewrite.Kernel.Compose
+      Moonlight.Rewrite.Kernel.Condition
+      Moonlight.Rewrite.Kernel.Decoration
+      Moonlight.Rewrite.Kernel.Decoration.Product
+      Moonlight.Rewrite.Kernel.Rewrite
+      Moonlight.Rewrite.Kernel.Rewrite.Internal
+      Moonlight.Rewrite.Kernel.Query
+      Moonlight.Rewrite.Kernel.SpanModel
+      SpanModelLaws
+      Moonlight.Rewrite.Kernel.Subst
+      Moonlight.Rewrite.Kernel.Unify
+  ghc-options: -Wall -Wcompat
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hedgehog >= 1.4 && < 1.7
+    , moonlight-category
+    , moonlight-category:laws
+    , moonlight-discrete:constraint
+    , moonlight-core
+    , moonlight-derived
+    , moonlight-sheaf:site
+    , moonlight-category:simplicial
+    , mtl >= 2.2 && < 2.4
+    , selective >= 0.7 && < 0.8
+    , tasty >= 1.4
+    , tasty-hedgehog >= 1.4
+    , tasty-hunit >= 0.10
+    , vector >= 0.13 && < 0.14
+
+test-suite moonlight-rewrite-core-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      test/core
+      src-core
+  main-is: Main.hs
+  other-modules:
+      Moonlight.Rewrite.Runtime
+      Moonlight.Rewrite.Runtime.Capabilities
+      Moonlight.Rewrite.Runtime.Condition
+      Moonlight.Rewrite.Runtime.Exec
+      Moonlight.Rewrite.Runtime.Exec.Internal
+      Moonlight.Rewrite.Runtime.PostMatch
+      Moonlight.Rewrite.Runtime.Rhs
+      Moonlight.Rewrite.Runtime.Rhs.Internal
+      Moonlight.Rewrite.Runtime.RulePlan
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , moonlight-discrete:constraint
+    , moonlight-core
+    , moonlight-core:moonlight-core-egraph-program
+    , moonlight-core:moonlight-core-syntax
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , QuickCheck >= 2.14
+    , selective >= 0.7 && < 0.8
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , transformers >= 0.6 && < 1
+
+test-suite moonlight-rewrite-system-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/system
+  main-is: Main.hs
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hedgehog >= 1.4 && < 1.7
+    , moonlight-discrete:constraint
+    , moonlight-core
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , moonlight-rewrite:system
+
+test-suite moonlight-rewrite-front-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/front
+  main-is: Main.hs
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hedgehog >= 1.4 && < 1.7
+    , moonlight-core
+    , moonlight-rewrite:front
+    , moonlight-rewrite:system
+
+test-suite moonlight-rewrite-proof-context-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/proof-context
+  main-is: Main.hs
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-rewrite:proof-context
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+
+test-suite moonlight-rewrite-relational-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/relational
+  main-is: Main.hs
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hedgehog >= 1.2
+    , moonlight-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-plan
+    , moonlight-flow-storage
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:system
+    , vector
+
+test-suite moonlight-rewrite-relational-front-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/relational-front
+  main-is: Main.hs
+  other-modules:
+    ComboAtlasSpec
+    PackageDisclosureSpec
+    Vocabulary
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , hedgehog >= 1.2
+    , moonlight-control
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-control:moonlight-control-homology
+    , moonlight-control:moonlight-control-support
+    , moonlight-core
+    , moonlight-core:moonlight-core-egraph-program
+    , moonlight-core:moonlight-core-syntax
+    , moonlight-egraph-core
+    , moonlight-pale:test
+    , moonlight-pale:test-surface
+    , moonlight-rewrite
+    , moonlight-rewrite:core
+    , moonlight-rewrite:front
+    , moonlight-rewrite:proof-context
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:relational-front
+    , moonlight-saturation
+    , moonlight-sheaf:descent
+    , tasty >= 1.4
+    , tasty-hedgehog >= 1.4
+    , tasty-hunit >= 0.10
+
+benchmark moonlight-rewrite-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: bench bench/algebra bench/core bench/system bench/proof-context bench/relational-front bench/support
+  main-is: Main.hs
+  other-modules:
+      Algebra
+      Common
+      Proof
+      Public
+      Runtime
+      System
+  ghc-options: -O2 -rtsopts
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , deepseq >= 1.4 && < 1.6
+    , moonlight-category
+    , moonlight-discrete:constraint
+    , moonlight-core
+    , moonlight-core:moonlight-core-automata
+    , moonlight-core:moonlight-core-syntax
+    , moonlight-rewrite
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , moonlight-rewrite:front
+    , moonlight-rewrite:proof-context
+    , moonlight-rewrite:relational-front
+    , moonlight-rewrite:system
+    , tasty-bench >= 0.3 && < 0.5
+
+benchmark moonlight-rewrite-measure
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: bench/measure
+  main-is: Main.hs
+  ghc-options: -O2 -rtsopts
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , deepseq >= 1.4 && < 1.6
+    , moonlight-core
+    , moonlight-core:moonlight-core-automata
+    , moonlight-core:moonlight-core-syntax
+    , moonlight-pale:bench
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , moonlight-rewrite:proof-context
+    , moonlight-rewrite:system
+    , process >= 1.6 && < 1.7
+    , text >= 2.0 && < 2.2

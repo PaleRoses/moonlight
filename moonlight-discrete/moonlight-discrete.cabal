@@ -1,0 +1,544 @@
+cabal-version:       3.0
+name:                moonlight-discrete
+version:             0.1.0.0
+homepage:            https://github.com/PaleRoses/moonlight
+bug-reports:         https://github.com/PaleRoses/moonlight/issues
+synopsis:            Finite discrete substrates for Moonlight.
+description:         Finite and discrete structural substrate for Moonlight: recursion-scheme tree automata and transducers; Boolean constraint expressions, CNF/DPLL, CSP arc consistency, and WFC search; typed optic addressing, writes, restrictions, and delta boundaries; graph entity vocabularies, selector algebras, graph deltas, local topology, and repair-index closures.
+license:             MIT
+license-file:        LICENSE
+author:              Blue Rose
+maintainer:          rosaliafialkova@gmail.com
+category:            Foundation
+build-type:          Simple
+tested-with:         GHC == 9.14.1
+extra-doc-files:
+  README.md
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    DerivingStrategies
+    FlexibleInstances
+    FunctionalDependencies
+    PatternSynonyms
+    StandaloneDeriving
+    TypeFamilies
+    UndecidableInstances
+
+library optics
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-optics
+  exposed-modules:
+    Moonlight.Optics
+    Moonlight.Optics.Boundary
+    Moonlight.Optics.Pure.Delta
+    Moonlight.Optics.Pure.Multiplicity
+    Moonlight.Optics.Pure.Path
+    Moonlight.Optics.Pure.Restriction
+    Moonlight.Optics.Pure.Write
+    Moonlight.Optics.TH
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , mtl >= 2.3 && < 2.4
+    , optics-core >= 0.4 && < 1
+    , optics-extra >= 0.4 && < 1
+    , optics-th >= 0.4 && < 1
+    , text >= 2.0 && < 2.2
+
+library automata
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-automata
+  exposed-modules:
+    Moonlight.Automata
+    Moonlight.Automata.Pure
+    Moonlight.Automata.Pure.Language
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core:moonlight-core-automata >= 0.1 && < 0.2
+    , recursion-schemes >= 5.2 && < 6
+
+library constraint
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-constraint
+  exposed-modules:
+    Moonlight.Constraint
+    Moonlight.Constraint.Pure.ArcConsistency
+    Moonlight.Constraint.Pure.CNF
+    Moonlight.Constraint.Pure.CSP
+    Moonlight.Constraint.Pure.CoFiniteTruth
+    Moonlight.Constraint.Pure.DPLL
+    Moonlight.Constraint.Pure.Evaluate
+    Moonlight.Constraint.Pure.Normalize
+    Moonlight.Constraint.Pure.Recursion
+    Moonlight.Constraint.Pure.Types
+    Moonlight.Constraint.Pure.WFC.Algebra
+    Moonlight.Constraint.Pure.WFC.Automata
+    Moonlight.Constraint.Pure.WFC.Compile
+    Moonlight.Constraint.Pure.WFC.Core
+    Moonlight.Constraint.Pure.WFC.Search
+    Moonlight.Constraint.Pure.WFC.Types
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-algebra
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-core:moonlight-core-automata
+    , moonlight-discrete:automata
+    , recursion-schemes >= 5.2 && < 6
+
+library constraint-probability
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-constraint-probability
+  exposed-modules:
+    Moonlight.Constraint.Pure.WFC.Probability
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-discrete:constraint
+    , moonlight-probability >= 0.1 && < 0.2
+
+library moonlight-discrete-laws
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-laws
+  exposed-modules:
+    Moonlight.Automata.Effect.LawNames
+    Moonlight.Automata.Effect.Laws
+    Moonlight.Constraint.Effect.Harness
+    Moonlight.Constraint.Effect.LawNames
+    Moonlight.Optics.Effect.LawNames
+    Moonlight.Optics.Effect.Laws
+  build-depends:
+    base >= 4.18 && < 5
+    , comonad >= 5 && < 6
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , free >= 5.2 && < 6
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-core:moonlight-core-automata
+    , moonlight-discrete:automata
+    , moonlight-discrete:constraint
+    , moonlight-discrete:optics
+    , optics-core >= 0.4 && < 1
+    , recursion-schemes >= 5.2 && < 6
+
+library graph-core
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: src-graph-core
+  exposed-modules:
+    Moonlight.Graph.Pure.ContinuousAttr
+    Moonlight.Graph.Pure.CycleClosure
+    Moonlight.Graph.Pure.Delta
+    Moonlight.Graph.Pure.Optics
+    Moonlight.Graph.Pure.Selector
+    Moonlight.Graph.Pure.Types
+    Moonlight.Graph.Pure.View
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-discrete:optics
+    , text >= 2.0 && < 2.2
+
+library graph
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-graph
+  exposed-modules:
+    Moonlight.Graph
+    Moonlight.Graph.Pure.LocalTopology
+  build-depends:
+    algebraic-graphs >= 0.8 && < 0.9
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-discrete:graph-core
+
+library repair-index
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-graph
+  exposed-modules:
+    Moonlight.Repair.Index
+  build-depends:
+    algebraic-graphs >= 0.8 && < 0.9
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+
+test-suite moonlight-discrete-automata-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/automata
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    AutomataLaws
+    AutomataTests
+    RepoDisciplineSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , comonad >= 5 && < 6
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , directory >= 1.3 && < 1.4
+    , filepath >= 1.4 && < 1.6
+    , free >= 5.2 && < 6
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-core:moonlight-core-automata
+    , moonlight-discrete:automata
+    , moonlight-discrete:moonlight-discrete-laws
+    , moonlight-pale:test
+    , moonlight-pale:test-laws
+    , moonlight-pale:test-surface
+    , QuickCheck >= 2.14
+    , recursion-schemes >= 5.2 && < 6
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+
+test-suite moonlight-discrete-constraint-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/constraint
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    ArcConsistencySpec
+    CNFSpec
+    CSPSpec
+    CoFiniteTruthSpec
+    ConstraintArbitrary
+    ConstraintBoundary
+    ConstraintLaws
+    ConstraintTests
+    DPLLSpec
+    EndoPatchSpec
+    EvaluateSpec
+    NormalizeSpec
+    WFCAutomataLawSpec
+    WFCSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hedgehog >= 1.2
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-core:moonlight-core-automata
+    , moonlight-discrete:automata
+    , moonlight-discrete:constraint
+    , moonlight-discrete:moonlight-discrete-laws
+    , moonlight-pale:test
+    , moonlight-pale:test-laws
+    , QuickCheck >= 2.14
+    , tasty >= 1.4
+    , tasty-hedgehog >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+
+test-suite moonlight-discrete-constraint-probability-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/constraint-probability
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    ConstraintProbabilityTests
+    WFCProbabilitySpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-discrete:constraint
+    , moonlight-discrete:constraint-probability
+    , moonlight-probability >= 0.1 && < 0.2
+    , moonlight-pale:test
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+
+test-suite moonlight-discrete-graph-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/graph
+  main-is: Main.hs
+  other-modules:
+    ContinuousAttrSpec
+    DeltaSpec
+    GraphTests
+    LocalTopologySpec
+    OpticsSpec
+    SelectorSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-discrete:graph
+    , moonlight-discrete:moonlight-discrete-laws
+    , moonlight-discrete:optics
+    , moonlight-pale:test
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , text >= 2.0 && < 2.2
+
+test-suite moonlight-discrete-optics-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test/optics
+  main-is: Main.hs
+  other-modules:
+    OpticsTestSupport
+    OpticsTests
+  build-depends:
+    base >= 4.18 && < 5
+    , hedgehog >= 1.2
+    , moonlight-discrete:moonlight-discrete-laws
+    , moonlight-discrete:optics
+    , moonlight-pale:test
+    , mtl >= 2.3 && < 2.4
+    , QuickCheck >= 2.14
+    , tasty >= 1.4
+    , tasty-hedgehog >= 1.4
+    , tasty-quickcheck >= 0.10
+    , text >= 2.0 && < 2.2
+    , veil-computation-test-support
+
+test-suite moonlight-discrete-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test/aggregate
+    test/automata
+    test/constraint
+    test/constraint-probability
+    test/graph
+    test/optics
+  main-is: Main.hs
+  other-modules:
+    ArcConsistencySpec
+    AutomataLaws
+    AutomataTests
+    CNFSpec
+    CSPSpec
+    CoFiniteTruthSpec
+    ConstraintArbitrary
+    ConstraintBoundary
+    ConstraintLaws
+    ConstraintProbabilityTests
+    ConstraintTests
+    ContinuousAttrSpec
+    DPLLSpec
+    DeltaSpec
+    EndoPatchSpec
+    EvaluateSpec
+    GraphTests
+    LocalTopologySpec
+    NormalizeSpec
+    OpticsSpec
+    OpticsTestSupport
+    OpticsTests
+    RepoDisciplineSpec
+    SelectorSpec
+    WFCAutomataLawSpec
+    WFCProbabilitySpec
+    WFCSpec
+  ghc-options: -Wall -Wcompat
+  build-depends:
+    base >= 4.18 && < 5
+    , comonad >= 5 && < 6
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , directory >= 1.3 && < 1.4
+    , filepath >= 1.4 && < 1.6
+    , free >= 5.2 && < 6
+    , hedgehog >= 1.2
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-core:moonlight-core-automata
+    , moonlight-discrete:automata
+    , moonlight-discrete:constraint
+    , moonlight-discrete:constraint-probability
+    , moonlight-discrete:graph
+    , moonlight-discrete:moonlight-discrete-laws
+    , moonlight-discrete:optics
+    , moonlight-pale:test
+    , moonlight-pale:test-laws
+    , moonlight-pale:test-surface
+    , moonlight-probability >= 0.1 && < 0.2
+    , mtl >= 2.3 && < 2.4
+    , QuickCheck >= 2.14
+    , recursion-schemes >= 5.2 && < 6
+    , tasty >= 1.4
+    , tasty-hedgehog >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , text >= 2.0 && < 2.2
+    , veil-computation-test-support
+
+benchmark moonlight-discrete-automata-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench/automata
+    bench/support
+  main-is: Main.hs
+  other-modules:
+    AutomataBench
+    BenchSupport
+  ghc-options: -Wall -Wcompat -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , data-fix >= 0.3 && < 0.4
+    , moonlight-discrete:automata
+    , moonlight-pale:bench
+    , recursion-schemes >= 5.2 && < 6
+    , tasty-bench >= 0.3
+
+benchmark moonlight-discrete-constraint-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench/constraint
+    bench/support
+  main-is: Main.hs
+  other-modules:
+    BenchSupport
+    ConstraintBench
+  ghc-options: -Wall -Wcompat -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-discrete:constraint
+    , moonlight-pale:bench
+    , tasty-bench >= 0.3
+
+benchmark moonlight-discrete-constraint-probability-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench/constraint-probability
+    bench/support
+  main-is: Main.hs
+  other-modules:
+    BenchSupport
+    ConstraintProbabilityBench
+  ghc-options: -Wall -Wcompat -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-discrete:constraint
+    , moonlight-discrete:constraint-probability
+    , moonlight-probability >= 0.1 && < 0.2
+    , moonlight-pale:bench
+    , tasty-bench >= 0.3
+
+benchmark moonlight-discrete-graph-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench/graph
+    bench/support
+  main-is: Main.hs
+  other-modules:
+    BenchSupport
+    GraphBench
+  ghc-options: -Wall -Wcompat -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-discrete:graph
+    , moonlight-pale:bench
+    , tasty-bench >= 0.3
+
+benchmark moonlight-discrete-optics-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench/optics
+    bench/support
+  main-is: Main.hs
+  other-modules:
+    BenchSupport
+    OpticsBench
+  ghc-options: -Wall -Wcompat -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-discrete:optics
+    , moonlight-pale:bench
+    , optics-core >= 0.4 && < 1
+    , tasty-bench >= 0.3
+
+benchmark moonlight-discrete-repair-index-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench/repair-index
+    bench/support
+  main-is: Main.hs
+  other-modules:
+    BenchSupport
+    RepairIndexBench
+  ghc-options: -Wall -Wcompat -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-discrete:repair-index
+    , moonlight-pale:bench
+    , tasty-bench >= 0.3
+
+benchmark moonlight-discrete-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    bench/aggregate
+    bench/automata
+    bench/constraint
+    bench/constraint-probability
+    bench/graph
+    bench/optics
+    bench/repair-index
+    bench/support
+  main-is: Main.hs
+  other-modules:
+    AutomataBench
+    BenchSupport
+    ConstraintBench
+    ConstraintProbabilityBench
+    GraphBench
+    OpticsBench
+    RepairIndexBench
+  ghc-options: -Wall -Wcompat -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , moonlight-discrete:automata
+    , moonlight-discrete:constraint
+    , moonlight-discrete:constraint-probability
+    , moonlight-discrete:graph
+    , moonlight-discrete:optics
+    , moonlight-discrete:repair-index
+    , moonlight-probability >= 0.1 && < 0.2
+    , moonlight-pale:bench
+    , optics-core >= 0.4 && < 1
+    , recursion-schemes >= 5.2 && < 6
+    , tasty-bench >= 0.3
+
+source-repository head
+  type:     git
+  location: https://github.com/PaleRoses/moonlight.git
+  subdir:   moonlight-discrete

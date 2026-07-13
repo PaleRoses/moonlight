@@ -1,0 +1,212 @@
+cabal-version:       3.0
+name:                moonlight-egraph-introspection
+version:             0.1.0.0
+synopsis:            Rewrite-nerve introspection bridge for homotopy and sheaf analysis.
+description:         Foundation-tier package connecting finite rewrite categories to simplicial, sheaf, and homological summaries.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.EGraph.Introspection.Core.Context.Pairs
+    Moonlight.EGraph.Introspection.Core.Context.Tag
+    Moonlight.EGraph.Introspection.Core.Equation
+    Moonlight.EGraph.Introspection.Core.Rewrite
+    Moonlight.EGraph.Introspection.Core.Rewrite.Successor
+    Moonlight.EGraph.Introspection.Core.HsExpr
+    Moonlight.EGraph.Introspection.Core.HsExpr.Equation
+    Moonlight.EGraph.Introspection.Core.HsExpr.Front
+    Moonlight.EGraph.Introspection.Core.HsExpr.FreeScope
+    Moonlight.EGraph.Introspection.Core.HsExpr.Sig
+    Moonlight.EGraph.Introspection.Analysis.Cohomology
+    Moonlight.EGraph.Introspection.Analysis.Resolution
+    Moonlight.EGraph.Introspection.Analysis.Resolution.Descent
+    Moonlight.EGraph.Introspection.Analysis.Homotopy
+    Moonlight.EGraph.Introspection.Analysis.Reduction
+    Moonlight.EGraph.Introspection.Analysis.Relative
+    Moonlight.EGraph.Introspection.Analysis.Equivariant
+    Moonlight.EGraph.Introspection.Analysis.Obstruction
+    Moonlight.EGraph.Introspection.Analysis.Summary
+    Moonlight.EGraph.Introspection.Analysis.Descent
+    Moonlight.EGraph.Introspection.Analysis.Spectral
+    Moonlight.EGraph.Introspection.Analysis.Termination
+  other-modules:
+    Moonlight.EGraph.Introspection.Core.HsExpr.Analysis
+    Moonlight.EGraph.Introspection.Core.HsExpr.BinderAlgebra
+    Moonlight.EGraph.Introspection.Core.HsExpr.BindingFront
+    Moonlight.EGraph.Introspection.Core.HsExpr.Laws
+    Moonlight.EGraph.Introspection.Core.HsExpr.Spans
+    Moonlight.EGraph.Introspection.Core.HsExpr.Unfold
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , ghc >= 9.6 && < 9.16
+    , moonlight-algebra
+    , moonlight-analysis
+    , moonlight-core
+    , moonlight-category
+    , moonlight-egraph-core
+    , moonlight-egraph:context
+    , moonlight-egraph:extraction
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph:homology
+    , moonlight-probability
+    , moonlight-rewrite:core
+    , moonlight-rewrite:system
+    , moonlight-rewrite:front
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:relational-front
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:proof-context
+    , moonlight-category:simplicial
+    , moonlight-derived
+    , moonlight-homology
+    , moonlight-pale:diagnostic
+    , moonlight-pale:ghc-surface
+    , moonlight-linalg
+    , moonlight-saturation
+    , moonlight-saturation:core
+    , moonlight-control
+    , moonlight-control:moonlight-control-support
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-control:moonlight-control-homology
+    , moonlight-sheaf:core
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:runtime
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:site
+    , moonlight-sheaf:obstruction
+    , transformers >= 0.6 && < 1
+    , vector >= 0.13 && < 0.14
+    , data-fix >= 0.3 && < 0.4
+
+    , moonlight-algebra:finite-lattice
+executable moonlight-hsexpr-insertion-metrics
+  import: shared-properties
+  hs-source-dirs: app
+  main-is: HsExprInsertionMetricsMain.hs
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-egraph-introspection
+
+test-suite moonlight-egraph-introspection-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.EGraph.Introspection.Arbitrary
+    Moonlight.EGraph.Introspection.ContextSpec
+    Moonlight.EGraph.Introspection.FreeScopeSpec
+    Moonlight.EGraph.Introspection.HsExprBindingFrontSpec
+    Moonlight.EGraph.Introspection.HsExprSpec
+    Moonlight.EGraph.Introspection.HsExprSpec.Fixture
+    Moonlight.EGraph.Introspection.HsExprSpec.Site
+    Moonlight.EGraph.Introspection.HsExprSpec.Section
+    Moonlight.EGraph.Introspection.HsExprSpec.Equation
+    Moonlight.EGraph.Introspection.HsExprSpec.LawFront
+    Moonlight.EGraph.Introspection.HsExprSpec.Gluing
+    Moonlight.EGraph.Introspection.HsExprSpec.Global
+    Moonlight.EGraph.Introspection.HsExprSpec.Metrics
+    Moonlight.EGraph.Introspection.NerveSpec
+    Moonlight.EGraph.Introspection.NerveSpec.Fixture
+    Moonlight.EGraph.Introspection.NerveSpec.Fixture.Section
+    Moonlight.EGraph.Introspection.NerveSpec.FixturePrelude
+    Moonlight.EGraph.Introspection.NerveSpec.Fixture.Site
+    Moonlight.EGraph.Introspection.NerveSpec.Global
+    Moonlight.EGraph.Introspection.NerveSpec.Global.Homology
+    Moonlight.EGraph.Introspection.NerveSpec.Global.Persistence
+    Moonlight.EGraph.Introspection.NerveSpec.CommonPrelude
+    Moonlight.EGraph.Introspection.NerveSpec.Gluing
+    Moonlight.EGraph.Introspection.NerveSpec.Gluing.Prelude
+    Moonlight.EGraph.Introspection.NerveSpec.Gluing.Relative
+    Moonlight.EGraph.Introspection.NerveSpec.Global.Prelude
+    Moonlight.EGraph.Introspection.NerveSpec.Handlers
+    Moonlight.EGraph.Introspection.NerveSpec.Handlers.Prelude
+    Moonlight.EGraph.Introspection.NerveSpec.Section
+    Moonlight.EGraph.Introspection.NerveSpec.Section.Prelude
+    Moonlight.EGraph.Introspection.NerveSpec.Section.Scheduling
+    Moonlight.EGraph.Introspection.NerveSpec.Site
+    Moonlight.EGraph.Introspection.NerveSpec.Site.Prelude
+    Moonlight.EGraph.Introspection.NerveSpec.Site.Context
+    Moonlight.EGraph.Introspection.NerveSpec.Site.Core
+    Moonlight.EGraph.Introspection.PruningSpec
+    Moonlight.EGraph.Introspection.PruningSpec.CommonPrelude
+    Moonlight.EGraph.Introspection.PruningSpec.Fixture
+    Moonlight.EGraph.Introspection.PruningSpec.Section
+    Moonlight.EGraph.Introspection.PruningSpec.Gluing
+    Moonlight.EGraph.Introspection.PruningSpec.Global
+    Moonlight.EGraph.Introspection.PropertySpec
+    Moonlight.EGraph.Introspection.PropertySpec.CommonPrelude
+    Moonlight.EGraph.Introspection.PropertySpec.Fixture
+    Moonlight.EGraph.Introspection.PropertySpec.Site
+    Moonlight.EGraph.Introspection.PropertySpec.Section
+    Moonlight.EGraph.Introspection.PropertySpec.Gluing
+    Moonlight.EGraph.Introspection.PropertySpec.Global
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , ghc >= 9.6 && < 9.16
+    , moonlight-core
+    , moonlight-algebra
+    , moonlight-analysis
+    , moonlight-category
+    , moonlight-discrete:constraint
+    , moonlight-egraph-core
+    , moonlight-egraph:context
+    , moonlight-egraph:extraction
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph:rewrite
+    , moonlight-egraph:test-algebras
+    , moonlight-egraph:homology
+    , moonlight-egraph-introspection
+    , moonlight-pale:diagnostic
+    , moonlight-pale:ghc-surface
+    , moonlight-derived
+    , moonlight-homology
+    , moonlight-linalg
+    , moonlight-probability
+    , moonlight-rewrite:core
+    , moonlight-rewrite:system
+    , moonlight-rewrite:front
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:relational-front
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:proof-context
+    , moonlight-saturation:core
+    , moonlight-saturation
+    , moonlight-control
+    , moonlight-control:moonlight-control-support
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-control:moonlight-control-homology
+    , moonlight-sheaf:core
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:runtime
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:site
+    , moonlight-sheaf:obstruction
+    , moonlight-category:simplicial
+    , vector >= 0.13 && < 0.14
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , QuickCheck >= 2.14
+    , moonlight-saturation:protocol
+    , data-fix >= 0.3 && < 0.4
+    , moonlight-algebra:finite-lattice

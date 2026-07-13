@@ -1,0 +1,377 @@
+cabal-version:       3.0
+name:                moonlight-derived
+version:             0.1.0.0
+homepage:            https://github.com/PaleRoses/moonlight
+bug-reports:         https://github.com/PaleRoses/moonlight/issues
+synopsis:            Discrete derived sheaf kernels for finite sites and posets.
+description:         Closed finite-poset complexes, labeled block-matrix chains, gluing and minimization routines, six-functor operations, and Morse and microsupport computation.
+license:             MIT
+license-file:        LICENSE
+author:              Blue Rose
+maintainer:          rosaliafialkova@gmail.com
+category:            Math
+build-type:          Simple
+tested-with:         GHC == 9.14.1
+extra-doc-files:
+  README.md
+  THIRD_PARTY_NOTICES.md
+
+source-repository head
+  type:     git
+  location: https://github.com/PaleRoses/moonlight.git
+  subdir:   moonlight-derived
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+    -Wmissing-deriving-strategies
+library carriers
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: src-carriers
+  exposed-modules:
+    Moonlight.Derived.Pure.Failure
+    Moonlight.Derived.Pure.Site.DerivedMap
+    Moonlight.Derived.Pure.Site.FiniteChainComplex
+    Moonlight.Derived.Pure.Site.Gorenstein
+    Moonlight.Derived.Pure.Site.InjectiveComplex
+    Moonlight.Derived.Pure.Site.LabeledMatrix
+    Moonlight.Derived.Pure.Site.Microsupport
+    Moonlight.Derived.Pure.Site.Poset
+    Moonlight.Derived.Pure.Site.Poset.OrderComplex
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-category:finite >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , moonlight-homology >= 0.1 && < 0.2
+
+library linalg
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: src-linalg
+  exposed-modules:
+    Moonlight.Derived.Pure.LinAlg.Interpreter
+    Moonlight.Derived.Pure.LinAlg.Rank
+    Moonlight.Derived.Pure.LinAlg.SparseEchelon
+    Moonlight.Derived.Pure.LinAlg.LabeledMatrixSparse
+  build-depends:
+    base >= 4.18 && < 5
+    , bytestring >= 0.11 && < 0.13
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , moonlight-derived:carriers
+
+library gluing
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: src-gluing
+  exposed-modules:
+    Moonlight.Derived.Pure.Gluing.Cone
+    Moonlight.Derived.Pure.Gluing.MakeExact
+    Moonlight.Derived.Pure.Gluing.Peeling
+    Moonlight.Derived.Pure.Gluing.Peeling.Dense
+    Moonlight.Derived.Pure.Gluing.Peeling.Pivot
+    Moonlight.Derived.Pure.Gluing.Resolution
+    Moonlight.Derived.Pure.Gluing.Truncation
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+
+library functor
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: src-functor
+  exposed-modules:
+    Moonlight.Derived.Pure.Functor.ClosedSupport
+    Moonlight.Derived.Pure.Functor.ClosedSupport.Geometry
+    Moonlight.Derived.Pure.Functor.ClosedSupport.Resolution
+    Moonlight.Derived.Pure.Functor.ExceptionalPullback
+    Moonlight.Derived.Pure.Functor.ExceptionalPushforward
+    Moonlight.Derived.Pure.Functor.Presentation.Internal
+    Moonlight.Derived.Pure.Functor.ProperPullback
+    Moonlight.Derived.Pure.Functor.ProperPushforward
+    Moonlight.Derived.Pure.Functor.Pullback
+    Moonlight.Derived.Pure.Functor.Pushforward
+    Moonlight.Derived.Pure.Functor.QuillenA
+    Moonlight.Derived.Pure.Functor.Tensor
+    Moonlight.Derived.Pure.Functor.Tensor.Assembly
+    Moonlight.Derived.Pure.Functor.Tensor.BlockAssembly
+    Moonlight.Derived.Pure.Functor.Tensor.Layout
+    Moonlight.Derived.Pure.Functor.Tensor.SupportPresentation
+    Moonlight.Derived.Pure.Functor.VerdierDual
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+    , moonlight-derived:gluing
+
+library morse
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: src-morse
+  exposed-modules:
+    Moonlight.Derived.Pure.Dimension
+    Moonlight.Derived.Pure.Morse.Hypercohomology
+    Moonlight.Derived.Pure.Morse.Support
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+    , moonlight-derived:functor
+
+library global
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: src-global
+  exposed-modules:
+    Moonlight.Derived.Pure.Cohomology.Poset
+    Moonlight.Derived.Pure.Pipeline
+    Moonlight.Derived.Pure.Pruning.LaplacianGate
+    Moonlight.Derived.Pure.Pruning.SpectralGate
+    Moonlight.Derived.Pure.Pruning.VerdierGate
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , moonlight-homology >= 0.1 && < 0.2
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+    , moonlight-derived:functor
+    , moonlight-derived:morse
+
+library
+  import: shared-properties
+  hs-source-dirs: src-public
+  exposed-modules:
+    Moonlight.Derived.Complex
+    Moonlight.Derived.Failure
+    Moonlight.Derived.Functor
+    Moonlight.Derived.Gluing
+    Moonlight.Derived.Matrix
+    Moonlight.Derived.Morse
+    Moonlight.Derived.Triangulated
+    Moonlight.Derived.Presentation.Builder
+    Moonlight.Derived.Pruning
+    Moonlight.Derived.Site
+  other-modules:
+    Moonlight.Derived.Presentation
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+    , moonlight-derived:gluing
+    , moonlight-derived:functor
+    , moonlight-derived:morse
+    , moonlight-derived:global
+
+library moonlight-derived-laws
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-laws
+  exposed-modules:
+    Moonlight.Derived.Effect.Harness
+    Moonlight.Derived.Effect.LawNames
+    Moonlight.Derived.Effect.Laws
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+    , moonlight-derived:gluing
+    , moonlight-derived:functor
+    , moonlight-derived:morse
+    , moonlight-derived:global
+    , moonlight-pale:test-laws >= 0.1 && < 0.2
+    , tasty >= 1.4
+    , tasty-quickcheck >= 0.10
+    , QuickCheck >= 2.14
+
+test-suite moonlight-derived-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test test/carriers test/gluing test/functor test/global test/facade
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Derived.Test.Fixture
+    ClosedSupportSpec
+    ExceptionalPullbackSpec
+    ExceptionalPushforwardSpec
+    InjectiveComplexSpec
+    LabeledMatrixSpec
+    PosetCohomologySpec
+    PosetSpec
+    PresentationBuilderSpec
+    ResolutionSpec
+    SixFunctorSmokeSpec
+    SparseValidationSpec
+    TensorSpec
+    TriangulatedSpec
+    VerdierDualSpec
+  ghc-options: -Wall -Wcompat
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-derived
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+    , moonlight-derived:gluing
+    , moonlight-derived:functor
+    , moonlight-derived:morse
+    , moonlight-derived:global
+    , moonlight-derived:moonlight-derived-laws
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-homology >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+
+test-suite moonlight-derived-public-surface
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test-public
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-derived
+    , moonlight-homology >= 0.1 && < 0.2
+
+benchmark moonlight-derived-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: bench bench/carriers bench/linalg bench/gluing bench/functor bench/morse bench/global bench/facade bench/support
+  main-is: Main.hs
+  other-modules:
+    Fixture
+    Functor
+    Gluing
+    Matrix
+    Morse
+    Presentation
+    Pruning
+    Registry
+    Site
+    Structural
+    Triangulated
+  ghc-options: -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-derived
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+    , moonlight-derived:gluing
+    , moonlight-derived:functor
+    , moonlight-derived:morse
+    , moonlight-derived:global
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-homology >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , tasty-bench >= 0.3 && < 0.6
+
+executable moonlight-derived-bench-probe
+  import: shared-properties
+  hs-source-dirs: bench bench/carriers bench/linalg bench/gluing bench/functor bench/morse bench/global bench/facade bench/support
+  main-is: ProbeMain.hs
+  other-modules:
+    Fixture
+    Functor
+    Gluing
+    Matrix
+    Morse
+    Presentation
+    Pruning
+    Registry
+    Site
+    Structural
+    Triangulated
+  ghc-options: -O2 -rtsopts -threaded
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , directory >= 1.3 && < 1.4
+    , process >= 1.6 && < 1.7
+    , vector >= 0.13 && < 0.14
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-derived
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+    , moonlight-derived:gluing
+    , moonlight-derived:functor
+    , moonlight-derived:morse
+    , moonlight-derived:global
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-homology >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , tasty-bench >= 0.3 && < 0.6
+
+executable moonlight-derived-desc-anchor
+  import: shared-properties
+  hs-source-dirs: bench bench/support
+  main-is: DescAnchorMain.hs
+  other-modules:
+    Fixture
+  ghc-options: -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , vector >= 0.13 && < 0.14
+    , moonlight-category >= 0.1 && < 0.2
+    , moonlight-derived
+    , moonlight-derived:carriers
+    , moonlight-derived:linalg
+    , moonlight-derived:gluing
+    , moonlight-derived:functor
+    , moonlight-derived:morse
+    , moonlight-derived:global
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2

@@ -1,0 +1,64 @@
+[package]
+name = "veg"
+version = "0.1.0"
+edition = "2021"            # Rust Version
+authors = []
+license = ""
+homepage = ""
+repository = ""
+documentation = ""
+description = """"""
+
+[features]
+default = ["pc-half"]
+
+# Path compression strategies:
+# https://en.wikipedia.org/wiki/Disjoint-set_data_structure#Finding_set_representatives
+pc-none = []
+pc-split = []
+pc-half = []
+pc-full = []
+
+# Debugging
+trace = ["tracing", "tracing-subscriber"]
+trace-unionfind-basic = ["trace"]
+trace-unionfind-egg = ["trace"]
+trace-unionfind-persistent = ["trace"]
+trace-unionfind-versioned = ["trace"]
+trace-unionfind = ["trace-unionfind-basic", "trace-unionfind-egg", "trace-unionfind-persistent", "trace-unionfind-versioned"]
+trace-egraph-basic = ["trace"]
+trace-egraph-persistent = ["trace"]
+trace-egraph-versioned = ["trace"]
+trace-egraph = ["trace-egraph-basic", "trace-egraph-persistent", "trace-egraph-versioned"]
+trace-disequalities = ["trace"]
+trace-machine = ["trace"]
+trace-all = ["trace-unionfind", "trace-egraph", "trace-disequalities", "trace-machine"]
+
+[lib]
+name = "veg"
+path = "src/lib.rs"
+
+[dependencies]              # Used by your library
+# "egraphs with efficient saturation"
+egg = { version = "0.10.0" }    
+# "colored egraphs"
+easter_egg = { package = "easter-egg", git = "https://github.com/eytans/egg.git", rev = "9e5da4cdf6f9057ee55e67ab6fdee000d1814885" } 
+# "random number generation"
+rand = { version = "0.8.5" }   
+# "immutable data structures"
+im = { version = "15.1.0" }   
+# "fast non-cryptographic hasher"
+rustc-hash = { version = "2.1.1" }
+# "vectors storing a small number of items on the stack"
+smallvec = {version = "1.8.0", features = ["union", "const_generics"]}
+# "hashtable with consistent order and fast iteration"
+indexmap = "2.7.0"
+# "libraries for tracing and debugging function applications"
+tracing = { version = "0.1", optional = true }
+tracing-subscriber = { version = "0.3.0", optional = true }
+# "allocator for limiting memory usage"
+cap = "0.1.2"
+
+[[bin]]
+name = "parameter-analysis"
+path = "src/bin/parameter-analysis.rs"

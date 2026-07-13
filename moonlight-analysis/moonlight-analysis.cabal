@@ -1,0 +1,180 @@
+cabal-version:       3.0
+name:                moonlight-analysis
+version:             0.1.0.0
+synopsis:            Automatic differentiation and numerical primitives for Pale Meridian.
+description:         Foundation package implementing Dual-number forward AD, convergence contracts, and deterministic numerical solvers.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Math
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    TypeFamilies
+    StrictData
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Analysis
+    Moonlight.Analysis.Cohomology
+    Moonlight.Analysis.Equivariant
+    Moonlight.Analysis.Homotopy
+    Moonlight.Analysis.Obstruction
+    Moonlight.Analysis.Reduction
+    Moonlight.Analysis.Resolution
+    Moonlight.Analysis.Relative
+    Moonlight.Analysis.Persistence.Filtration
+    Moonlight.Analysis.Spectral
+    Moonlight.Analysis.Summary
+    Moonlight.Analysis.Termination
+    Moonlight.Analysis.Dual
+    Moonlight.Analysis.Convergence
+    Moonlight.Analysis.ModuleContract
+    Moonlight.Analysis.SheafArchitecture
+    Moonlight.Analysis.SheafRefinement
+    Moonlight.Analysis.Dynamics.CPG.Network
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement
+    Moonlight.Analysis.Dynamics.IK.Fabrik
+    Moonlight.Analysis.Dynamics.IK.Fabrik.SheafRefinement
+    Moonlight.Analysis.Dynamics.Locomotion.FootPlacement
+    Moonlight.Analysis.Dynamics.Inertia.Region
+    Moonlight.Analysis.Dynamics.Inertia.Region.Cover
+    Moonlight.Analysis.Dynamics.Inertia.Region.PathBlueprint
+    Moonlight.Analysis.Dynamics.Inertia.Region.Score
+    Moonlight.Analysis.Dynamics.Inertia.Region.Kernel
+    Moonlight.Analysis.Dynamics.Inertia.Region.SheafRefinement
+    Moonlight.Analysis.Dynamics.Inertia.Tensor
+    Moonlight.Analysis.Solve.Types
+    Moonlight.Analysis.Solve.Monotone
+    Moonlight.Analysis.Solve.Semiring
+    Moonlight.Analysis.Solve.Root
+    Moonlight.Analysis.Solve.Hybrid
+    Moonlight.Analysis.Integrate.ODE
+    Moonlight.Analysis.Integrate.Quadrature
+    Moonlight.Analysis.Mesh.Graph
+    Moonlight.Analysis.Mesh.Multigrid
+    Moonlight.Analysis.Mesh.Scalar
+    Moonlight.Analysis.Mesh.Wave
+    Moonlight.Analysis.Numerics.FiniteDifference
+    Moonlight.Opt.GradientDescent
+  other-modules:
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement.Candidate
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement.Core
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement.Policy
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement.Operator
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement.Score
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement.SheafStalk
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement.Validate
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement.Skeleton
+    Moonlight.Analysis.Dynamics.Biomechanics.SheafRefinement.Solve
+    Moonlight.Analysis.SheafRefinement.Tolerance
+    Moonlight.Analysis.Dynamics.Inertia.Region.SheafStalk
+    Moonlight.Analysis.Dynamics.Inertia.Region.PathBlueprint.Interpret
+    Moonlight.Analysis.Solve.Internal.BracketSign
+    Moonlight.Analysis.Solve.Internal.BracketOps
+    Moonlight.Analysis.Solve.Internal.RootEngine
+    Moonlight.Analysis.Solve.Internal.RootEvaluator
+    Moonlight.Analysis.Solve.Internal.RootState
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , ghc >= 9.6 && < 9.16
+    , ghc-boot-th >= 9.6 && < 9.16
+    , moonlight-pale:ghc-surface
+    , process >= 1.6 && < 1.7
+    , moonlight-core
+    , moonlight-algebra
+    , moonlight-category
+    , moonlight-derived
+    , moonlight-egraph-core
+    , moonlight-rewrite:core
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:system
+    , moonlight-rewrite:front
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:relational-front
+    , moonlight-egraph-fuzzy
+    , moonlight-geometry
+    , moonlight-linalg
+    , moonlight-probability
+    , moonlight-sheaf:core
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:runtime
+    , moonlight-homology
+    , moonlight-pale:diagnostic
+    , text >= 2.0
+    , vector >= 0.13 && < 0.14
+    , vector-algorithms
+
+test-suite moonlight-analysis-test
+  type: exitcode-stdio-1.0
+  default-language: GHC2024
+  hs-source-dirs: test
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    Moonlight.Analysis.DualSpec
+    Moonlight.Analysis.ConvergenceSpec
+    Moonlight.Analysis.CPGSpec
+    Moonlight.Analysis.BiomechanicsSheafRefinementSpec
+    Moonlight.Analysis.BiomechanicsSheafRefinementImportManifest
+    Moonlight.Analysis.SheafImportManifestSupport
+    Moonlight.Analysis.SheafImportDisciplineSupport
+    Moonlight.Analysis.BiomechanicsSheafRefinementImportDisciplineSpec
+    Moonlight.Analysis.IKFabrikSheafRefinementImportManifest
+    Moonlight.Analysis.IKFabrikSheafRefinementImportDisciplineSpec
+    Moonlight.Analysis.InertiaRegionSheafRefinementImportManifest
+    Moonlight.Analysis.InertiaRegionSheafRefinementImportDisciplineSpec
+    Moonlight.Analysis.InertiaSpec
+    Moonlight.Analysis.InertiaSheafRefinementSpec
+    Moonlight.Analysis.IKSheafRefinementSpec
+    Moonlight.Analysis.LocomotionIKSpec
+    Moonlight.Analysis.ModuleContractSpec
+    Moonlight.Analysis.ODESpec
+    Moonlight.Analysis.SheafArchitectureSpec
+    Moonlight.Analysis.SheafRefinementSpec
+    Moonlight.Analysis.RootSpec
+    Moonlight.Analysis.SolverInfraSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-analysis
+    , moonlight-pale:diagnostic-ghc
+    , moonlight-pale:test-surface
+    , moonlight-core
+    , moonlight-algebra
+    , moonlight-category
+    , moonlight-egraph-core
+    , moonlight-rewrite:core
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:system
+    , moonlight-rewrite:front
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:relational-front
+    , moonlight-egraph-fuzzy
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:runtime
+    , moonlight-linalg
+    , aeson >= 2.1
+    , bytestring >= 0.11
+    , text >= 2.0
+    , directory >= 1.3
+    , filepath >= 1.4
+    , process >= 1.6
+    , moonlight-egraph:test-algebras
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , QuickCheck >= 2.14

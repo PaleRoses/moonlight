@@ -1,0 +1,95 @@
+cabal-version:       3.0
+name:                moonlight-probability
+version:             0.1.0.0
+homepage:            https://github.com/PaleRoses/moonlight
+bug-reports:         https://github.com/PaleRoses/moonlight/issues
+synopsis:            Pure probability types and distributions for Pale Meridian.
+description:         Foundation-tier package providing validated probabilities, log-domain arithmetic, pure sampling, categorical distributions, entropy, and thin wrappers over statistics.
+license:             MIT
+license-file:        LICENSE
+author:              Blue Rose
+maintainer:          rosaliafialkova@gmail.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    GeneralizedNewtypeDeriving
+    DerivingStrategies
+    ConstraintKinds
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Probability
+    Moonlight.Probability.Core
+    Moonlight.Probability.Sample
+    Moonlight.Probability.Sample.Advanced
+    Moonlight.Probability.Entropy
+    Moonlight.Probability.Distribution
+    Moonlight.Probability.Distribution.Finite
+    Moonlight.Probability.Distribution.Parametric
+    Moonlight.Probability.Distribution.Categorical
+    Moonlight.Probability.Distribution.Transform
+    Moonlight.Probability.Distribution.Simplex
+    Moonlight.Probability.Distribution.DenseSimplex
+    Moonlight.Probability.Distribution.Kernel
+  other-modules:
+    Moonlight.Probability.Core.Internal
+    Moonlight.Probability.Sample.Input
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-algebra
+    , statistics >= 0.16 && < 0.18
+    , log-domain >= 0.13 && < 0.15
+    , math-functions >= 0.3.4 && < 0.4
+    , splitmix >= 0.1 && < 1
+    , vector >= 0.13 && < 0.14
+    , primitive >= 0.9 && < 1
+    , transformers >= 0.6 && < 1
+
+
+test-suite moonlight-probability-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    Moonlight.Probability.CoreSpec
+    Moonlight.Probability.DistributionSpec
+    Moonlight.Probability.AlgebraLawSpec
+    Moonlight.Probability.FiniteSpec
+    Moonlight.Probability.TransformSpec
+    Moonlight.Probability.CategoricalSpec
+    Moonlight.Probability.DenseSimplexSpec
+    Moonlight.Probability.EntropySpec
+    Moonlight.Probability.SampleSpec
+    Moonlight.Probability.TestSupport.Generators
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-probability
+    , moonlight-core
+    , moonlight-algebra
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , QuickCheck >= 2.14
+
+source-repository head
+  type:     git
+  location: https://github.com/PaleRoses/moonlight.git
+  subdir:   moonlight-probability

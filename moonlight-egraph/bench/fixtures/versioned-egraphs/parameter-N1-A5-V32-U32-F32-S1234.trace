@@ -1,0 +1,193 @@
+add 0 
+checkout 0
+find 0
+checkout 0
+find 0
+checkout 0
+find 0
+checkout 0
+branchout
+checkout 1
+union 0 0
+checkout 1
+branchout
+checkout 2
+branchout
+checkout 3
+union 0 0
+checkout 3
+union 0 0
+checkout 0
+find 0
+checkout 0
+union 0 0
+checkout 3
+union 0 0
+checkout 0
+union 0 0
+checkout 1
+branchout
+checkout 0
+union 0 0
+checkout 3
+find 0
+checkout 0
+union 0 0
+checkout 1
+union 0 0
+checkout 4
+union 0 0
+checkout 2
+union 0 0
+checkout 1
+find 0
+checkout 3
+branchout
+checkout 0
+branchout
+checkout 2
+union 0 0
+checkout 5
+union 0 0
+checkout 6
+find 0
+checkout 3
+union 0 0
+checkout 2
+find 0
+checkout 5
+branchout
+checkout 2
+find 0
+checkout 1
+union 0 0
+checkout 2
+find 0
+checkout 5
+find 0
+checkout 1
+find 0
+checkout 5
+find 0
+checkout 6
+branchout
+checkout 0
+union 0 0
+checkout 0
+union 0 0
+checkout 8
+branchout
+checkout 9
+find 0
+checkout 6
+branchout
+checkout 8
+branchout
+checkout 5
+union 0 0
+checkout 3
+union 0 0
+checkout 5
+branchout
+checkout 8
+find 0
+checkout 1
+find 0
+checkout 4
+find 0
+checkout 5
+find 0
+checkout 10
+find 0
+checkout 7
+find 0
+checkout 12
+find 0
+checkout 3
+branchout
+checkout 13
+union 0 0
+checkout 3
+find 0
+checkout 8
+branchout
+checkout 3
+branchout
+checkout 0
+branchout
+checkout 0
+union 0 0
+checkout 6
+branchout
+checkout 2
+find 0
+checkout 10
+union 0 0
+checkout 7
+union 0 0
+checkout 10
+find 0
+checkout 8
+branchout
+checkout 6
+find 0
+checkout 8
+branchout
+checkout 10
+union 0 0
+checkout 11
+branchout
+checkout 18
+union 0 0
+checkout 11
+union 0 0
+checkout 7
+branchout
+checkout 7
+branchout
+checkout 1
+find 0
+checkout 14
+find 0
+checkout 9
+union 0 0
+checkout 13
+find 0
+checkout 5
+find 0
+checkout 7
+branchout
+checkout 22
+union 0 0
+checkout 3
+branchout
+checkout 8
+branchout
+checkout 24
+union 0 0
+checkout 3
+branchout
+checkout 5
+branchout
+checkout 10
+branchout
+checkout 20
+branchout
+checkout 1
+find 0
+checkout 23
+find 0
+checkout 7
+branchout
+checkout 1
+branchout
+checkout 28
+branchout
+checkout 13
+find 0
+checkout 29
+union 0 0
+checkout 32
+union 0 0
+checkout 4
+union 0 0

@@ -1,0 +1,15 @@
+[package]
+name = "moonlight-versioned-egraphs-bench"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+easter_egg = { package = "easter-egg", git = "https://github.com/eytans/egg.git", rev = "9e5da4cdf6f9057ee55e67ab6fdee000d1814885" }
+im = "15.1.0"
+rand = "0.8.5"
+rustc-hash = "2.1.1"
+veg = { path = "upstream" }
+

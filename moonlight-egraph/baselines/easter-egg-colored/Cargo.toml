@@ -1,0 +1,11 @@
+[package]
+name = "moonlight-easter-egg-colored-bench"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+easter_egg = { package = "easter-egg", git = "https://github.com/eytans/easter-egg.git", rev = "0346f2eb9e22f338efcbf6c27be318bda6d4ae9a" }
+symbolic_expressions = "5"
