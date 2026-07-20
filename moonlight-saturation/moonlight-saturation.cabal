@@ -1,0 +1,422 @@
+cabal-version: 3.8
+name: moonlight-saturation
+version: 0.1.0.0
+synopsis: Fixed-point saturation kernels and context-aware runtimes.
+description: Generic fixed-point saturation core, host protocols, optional obstruction algebras, and canonical context-aware saturation runtime.
+license: MIT
+author: Blue Rose
+maintainer: rosaliafialkova@gmail.com
+category: Foundation
+build-type: Simple
+extra-doc-files:
+    README.md
+
+flag warnings-as-errors
+  description: Treat compiler warnings as errors in package validation.
+  default: False
+  manual: True
+
+common language
+  default-language: GHC2021
+  default-extensions:
+      DerivingStrategies
+      ImportQualifiedPost
+      StandaloneKindSignatures
+      TypeFamilies
+  ghc-options:
+      -Wall
+      -Wcompat
+      -Wincomplete-record-updates
+      -Wincomplete-uni-patterns
+      -Wredundant-constraints
+  if flag(warnings-as-errors)
+    ghc-options: -Werror
+
+library core
+  import: language
+  visibility: public
+  hs-source-dirs: src-core
+  exposed-modules:
+      Moonlight.Saturation.Core
+      Moonlight.Saturation.Core.Engine
+      Moonlight.Saturation.Core.Kernel
+      Moonlight.Saturation.Core.Outcome
+      Moonlight.Saturation.Core.Round
+      Moonlight.Saturation.Core.Run
+      Moonlight.Saturation.Core.Termination
+  build-depends:
+      base >= 4.18 && < 5
+    , contravariant >= 1.5
+
+library protocol
+  import: language
+  visibility: public
+  hs-source-dirs: src-protocol
+  exposed-modules:
+      Moonlight.Saturation.Matching
+      Moonlight.Saturation.Substrate
+      Moonlight.Saturation.Substrate.Types
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-saturation:core
+    , moonlight-sheaf:descent
+    , moonlight-pale:diagnostic
+    , moonlight-algebra:finite-lattice
+
+library obstruction
+  import: language
+  visibility: public
+  hs-source-dirs: src-obstruction
+  exposed-modules:
+      Moonlight.Saturation.Obstruction.Cohomological.Aggregate
+      Moonlight.Saturation.Obstruction.Cohomological.Effect
+      Moonlight.Saturation.Obstruction.Cohomological.LivePruning
+      Moonlight.Saturation.Obstruction.Cohomological.Metrics.Pipeline
+      Moonlight.Saturation.Obstruction.Cohomological.Prepared
+      Moonlight.Saturation.Obstruction.Cohomological.Region
+      Moonlight.Saturation.Obstruction.Cohomological.Search
+      Moonlight.Saturation.Obstruction.Cohomological.Seed
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6
+    , foldl >= 1.4 && < 1.5
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-saturation:core
+    , moonlight-saturation:protocol
+    , moonlight-sheaf:core
+    , moonlight-sheaf:obstruction
+
+library internal
+  import: language
+  hs-source-dirs: src-public
+  exposed-modules:
+      Moonlight.Saturation
+      Moonlight.Saturation.Context.Driver
+      Moonlight.Saturation.Context.Error
+      Moonlight.Saturation.Context.Match.Engine
+      Moonlight.Saturation.Context.Match.State.Registry
+      Moonlight.Saturation.Context.Match.Types.Plan
+      Moonlight.Saturation.Context.Program.Compile
+      Moonlight.Saturation.Context.Program.Plan
+      Moonlight.Saturation.Context.Program.Source
+      Moonlight.Saturation.Context.Program.Spec
+      Moonlight.Saturation.Context.Program.View
+      Moonlight.Saturation.Context.Runtime.Carrier.Plain
+      Moonlight.Saturation.Context.Runtime.Carrier.Proof
+      Moonlight.Saturation.Context.Runtime.Carrier.Schedule
+      Moonlight.Saturation.Context.Runtime.Engine
+      Moonlight.Saturation.Context.Runtime.Match.Batch
+      Moonlight.Saturation.Context.Runtime.Match.Pipeline
+      Moonlight.Saturation.Context.Runtime.PlanIdentity
+      Moonlight.Saturation.Context.Runtime.Policy
+      Moonlight.Saturation.Context.Runtime.Report
+      Moonlight.Saturation.Context.Runtime.Schedule.Decision
+      Moonlight.Saturation.Context.Runtime.State
+      Moonlight.Saturation.Support.Algebra
+      Moonlight.Saturation.Support.Compile
+      Moonlight.Saturation.Support.Core
+      Moonlight.Saturation.Support.Driver
+      Moonlight.Saturation.Context.Runtime.Carrier.Access
+      Moonlight.Saturation.Context.Runtime.Carrier.Builder
+      Moonlight.Saturation.Context.Runtime.Facts
+      Moonlight.Saturation.Context.Runtime.Match.Candidates
+      Moonlight.Saturation.Context.Runtime.Match.Facts
+      Moonlight.Saturation.Context.Runtime.Policy.Internal
+      Moonlight.Saturation.Context.Runtime.Rebuild
+      Moonlight.Saturation.Context.Runtime.Report.Internal
+      Moonlight.Saturation.Context.Runtime.Round
+      Moonlight.Saturation.Context.Runtime.Round.Input
+      Moonlight.Saturation.Context.Program.Internal.Builder
+      Moonlight.Saturation.Context.Program.Internal.SiteIndex
+      Moonlight.Saturation.Context.Program.Internal.Validate
+      Moonlight.Saturation.Context.Match.Algebra.Aggregate
+  build-depends:
+      base >= 4.18 && < 5
+    , containers >= 0.6
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-saturation:core
+    , moonlight-saturation:protocol
+    , moonlight-control
+    , moonlight-control:moonlight-control-support
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-control:moonlight-control-homology
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:runtime
+    , moonlight-pale:diagnostic
+    , time
+    , transformers
+    , vector
+    , moonlight-algebra:finite-lattice
+
+library
+  import: language
+  reexported-modules:
+      Moonlight.Saturation
+    , Moonlight.Saturation.Context.Driver
+    , Moonlight.Saturation.Context.Error
+    , Moonlight.Saturation.Context.Match.Engine
+    , Moonlight.Saturation.Context.Match.State.Registry
+    , Moonlight.Saturation.Context.Match.Types.Plan
+    , Moonlight.Saturation.Context.Program.Compile
+    , Moonlight.Saturation.Context.Program.Plan
+    , Moonlight.Saturation.Context.Program.Source
+    , Moonlight.Saturation.Context.Program.Spec
+    , Moonlight.Saturation.Context.Program.View
+    , Moonlight.Saturation.Context.Runtime.Carrier.Plain
+    , Moonlight.Saturation.Context.Runtime.Carrier.Proof
+    , Moonlight.Saturation.Context.Runtime.Carrier.Schedule
+    , Moonlight.Saturation.Context.Runtime.Engine
+    , Moonlight.Saturation.Context.Runtime.Match.Batch
+    , Moonlight.Saturation.Context.Runtime.Match.Pipeline
+    , Moonlight.Saturation.Context.Runtime.PlanIdentity
+    , Moonlight.Saturation.Context.Runtime.Policy
+    , Moonlight.Saturation.Context.Runtime.Report
+    , Moonlight.Saturation.Context.Runtime.Schedule.Decision
+    , Moonlight.Saturation.Context.Runtime.State
+    , Moonlight.Saturation.Support.Algebra
+    , Moonlight.Saturation.Support.Compile
+    , Moonlight.Saturation.Support.Core
+    , Moonlight.Saturation.Support.Driver
+  build-depends:
+      base >= 4.18 && < 5
+    , moonlight-saturation:internal
+
+common saturation-test-properties
+  import: language
+  ghc-options: -Wall -Wcompat
+  build-depends:
+      base >= 4.18 && < 5
+    , moonlight-pale:test
+    , tasty >= 1.4
+
+common saturation-context-test-slice
+  other-modules:
+      Moonlight.Saturation.ContextTests
+      Moonlight.Saturation.ContextSpec
+      Moonlight.Saturation.RuntimeCandidateSpec
+      Moonlight.Saturation.SchedulerSpec
+      Moonlight.Saturation.Test.ContextFixture
+      Moonlight.Saturation.Test.ContextWorkload
+  build-depends:
+      containers >= 0.6
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-saturation:internal
+    , moonlight-saturation:core
+    , moonlight-saturation:protocol
+    , moonlight-control
+    , moonlight-control:moonlight-control-support
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-control:moonlight-control-homology
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:runtime
+    , moonlight-pale:diagnostic
+    , tasty-hunit >= 0.10
+    , time
+    , transformers
+    , vector
+    , moonlight-algebra:finite-lattice
+
+common saturation-protocol-test-slice
+  other-modules:
+      Moonlight.Saturation.MatchingSpec
+      Moonlight.Saturation.ProtocolTests
+      Moonlight.Saturation.Test.ProtocolFixture
+  build-depends:
+      containers >= 0.6
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-saturation:protocol
+    , tasty-hunit >= 0.10
+
+common saturation-obstruction-test-slice
+  other-modules:
+      Moonlight.Saturation.AggregateSpec
+      Moonlight.Saturation.AlgebraLawsSpec
+      Moonlight.Saturation.LivePruningSpec
+      Moonlight.Saturation.ObstructionTests
+      Moonlight.Saturation.ObstructionEffectSpec
+      Moonlight.Saturation.RegionSpec
+      Moonlight.Saturation.SearchSpec
+      Moonlight.Saturation.Test.ObstructionFixture
+  build-depends:
+      QuickCheck >= 2.14
+    , containers >= 0.6
+    , foldl >= 1.4 && < 1.5
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-saturation:obstruction
+    , moonlight-saturation:protocol
+    , moonlight-sheaf:obstruction
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+
+common saturation-core-test-slice
+  other-modules:
+      Moonlight.Saturation.CoreTests
+      Moonlight.Saturation.EngineSpec
+      Moonlight.Saturation.Gen
+      Moonlight.Saturation.Oracle
+      Moonlight.Saturation.Property
+      Moonlight.Saturation.SaturationSpec
+      Moonlight.Saturation.Test.CoreFixture
+  build-depends:
+      QuickCheck >= 2.14
+    , moonlight-saturation:core
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+
+test-suite moonlight-saturation-context-test
+  import: saturation-test-properties, saturation-context-test-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      test/context
+      test/support
+  main-is: Main.hs
+
+test-suite moonlight-saturation-protocol-test
+  import: saturation-test-properties, saturation-protocol-test-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      test/protocol
+      test/support
+  main-is: Main.hs
+
+test-suite moonlight-saturation-obstruction-test
+  import: saturation-test-properties, saturation-obstruction-test-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      test/obstruction
+      test/support
+  main-is: Main.hs
+
+test-suite moonlight-saturation-core-test
+  import: saturation-test-properties, saturation-core-test-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      test/core
+      test/support
+  main-is: Main.hs
+
+test-suite moonlight-saturation-test
+  import: saturation-test-properties, saturation-core-test-slice, saturation-protocol-test-slice, saturation-context-test-slice, saturation-obstruction-test-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      test/aggregate
+      test/core
+      test/protocol
+      test/context
+      test/obstruction
+      test/support
+  main-is: Main.hs
+
+common saturation-benchmark-properties
+  import: language
+  ghc-options: -O2 -rtsopts
+  other-modules: BenchSupport
+  build-depends:
+      base >= 4.18 && < 5
+    , deepseq >= 1.4
+    , moonlight-pale:bench
+    , tasty-bench >= 0.3 && < 0.6
+
+common saturation-core-benchmark-slice
+  other-modules:
+      CoreBench
+      Moonlight.Saturation.Test.CoreFixture
+  build-depends:
+      moonlight-saturation:core
+
+common saturation-context-fixture-benchmark-slice
+  other-modules:
+      Moonlight.Saturation.Test.ContextFixture
+      Moonlight.Saturation.Test.ContextWorkload
+  build-depends:
+      containers >= 0.6
+    , moonlight-algebra
+    , moonlight-algebra:finite-lattice
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-saturation
+    , moonlight-saturation:core
+    , moonlight-saturation:protocol
+    , moonlight-control
+    , moonlight-sheaf:descent
+
+common saturation-protocol-benchmark-slice
+  other-modules:
+      ProtocolBench
+      Moonlight.Saturation.Test.ProtocolFixture
+
+common saturation-context-benchmark-slice
+  other-modules: ContextBench
+  build-depends: vector
+
+common saturation-obstruction-benchmark-slice
+  other-modules:
+      ObstructionBench
+      Moonlight.Saturation.Test.ObstructionFixture
+  build-depends:
+      containers >= 0.6
+    , foldl >= 1.4 && < 1.5
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-saturation:obstruction
+
+benchmark moonlight-saturation-core-bench
+  import: saturation-benchmark-properties, saturation-core-benchmark-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      bench/core
+      bench/support
+      test/support
+  main-is: Main.hs
+
+benchmark moonlight-saturation-protocol-bench
+  import: saturation-benchmark-properties, saturation-context-fixture-benchmark-slice, saturation-protocol-benchmark-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      bench/protocol
+      bench/support
+      test/support
+  main-is: Main.hs
+
+benchmark moonlight-saturation-context-bench
+  import: saturation-benchmark-properties, saturation-context-fixture-benchmark-slice, saturation-context-benchmark-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      bench/context
+      bench/support
+      test/support
+  main-is: Main.hs
+
+benchmark moonlight-saturation-obstruction-bench
+  import: saturation-benchmark-properties, saturation-obstruction-benchmark-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      bench/obstruction
+      bench/support
+      test/support
+  main-is: Main.hs
+
+benchmark moonlight-saturation-bench
+  import: saturation-benchmark-properties, saturation-core-benchmark-slice, saturation-context-fixture-benchmark-slice, saturation-protocol-benchmark-slice, saturation-context-benchmark-slice, saturation-obstruction-benchmark-slice
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+      bench/aggregate
+      bench/core
+      bench/protocol
+      bench/context
+      bench/obstruction
+      bench/support
+      test/support
+  main-is: Main.hs

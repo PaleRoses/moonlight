@@ -1,0 +1,70 @@
+cabal-version:       3.0
+name:                moonlight-surface
+version:             0.1.0.0
+synopsis:            Equational 3D surface construction language for Moonlight e-graphs.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Surface.Language
+    Moonlight.Surface.Laws
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-egraph-core
+    , moonlight-egraph-introspection
+    , moonlight-rewrite:system
+    , data-fix >= 0.3 && < 0.4
+
+test-suite moonlight-surface-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Surface.ContextSupportedFactsSpec
+    Moonlight.Surface.LawAgreementSpec
+    Moonlight.Surface.ReceiptSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-algebra
+    , moonlight-algebra:finite-lattice
+    , moonlight-core
+    , moonlight-egraph:context
+    , moonlight-egraph-core
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph:rewrite
+    , moonlight-egraph:test-algebras
+    , moonlight-egraph-introspection
+    , moonlight-pale:test
+    , moonlight-rewrite:core
+    , moonlight-rewrite:proof-context
+    , moonlight-rewrite:system
+    , moonlight-saturation
+    , moonlight-saturation:protocol
+    , moonlight-saturation:core
+    , moonlight-sheaf:runtime
+    , moonlight-surface
+    , data-fix >= 0.3 && < 0.4
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10

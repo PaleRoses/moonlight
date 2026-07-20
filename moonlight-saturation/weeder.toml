@@ -1,0 +1,48 @@
+roots = [
+  '^Main\.main$',
+  '^Paths_.*',
+  '^PackageInfo_.*'
+]
+
+# Every exposed module of the four public components is a root: the package is
+# published through the moonlight mirror, so its exposed surface is API by
+# owner ruling (2026-07-15) regardless of first-party callers. Hidden modules
+# (cabal other-modules) are deliberately NOT rooted — unreachable declarations
+# there are exactly what this gate exists to catch.
+root-modules = [
+  '^Moonlight\.Saturation$',
+  '^Moonlight\.Saturation\.Core(\..*)?$',
+  '^Moonlight\.Saturation\.Matching$',
+  '^Moonlight\.Saturation\.Substrate(\..*)?$',
+  '^Moonlight\.Saturation\.Obstruction\..*$',
+  '^Moonlight\.Saturation\.Support\..*$',
+  '^Moonlight\.Saturation\.Context\.Driver$',
+  '^Moonlight\.Saturation\.Context\.Error$',
+  '^Moonlight\.Saturation\.Context\.Match\.Engine$',
+  '^Moonlight\.Saturation\.Context\.Match\.State\.Registry$',
+  '^Moonlight\.Saturation\.Context\.Match\.Types\.Plan$',
+  '^Moonlight\.Saturation\.Context\.Program\.Compile$',
+  '^Moonlight\.Saturation\.Context\.Program\.Plan$',
+  '^Moonlight\.Saturation\.Context\.Program\.Source$',
+  '^Moonlight\.Saturation\.Context\.Program\.Spec$',
+  '^Moonlight\.Saturation\.Context\.Program\.View$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.Carrier\.Plain$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.Carrier\.Proof$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.Carrier\.Schedule$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.Engine$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.Match\.Batch$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.Match\.Pipeline$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.PlanIdentity$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.Policy$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.Report$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.Schedule\.Decision$',
+  '^Moonlight\.Saturation\.Context\.Runtime\.State$'
+]
+
+# Instances are rooted wholesale: this package publishes its exposed types
+# through the mirror, so derived instances on API types are API (owner
+# keep-ruling, 2026-07-15). The trade — genuinely orphaned internal instances
+# escape detection — is accepted.
+root-instances = []
+type-class-roots = true
+unused-types = true

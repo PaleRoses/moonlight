@@ -1,0 +1,65 @@
+cabal-version:       3.0
+name:                moonlight-flow-plan-rewrite
+version:             0.1.0.0
+synopsis:            E-graph-backed rewrite normalization for relational flow plans.
+description:
+  E-graph-backed rewrite saturation for Moonlight flow plan shapes. This package
+  owns the egraph-specific normalization layer above the egraph-free
+  moonlight-flow-plan query, shape, physical planning, and atomization surface.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Flow.Plan.Rewrite
+    Moonlight.Flow.Plan.Rewrite.Transform.Coverage
+    Moonlight.Flow.Plan.Rewrite.Transform.ProjectionRestriction
+  other-modules:
+    Moonlight.Flow.Plan.Reuse.Factor.Signature
+    Moonlight.Flow.Plan.Rewrite.Internal.Analysis
+    Moonlight.Flow.Plan.Rewrite.Internal.Canonicalization
+    Moonlight.Flow.Plan.Rewrite.Internal.Normalization
+    Moonlight.Flow.Plan.Rewrite.Internal.Rules
+    Moonlight.Flow.Plan.Rewrite.Internal.RewriteState
+    Moonlight.Flow.Plan.Rewrite.Internal.Saturate
+    Moonlight.Flow.Plan.Rewrite.Internal.Saturation
+    Moonlight.Flow.Plan.Rewrite.Internal.State
+    Moonlight.Flow.Plan.Rewrite.Internal.Types
+    Moonlight.Flow.Plan.Rewrite.Node
+    Moonlight.Flow.Plan.Rewrite.Proof
+  build-depends:
+    algebraic-graphs >= 0.8 && < 0.9
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-egraph-core
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-saturation:core
+    , primitive
+    , vector
+    , data-fix >= 0.3 && < 0.4

@@ -1,0 +1,20 @@
+roots = [
+  '^Main\.main$',
+  '^Paths_.*',
+  '.*\.RewriteSigKind$',
+  '.*\.RewriteGuardAtomKind$'
+]
+
+root-modules = [
+  '^Moonlight\.Rewrite$',
+  '^Moonlight\.Rewrite\.Algebra$',
+  '^Moonlight\.Rewrite\.Runtime$',
+  '^Moonlight\.Rewrite\.System$',
+  '^Moonlight\.Rewrite\.DSL$',
+  '^Moonlight\.Rewrite\.ProofContext$',
+  '^Moonlight\.Rewrite\.Relational$',
+  '^Moonlight\.Rewrite\.Relational\.Front$'
+]
+
+type-class-roots = false
+unused-types = true

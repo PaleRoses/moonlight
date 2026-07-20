@@ -1,0 +1,243 @@
+cabal-version:       3.0
+name:                melusine-nebula
+version:             0.1.0.0
+synopsis:            Engine-tier self-compression over real Haskell modules.
+description:         Ingests real Haskell modules into context e-graphs, saturates them against their own site-derived rewrite corpus, extracts cost-minimal bindings, and synthesizes shared abstractions discovered by anti-unification.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Engine
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+  default-extensions:
+    DerivingStrategies
+    GADTs
+    RankNTypes
+    ScopedTypeVariables
+    TypeFamilies
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Melusine.Nebula
+    Melusine.Nebula.CLI
+    Melusine.Nebula.Core
+    Melusine.Nebula.Discovery.AlphaUnify
+    Melusine.Nebula.Discovery.Choose
+    Melusine.Nebula.Harvest.Cluster
+    Melusine.Nebula.Harvest.Core
+    Melusine.Nebula.Harvest.Maintain
+    Melusine.Nebula.Harvest.Pairs
+    Melusine.Nebula.Proof.Audit
+    Melusine.Nebula.Proof.Certificate
+    Melusine.Nebula.Report.Json
+    Melusine.Nebula.Report.Text
+    Melusine.Nebula.Rewrite.Corpus
+    Melusine.Nebula.Rewrite.Saturate
+    Melusine.Nebula.Source.Ingest
+    Melusine.Nebula.Source.Workspace
+    Melusine.Nebula.Synthesis.Core
+    Melusine.Nebula.Synthesis.Diagnostics
+    Melusine.Nebula.Synthesis.Scope
+    Melusine.Nebula.Synthesis.Types
+    Melusine.Nebula.Source.Ast
+    Melusine.Nebula.Write.Back
+    Melusine.Nebula.Write.Declaration
+    Melusine.Nebula.Write.Diff
+    Melusine.Nebula.Write.Patch
+    Melusine.Nebula.Write.Protocol
+    Melusine.Nebula.Write.Seal
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , deepseq >= 1.4 && < 1.6
+    , directory >= 1.3 && < 1.4
+    , filepath >= 1.4 && < 1.6
+    , ghc >= 9.14 && < 9.16
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-control
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-differential
+    , moonlight-egraph-core
+    , moonlight-egraph:context
+    , moonlight-egraph:extraction
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph-introspection >= 0.1 && < 0.2
+    , moonlight-egraph:rewrite
+    , moonlight-flow-key
+    , moonlight-rewrite:proof-context
+    , moonlight-rewrite:core
+    , moonlight-rewrite:system
+    , moonlight-saturation
+    , moonlight-saturation:core
+    , moonlight-sheaf:core
+    , moonlight-sheaf:cosheaf
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:runtime
+    , moonlight-sheaf:site
+    , moonlight-pale:diagnostic >= 0.1 && < 0.2
+    , moonlight-pale:ghc-surface >= 0.1 && < 0.2
+    , data-fix >= 0.3 && < 0.4
+    , recursion-schemes >= 5.2
+
+    , moonlight-algebra:finite-lattice
+library bench-pipeline-product
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: bench-pipeline/lib
+  exposed-modules:
+    Bench.Pipeline.ProductSubstrate
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , melusine-nebula
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-egraph-core
+    , moonlight-egraph:context
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph-introspection >= 0.1 && < 0.2
+    , moonlight-rewrite:system
+    , moonlight-saturation
+    , moonlight-saturation:core
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:runtime
+    , moonlight-pale:ghc-surface >= 0.1 && < 0.2
+
+library bench-pipeline-lift
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: bench-pipeline-lift
+  exposed-modules:
+    Bench.Pipeline.Lift
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , ghc >= 9.14 && < 9.16
+    , melusine-nebula
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-egraph:context
+    , moonlight-egraph-introspection >= 0.1 && < 0.2
+
+executable melusine-nebula
+  import: shared-properties
+  hs-source-dirs: app
+  main-is: Main.hs
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , melusine-nebula
+
+executable bench-caselift
+  import: shared-properties
+  hs-source-dirs: bench-caselift
+  main-is: Main.hs
+  other-modules:
+    Bench.CaseLift
+  ghc-options: -O2 -rtsopts -with-rtsopts=-T
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , data-fix >= 0.3 && < 0.4
+    , deepseq >= 1.4 && < 1.6
+    , directory >= 1.3 && < 1.4
+    , filepath >= 1.4 && < 1.6
+    , ghc >= 9.14 && < 9.16
+    , melusine-nebula
+    , melusine-nebula:bench-pipeline-lift
+    , moonlight-core
+    , moonlight-egraph:context
+    , moonlight-egraph-core
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph-introspection
+    , moonlight-saturation:core
+    , moonlight-pale:ghc-surface
+    , process >= 1.6 && < 1.7
+    , time >= 1.12 && < 1.15
+
+test-suite melusine-nebula-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test
+    bench-caselift
+  main-is: Main.hs
+  ghc-options: -Wno-missing-import-lists -rtsopts -with-rtsopts=-T
+  other-modules:
+    Melusine.Nebula.Spec.AuditSpec
+    Bench.CaseLift
+    Melusine.Nebula.Spec.CertificateSpec
+    Melusine.Nebula.Spec.CaseLiftSpec
+    Melusine.Nebula.Spec.HarvestSpec
+    Melusine.Nebula.Spec.PipelineSpec
+    Melusine.Nebula.Spec.RealizeSpec
+    Melusine.Nebula.Spec.ReportJsonSpec
+    Melusine.Nebula.Spec.WriteBackSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , deepseq >= 1.4 && < 1.6
+    , directory >= 1.3 && < 1.4
+    , filepath >= 1.4 && < 1.6
+    , containers >= 0.6 && < 0.9
+    , ghc >= 9.14 && < 9.16
+    , melusine-nebula
+    , melusine-nebula:bench-pipeline-lift
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-egraph:context
+    , moonlight-egraph:bench-harness
+    , moonlight-egraph-core
+    , moonlight-egraph:extraction
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph-introspection >= 0.1 && < 0.2
+    , moonlight-flow-key
+    , moonlight-homology >= 0.1 && < 0.2
+    , moonlight-rewrite:proof-context
+    , moonlight-rewrite:system
+    , moonlight-saturation
+    , moonlight-saturation:core
+    , moonlight-sheaf:cosheaf
+    , moonlight-sheaf:runtime
+    , moonlight-sheaf:site
+    , moonlight-pale:ghc-surface >= 0.1 && < 0.2
+    , moonlight-pale:bench >= 0.1 && < 0.2
+    , process >= 1.6 && < 1.7
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , data-fix >= 0.3 && < 0.4
+    , moonlight-algebra:finite-lattice
+    , time >= 1.12 && < 1.15
+
+benchmark bench-pipeline
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: bench-pipeline/app
+  main-is: PipelineMain.hs
+  ghc-options: -O2 -rtsopts "-with-rtsopts=-T"
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , directory >= 1.3 && < 1.4
+    , filepath >= 1.4 && < 1.6
+    , melusine-nebula
+    , melusine-nebula:bench-pipeline-lift
+    , melusine-nebula:bench-pipeline-product
+    , moonlight-egraph:bench-harness
+    , moonlight-egraph:context
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph-introspection >= 0.1 && < 0.2
+    , moonlight-saturation:core
+    , moonlight-saturation:protocol
+    , moonlight-pale:ghc-surface >= 0.1 && < 0.2
+    , moonlight-pale:bench >= 0.1 && < 0.2
+    , process >= 1.6 && < 1.7

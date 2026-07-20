@@ -1,0 +1,70 @@
+-- | Stalk algebras for the public surface: how stalk values merge, mismatch,
+-- and repair.
+module Moonlight.Sheaf.Stalk
+  ( StalkAlgebra (..),
+    StalkRestrictionKernel (..),
+    StalkBounds (..),
+    MergeObstruction (..),
+    RepairInput (..),
+    applyStalkRestrictionKernel,
+    restrictStalk,
+    stalkApproxEq,
+    stalkMismatches,
+    mergeStalks,
+    normalizeStalk,
+    mismatchObstruction,
+    DiscreteMismatch (..),
+    DiscreteRepairObstruction (..),
+    discreteStalkAlgebra,
+    GeometricStalk (..),
+    GeometricMismatch (..),
+    GeometricRepairObstruction (..),
+    GeometricRestriction (..),
+    geometricStalkAlgebra,
+    InterfaceStalkGroupoid,
+    mkInterfaceStalkGroupoid,
+    fromDiscreteStalk,
+    interfaceStalkObjects,
+    interfaceStalkAutomorphismCounts,
+    maxInterfaceStalkAutomorphismCount,
+    orbitRepresentatives,
+    orbitsWithSize,
+  )
+where
+
+import Moonlight.Sheaf.Section.Stalk
+  ( MergeObstruction (..),
+    RepairInput (..),
+    StalkAlgebra (..),
+    StalkRestrictionKernel (..),
+    StalkBounds (..),
+    applyStalkRestrictionKernel,
+    mergeStalks,
+    mismatchObstruction,
+    normalizeStalk,
+    restrictStalk,
+    stalkApproxEq,
+    stalkMismatches,
+  )
+import Moonlight.Sheaf.Section.Stalk.Discrete
+  ( DiscreteMismatch (..),
+    DiscreteRepairObstruction (..),
+    discreteStalkAlgebra,
+  )
+import Moonlight.Sheaf.Section.Stalk.Geometric
+  ( GeometricMismatch (..),
+    GeometricRepairObstruction (..),
+    GeometricRestriction (..),
+    GeometricStalk (..),
+    geometricStalkAlgebra,
+  )
+import Moonlight.Sheaf.Section.Stalk.Groupoid
+  ( InterfaceStalkGroupoid,
+    fromDiscreteStalk,
+    interfaceStalkAutomorphismCounts,
+    interfaceStalkObjects,
+    maxInterfaceStalkAutomorphismCount,
+    mkInterfaceStalkGroupoid,
+    orbitRepresentatives,
+    orbitsWithSize,
+  )

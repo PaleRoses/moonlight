@@ -1,0 +1,55 @@
+cabal-version:       3.0
+name:                moonlight-stochastic-sheaf
+version:             0.1.0.0
+synopsis:            Stochastic sheaf integration for Pale Meridian.
+description:         Foundation-tier package integrating categorical probability stalks with cellular sheaf sections and restriction registries.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Stochastic.Sheaf
+    Moonlight.Stochastic.Sheaf.Core
+    Moonlight.Stochastic.Sheaf.Algebra
+    Moonlight.Stochastic.Sheaf.Compile
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-probability
+    , moonlight-sheaf:core
+    , moonlight-sheaf:runtime
+
+
+test-suite moonlight-stochastic-sheaf-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    Moonlight.Stochastic.Sheaf.Spec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-stochastic-sheaf
+    , moonlight-probability
+    , moonlight-sheaf:core
+    , moonlight-sheaf:runtime
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10

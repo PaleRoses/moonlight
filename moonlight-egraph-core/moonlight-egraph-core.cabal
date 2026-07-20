@@ -1,0 +1,66 @@
+cabal-version:       3.0
+name:                moonlight-egraph-core
+version:             0.1.0.0
+synopsis:            Core deterministic e-graph kernel for Pale Meridian.
+description:
+  The dependency-minimal e-graph kernel shared by moonlight-egraph and the
+  moonlight-rewrite relational front.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    ConstraintKinds
+    QuantifiedConstraints
+    StandaloneDeriving
+    StrictData
+    UndecidableInstances
+    UndecidableSuperClasses
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.EGraph.Effect.CoveringSurface
+    Moonlight.EGraph.Pure.Analysis
+    Moonlight.EGraph.Pure.Change
+    Moonlight.EGraph.Pure.Delta
+    Moonlight.EGraph.Pure.Extraction
+    Moonlight.EGraph.Pure.Kernel.HashCons
+    Moonlight.EGraph.Pure.Query.RootFilter
+    Moonlight.EGraph.Pure.Rebuild
+    Moonlight.EGraph.Pure.Structural.Store
+    Moonlight.EGraph.Pure.Types
+  other-modules:
+    Moonlight.EGraph.Pure.Analysis.Spec
+    Moonlight.EGraph.Pure.Extraction.Algebra
+    Moonlight.EGraph.Pure.Extraction.Cache
+    Moonlight.EGraph.Pure.Extraction.Compile
+    Moonlight.EGraph.Pure.Extraction.Core
+    Moonlight.EGraph.Pure.Extraction.Worklist
+    Moonlight.EGraph.Pure.Types.Core
+    Moonlight.EGraph.Pure.Types.Internal
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-core:moonlight-core-egraph-program
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-delta:moonlight-delta-epoch
+    , data-fix >= 0.3 && < 0.4
+    , recursion-schemes >= 5.2 && < 6
+    , transformers >= 0.6 && < 0.7
+    , vector >= 0.13 && < 0.14

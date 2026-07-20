@@ -1,0 +1,123 @@
+cabal-version:       3.0
+name:                moonlight-sketch
+version:             0.1.0.0
+synopsis:            Pure schema IR grounded in categorical sketch theory.
+description:         Foundation package providing SchemaNode ADT, constraint types,
+                     format AST, canonical normalization, content-addressable stable hashing,
+                     structural subtyping with variance, reference resolution, and data
+                     validation against schemas. Schemas are inert data and behavioral hooks
+                     are resolved through SchemaEnv registries.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Math
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    TypeFamilies
+    UndecidableInstances
+    FunctionalDependencies
+    OverloadedStrings
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Sketch
+  other-modules:
+    Moonlight.Sketch.Pure.Types
+    Moonlight.Sketch.Pure.Types.Core
+    Moonlight.Sketch.Pure.Types.Identifiers
+    Moonlight.Sketch.Pure.Types.Issues
+    Moonlight.Sketch.Pure.Types.Format
+    Moonlight.Sketch.Pure.Normalize
+    Moonlight.Sketch.Pure.Hash
+    Moonlight.Sketch.Pure.Subtype
+    Moonlight.Sketch.Pure.Resolve
+    Moonlight.Sketch.Pure.Format
+    Moonlight.Sketch.Pure.Validate.Core
+    Moonlight.Sketch.Pure.Validate.Cache
+    Moonlight.Sketch.Pure.Validate.Algebra
+    Moonlight.Sketch.Pure.Validate.Algebra.Core
+    Moonlight.Sketch.Pure.Validate.Algebra.Primitive
+    Moonlight.Sketch.Pure.Validate.Algebra.Composite
+    Moonlight.Sketch.Pure.Validate.Compile
+    Moonlight.Sketch.Pure.Validate.Compile.Core
+    Moonlight.Sketch.Pure.Validate.Compile.Algebra
+    Moonlight.Sketch.Pure.Validate.Compile.Coalgebra
+    Moonlight.Sketch.Pure.Validate
+    Moonlight.Sketch.Pure.Env
+    Moonlight.Sketch.Pure.Instances
+  build-depends:
+    algebraic-graphs >= 0.8 && < 0.9
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , text >= 2.0 && < 2.2
+    , bytestring >= 0.11 && < 0.13
+    , aeson >= 2.1 && < 2.3
+    , scientific >= 0.3 && < 0.4
+    , vector >= 0.13 && < 0.14
+    , unicode-transforms >= 0.4 && < 0.5
+    , regex-tdfa >= 1.3 && < 1.4
+    , moonlight-core
+    , moonlight-algebra
+    , moonlight-discrete:optics
+    , recursion-schemes >= 5.2 && < 6
+
+library moonlight-sketch-laws
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-laws
+  exposed-modules:
+    Moonlight.Sketch.Effect.Harness
+    Moonlight.Sketch.Effect.LawNames
+  build-depends:
+    aeson >= 2.1 && < 2.3
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , text >= 2.0 && < 2.2
+    , moonlight-core
+    , moonlight-algebra
+    , moonlight-sketch
+
+test-suite moonlight-sketch-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    Moonlight.Sketch.Arbitrary
+    Moonlight.Sketch.Effect.Laws
+    Moonlight.Sketch.NormalizeSpec
+    Moonlight.Sketch.HashSpec
+    Moonlight.Sketch.SubtypeSpec
+    Moonlight.Sketch.ResolveSpec
+    Moonlight.Sketch.FormatSpec
+    Moonlight.Sketch.ValidateSpec
+    Moonlight.Sketch.InstancesSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , text >= 2.0 && < 2.2
+    , aeson >= 2.1 && < 2.3
+    , vector >= 0.13 && < 0.14
+    , moonlight-sketch
+    , moonlight-sketch:moonlight-sketch-laws
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-pale:test-laws
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , QuickCheck >= 2.14

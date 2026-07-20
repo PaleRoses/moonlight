@@ -1,0 +1,330 @@
+cabal-version:       3.0
+name:                moonlight-flow-runtime
+version:             0.1.0.0
+synopsis:            Relational runtime orchestration.
+description:
+  Runtime state, routing, carrier topology, work scheduling, generated sites, subscriptions, observation, and carrier-delta orchestration.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+library moonlight-flow-runtime-contract
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-contract
+  ghc-options:
+    -fomit-interface-pragmas
+  exposed-modules:
+    Moonlight.Flow.Patch
+    Moonlight.Flow.Query
+    Moonlight.Flow.Runtime.Core.Env
+    Moonlight.Flow.Runtime.Core.Hydrate
+    Moonlight.Flow.Runtime.Core.Patch
+    Moonlight.Flow.Runtime.Core.Patch.Internal
+    Moonlight.Flow.Runtime.Core.Patch.Validation
+    Moonlight.Flow.Runtime.Core.RepairStats
+    Moonlight.Flow.Runtime.Core.State
+    Moonlight.Flow.Runtime.Execution.IR
+    Moonlight.Flow.Runtime.Execution.Shard
+    Moonlight.Flow.Runtime.Factor.Request
+    Moonlight.Flow.Runtime.Spec.FactorProgram
+    Moonlight.Flow.Runtime.Spec.Schema
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-algebra:finite-lattice
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-flow-storage
+    , moonlight-saturation:core
+    , primitive
+    , text
+    , unordered-containers
+    , vector
+
+library moonlight-flow-runtime-engine
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Flow.Query.Run
+    Moonlight.Flow.Read
+    Moonlight.Flow.Runtime.Backend
+    Moonlight.Flow.Runtime.Carrier.Amalgamation
+    Moonlight.Flow.Runtime.Carrier.Core.Types
+    Moonlight.Flow.Runtime.Carrier.Emit
+    Moonlight.Flow.Runtime.Carrier.Emit.Atom
+    Moonlight.Flow.Runtime.Carrier.Emit.Factor
+    Moonlight.Flow.Runtime.Carrier.Emit.FactorPayload
+    Moonlight.Flow.Runtime.Carrier.Restrict
+    Moonlight.Flow.Runtime.Carrier.Reuse
+    Moonlight.Flow.Runtime.Carrier.Reuse.CoverMaterialization
+    Moonlight.Flow.Runtime.Carrier.Reuse.Materialize
+    Moonlight.Flow.Runtime.Carrier.Reuse.State
+    Moonlight.Flow.Runtime.Carrier.State
+    Moonlight.Flow.Runtime.Carrier.Store
+    Moonlight.Flow.Runtime.Carrier.Store.Internal
+    Moonlight.Flow.Runtime.Carrier.Store.Read
+    Moonlight.Flow.Runtime.Carrier.Store.Touch
+    Moonlight.Flow.Runtime.Carrier.Store.Write
+    Moonlight.Flow.Runtime.Apply
+    Moonlight.Flow.Runtime.Core.Create
+    Moonlight.Flow.Runtime.Create
+    Moonlight.Flow.Runtime.Core.Replay.Policy
+    Moonlight.Flow.Runtime.Engine.Capability
+    Moonlight.Flow.Runtime.Engine.Compaction
+    Moonlight.Flow.Runtime.Engine.Diagnostics
+    Moonlight.Flow.Runtime.Engine.Dispatch.Carrier
+    Moonlight.Flow.Runtime.Engine.Dispatch.Core
+    Moonlight.Flow.Runtime.Engine.Dispatch.Shard
+    Moonlight.Flow.Runtime.Engine.GeneratedSite.Apply
+    Moonlight.Flow.Runtime.Engine.GeneratedSite.Materialize
+    Moonlight.Flow.Runtime.Engine.GeneratedSite.Validation
+    Moonlight.Flow.Runtime.Engine.Input
+    Moonlight.Flow.Runtime.Engine.Patch.Apply
+    Moonlight.Flow.Runtime.Engine.Patch.Replay
+    Moonlight.Flow.Runtime.Engine.Patch.Schedule
+    Moonlight.Flow.Runtime.Engine.Queue.Frontier
+    Moonlight.Flow.Runtime.Engine.Queue.Scheduler
+    Moonlight.Flow.Runtime.Engine.Queue.Types
+    Moonlight.Flow.Runtime.Engine.Schedule.Enqueue
+    Moonlight.Flow.Runtime.Engine.Schedule.Feedback
+    Moonlight.Flow.Runtime.Engine.Schedule.Time
+    Moonlight.Flow.Runtime.Engine.State
+    Moonlight.Flow.Runtime.Engine.Step.Drain
+    Moonlight.Flow.Runtime.Engine.Step.Flush
+    Moonlight.Flow.Runtime.Engine.Step.Settle
+    Moonlight.Flow.Runtime.Engine.Touch
+    Moonlight.Flow.Runtime.Error
+    Moonlight.Flow.Runtime.Execution.Delta
+    Moonlight.Flow.Runtime.Execution.Failure
+    Moonlight.Flow.Runtime.Execution.IR.Normalize
+    Moonlight.Flow.Runtime.Factor.Compile
+    Moonlight.Flow.Runtime.Factor.Input
+    Moonlight.Flow.Runtime.Factor.Internal.Cache
+    Moonlight.Flow.Runtime.Factor.Internal.Commit
+    Moonlight.Flow.Runtime.Factor.Internal.Engine
+    Moonlight.Flow.Runtime.Factor.Internal.Exact
+    Moonlight.Flow.Runtime.Factor.Internal.Reuse.Result
+    Moonlight.Flow.Runtime.Factor.Internal.Reuse.SelectedMaterialization
+    Moonlight.Flow.Runtime.Factor.Internal.Reuse.Target
+    Moonlight.Flow.Runtime.Factor.Program
+    Moonlight.Flow.Runtime.Factor.Read
+    Moonlight.Flow.Runtime.Factor.Repair
+    Moonlight.Flow.Runtime.Factor.Reuse
+    Moonlight.Flow.Runtime.Factor.State
+    Moonlight.Flow.Runtime.Inspect
+    Moonlight.Flow.Runtime.Factor.State.Types
+    Moonlight.Flow.Runtime.Kernel
+    Moonlight.Flow.Runtime.Kernel.Config
+    Moonlight.Flow.Runtime.Kernel.Create
+    Moonlight.Flow.Runtime.Kernel.Operators
+    Moonlight.Flow.Runtime.Settle
+    Moonlight.Flow.Runtime.Time
+    Moonlight.Flow.Runtime.Topology
+    Moonlight.Flow.Runtime.Topology.Generate
+    Moonlight.Flow.Runtime.Topology.Lowering.Edge
+    Moonlight.Flow.Runtime.Topology.Lowering.GeneratedSite
+    Moonlight.Flow.Runtime.Topology.Lowering.Impact
+    Moonlight.Flow.Runtime.Topology.Lowering.Types
+    Moonlight.Flow.Runtime.Topology.ReuseEdges
+    Moonlight.Flow.Runtime.Topology.Routing
+    Moonlight.Flow.Runtime.Topology.Routing.Events
+    Moonlight.Flow.Runtime.Topology.Routing.Internal
+    Moonlight.Flow.Runtime.Topology.Site.Patch
+    Moonlight.Flow.Runtime.Topology.Site.Quotient.Source
+    Moonlight.Flow.Runtime.Topology.Site.Routing
+    Moonlight.Flow.Runtime.Topology.Site.Topology
+    Moonlight.Flow.Runtime.Topology.Site.Types
+    Moonlight.Flow.Runtime.Topology.Subscription
+    Moonlight.Flow.Runtime.Topology.Subscription.Builder
+    Moonlight.Flow.Runtime.Topology.Validate
+    Moonlight.Flow.Runtime.Types
+    Moonlight.Flow.Runtime.Visible
+  other-modules:
+    Moonlight.Flow.Runtime.Engine.Patch.Schedule.AtomEvents
+    Moonlight.Flow.Runtime.Engine.Patch.Schedule.Retraction
+  build-depends:
+    base >= 4.18 && < 5
+    , bytestring
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-delta:moonlight-delta-patch
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-carrier-reuse
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-algebra:finite-lattice
+    , moonlight-flow-storage
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-saturation:core
+    , primitive
+    , text
+    , unordered-containers
+    , vector
+
+library moonlight-flow-runtime-dataflow-contract
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-dataflow-contract
+  ghc-options:
+    -fomit-interface-pragmas
+  exposed-modules:
+    Moonlight.Flow.Runtime.Engine.Dataflow.Tags
+    Moonlight.Flow.Runtime.Engine.Dataflow.Types
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-flow-key
+    , moonlight-flow-plan
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , text
+
+library moonlight-flow-runtime-dataflow
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-dataflow
+  exposed-modules:
+    Moonlight.Flow.Runtime.Engine.Dataflow
+    Moonlight.Flow.Runtime.Engine.Dataflow.Build
+    Moonlight.Flow.Runtime.Engine.Dataflow.CBOR
+    Moonlight.Flow.Runtime.Engine.Dataflow.Workload
+  build-depends:
+    base >= 4.18 && < 5
+    , bytestring
+    , cborg >= 0.2 && < 0.3
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-dataflow-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+    , text
+
+
+test-suite moonlight-flow-runtime-internal-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test-internal
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Flow.Runtime.CarrierDelta.FactorSpec
+    Moonlight.Flow.Runtime.DiagnosticsDataflowSpec
+    Moonlight.Flow.Runtime.GeneratedPatchSequenceSpec
+    Moonlight.Flow.Runtime.ModuleBoundarySpec
+    Moonlight.Flow.Runtime.ProjectionSoakSpec
+    Moonlight.Flow.Runtime.QuotientSourceSpec
+    Moonlight.Flow.Runtime.ReplaySelectionSpec
+    Moonlight.Flow.Runtime.SchedulerLocalitySpec
+    Moonlight.Flow.Runtime.SubsumptionSpec
+    Moonlight.Flow.Runtime.TopologyValidationSpec
+    Test.Moonlight.Flow.Execution.RelProgram
+    Test.Moonlight.Flow.Instrument
+    Test.Moonlight.Flow.Oracle.Runtime.Program
+    Test.Moonlight.Flow.Property.Debug.CacheEviction
+    Test.Moonlight.Flow.Property.Debug.CompactionFrontier
+    Test.Moonlight.Flow.Property.Runtime.BranchSharing
+    Test.Moonlight.Flow.Property.Runtime.FactorReuse
+    Test.Moonlight.Flow.Property.Runtime.PlanReuse
+    Test.Moonlight.Flow.Property.Subsumption
+    Test.Moonlight.Flow.Runtime.Diagnostics.Observation
+    Test.Moonlight.Flow.Runtime.Diagnostics.Validate
+    Test.Moonlight.Flow.Runtime.Diagnostics.Validate.BatchRecompute
+    Test.Moonlight.Flow.Runtime.Diagnostics.Validate.PlanReuse
+    Test.Moonlight.Flow.Runtime.Diagnostics.Validate.SiteSync
+    Test.Moonlight.Flow.Trace.EngineClosureFixture
+  build-depends:
+    QuickCheck >= 2.14
+    , base >= 4.18 && < 5
+    , bytestring
+    , cborg >= 0.2 && < 0.3
+    , containers >= 0.6 && < 0.9
+    , directory
+    , filepath
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-delta:moonlight-delta-patch
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-carrier-reuse
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+    , moonlight-flow-runtime:moonlight-flow-runtime-dataflow
+    , moonlight-flow-storage
+    , moonlight-saturation:core
+    , moonlight-pale:test
+    , moonlight-pale:test-surface
+    , primitive
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , text
+    , time
+    , unordered-containers
+    , vector
+    , moonlight-algebra:finite-lattice

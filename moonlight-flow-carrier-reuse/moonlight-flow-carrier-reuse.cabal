@@ -1,0 +1,130 @@
+cabal-version:       3.0
+name:                moonlight-flow-carrier-reuse
+version:             0.1.0.0
+synopsis:            E-graph-backed carrier reuse planning.
+description:
+  Carrier reuse indexes, state, registry, and plan normalization integration.
+  The carrier contract and engine remain egraph-free in moonlight-flow-carrier;
+  this package owns the reuse layer that depends on flow plan rewriting.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+library index
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-index
+  ghc-options:
+    -fomit-interface-pragmas
+  exposed-modules:
+    Moonlight.Flow.Carrier.Reuse.Internal.Index.Materialization
+    Moonlight.Flow.Carrier.Reuse.Internal.Index.Reuse
+    Moonlight.Flow.Carrier.Reuse.Internal.Index.Shape
+    Moonlight.Flow.Carrier.Reuse.Internal.Shape
+    Moonlight.Flow.Carrier.Reuse.Internal.Stats
+    Moonlight.Flow.Carrier.Reuse.Internal.Validity
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-plan-rewrite
+    , moonlight-flow-storage
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Flow.Carrier.Reuse
+    Moonlight.Flow.Carrier.Reuse.Config
+    Moonlight.Flow.Carrier.Reuse.Internal.Invalidation
+    Moonlight.Flow.Carrier.Reuse.Internal.Proof.Subsumption
+    Moonlight.Flow.Carrier.Reuse.Internal.Registry
+    Moonlight.Flow.Carrier.Reuse.Internal.Resolve
+    Moonlight.Flow.Carrier.Reuse.Internal.State.Diagnostics
+    Moonlight.Flow.Carrier.Reuse.Internal.State.Materialization
+    Moonlight.Flow.Carrier.Reuse.Internal.State.Normalize
+    Moonlight.Flow.Carrier.Reuse.Internal.State.Register
+    Moonlight.Flow.Carrier.Reuse.Internal.State.Types
+    Moonlight.Flow.Carrier.Reuse.Types
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-carrier-reuse:index
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-plan-rewrite
+    , moonlight-flow-storage
+    , unordered-containers
+    , vector
+
+test-suite moonlight-flow-carrier-reuse-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Flow.Carrier.Reuse.RegistryCanonicalizationSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-test-support
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-carrier-reuse
+    , moonlight-flow-carrier-reuse:index
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-plan-rewrite
+    , moonlight-flow-storage
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10

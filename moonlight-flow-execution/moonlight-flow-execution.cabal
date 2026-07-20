@@ -1,0 +1,113 @@
+cabal-version:       3.0
+name:                moonlight-flow-execution
+version:             0.1.0.0
+synopsis:            Relational execution algorithms.
+description:
+  Prepared execution, dense WCOJ, acyclic execution, factorized execution, prepared cache, result deltas, and execution-side subsumption.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+library moonlight-flow-execution-contract
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-contract
+  ghc-options:
+    -fomit-interface-pragmas
+  exposed-modules:
+    Moonlight.Flow.Execution.Observe.Provenance.Arena
+    Moonlight.Flow.Execution.Observe.Provenance.Args
+    Moonlight.Flow.Execution.Observe.Provenance.GC
+    Moonlight.Flow.Execution.Observe.Provenance.Id
+    Moonlight.Flow.Execution.Observe.Provenance.Types
+    Moonlight.Flow.Execution.Observe.Provenance.Types.Internal
+    Moonlight.Flow.Execution.Observe.RepairTelemetry
+    Moonlight.Flow.Execution.Observe.Telemetry
+    Moonlight.Flow.Execution.Prepared.Contract
+    Moonlight.Flow.Execution.Result.SliceDelta
+    Moonlight.Flow.Execution.Subsumption.FactorShape
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-storage
+    , primitive
+
+library moonlight-flow-execution-engine
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Flow.Execution.Acyclic
+    Moonlight.Flow.Execution.Direct
+    Moonlight.Flow.Execution.Dense.Plan
+    Moonlight.Flow.Execution.Dense.Validate
+    Moonlight.Flow.Execution.Dense.WCOJ
+    Moonlight.Flow.Execution.Engine
+    Moonlight.Flow.Execution.Factor.Core
+    Moonlight.Flow.Execution.Factor.Contribution
+    Moonlight.Flow.Execution.Factor.Contribution.Identity
+    Moonlight.Flow.Execution.Factor.Delta
+    Moonlight.Flow.Execution.Factor.Enumerate
+    Moonlight.Flow.Execution.Factor.Incremental
+    Moonlight.Flow.Execution.Factor.Provenance
+    Moonlight.Flow.Execution.Factor.Run
+    Moonlight.Flow.Execution.Factor.Types
+    Moonlight.Flow.Execution.Factor.Validate
+    Moonlight.Flow.Execution.Observe.Provenance.Support
+    Moonlight.Flow.Execution.Observe.Provenance.Value
+    Moonlight.Flow.Execution.Prepared.Backend
+    Moonlight.Flow.Execution.Prepared.Base
+    Moonlight.Flow.Execution.Prepared.Cache
+    Moonlight.Flow.Execution.Prepared.Request
+    Moonlight.Flow.Execution.Prepared.Run
+    Moonlight.Flow.Execution.Prepared.Topology
+    Moonlight.Flow.Execution.Subsumption.CQContainment
+    Moonlight.Flow.Execution.Subsumption.Containment
+    Moonlight.Flow.Execution.Subsumption.Proof
+  other-modules:
+    Moonlight.Flow.Execution.Dense.WCOJ.Project
+    Moonlight.Flow.Execution.Dense.WCOJ.Witness
+    Moonlight.Flow.Execution.Factor.Dirty
+    Moonlight.Flow.Execution.Factor.NodePlan
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-delta:moonlight-delta-patch
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-storage
+    , primitive
+    , unordered-containers
+    , vector

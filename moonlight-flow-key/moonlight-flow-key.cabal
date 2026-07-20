@@ -1,0 +1,48 @@
+cabal-version:       3.0
+name:                moonlight-flow-key
+version:             0.1.0.0
+synopsis:            Stable relational keys, tuple roles, scopes, and digests.
+description:
+  Cold Moonlight Flow identity algebra: stable digests, role-indexed tuple keys,
+  relational scopes, phases, and schema digest primitives.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+    -fomit-interface-pragmas
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Flow.Internal.Digest
+    Moonlight.Flow.Internal.PrimArray
+    Moonlight.Flow.Model.Id
+    Moonlight.Flow.Model.Phase
+    Moonlight.Flow.Model.Scope
+    Moonlight.Flow.Model.Schema.Digest
+    Moonlight.Flow.Model.Schema.Digest.Words
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , primitive
+    , vector

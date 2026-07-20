@@ -1,0 +1,103 @@
+cabal-version:       3.0
+name:                moonlight-sheaf-flow
+version:             0.1.0.0
+synopsis:            Flow-runtime integrations for moonlight-sheaf.
+description:
+  Relational flow runtime adapters for sheaf context refresh, row compilation,
+  and carrier visibility. The generic moonlight-sheaf runtime remains below
+  moonlight-flow; this package owns the higher integration layer.
+license:             MIT
+author:              Blue Rose
+maintainer:          rosaliafialkova@gmail.com
+category:            Math
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    FunctionalDependencies
+    TypeFamilies
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Sheaf.Context.Runtime.Row
+    Moonlight.Sheaf.Runtime.Compile.Row
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+    , moonlight-sheaf:core
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:runtime
+    , transformers
+
+library relational
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Sheaf.Relational.Carrier.Fact
+    Moonlight.Sheaf.Relational.Carrier.Visible
+    Moonlight.Sheaf.Relational.Runtime.Oracle.Context
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+    , moonlight-sheaf:core
+    , moonlight-sheaf:runtime
+
+test-suite moonlight-sheaf-flow-context-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test-context
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    Moonlight.Sheaf.ContextSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+    , moonlight-sheaf:core
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:runtime
+    , moonlight-sheaf-flow
+    , moonlight-algebra:finite-lattice
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10

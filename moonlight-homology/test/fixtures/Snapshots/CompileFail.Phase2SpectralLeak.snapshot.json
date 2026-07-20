@@ -1,0 +1,1 @@
+{"diagnostics":[{"code":"GHC-64725","endCol":15,"endLine":11,"file":"foundation/moonlight-homology/test/fixtures/CompileFail/Phase2SpectralLeak.hs","startCol":3,"startLine":11}],"diagnosticsFlag":"-fdiagnostics-as-json","exit":"failure","fixture":"CompileFail/Phase2SpectralLeak.hs"}

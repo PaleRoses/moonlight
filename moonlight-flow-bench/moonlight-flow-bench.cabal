@@ -1,0 +1,87 @@
+cabal-version:       3.0
+name:                moonlight-flow-bench
+version:             0.1.0.0
+synopsis:            Runtime benchmark programs.
+description:
+  Dedicated package for RBAC runtime soak and locality probes.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+common rbac-runtime-executable
+  import: shared-properties
+  hs-source-dirs: runtime
+  ghc-options:
+    -rtsopts
+    -threaded
+    -with-rtsopts=-T
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+    , moonlight-flow-rbac-fixture:moonlight-flow-rbac-fixture-core
+
+executable rbac-targeted-soak
+  import: rbac-runtime-executable
+  main-is: RbacTargetedSoakMain.hs
+  other-modules:
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Config
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Print
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Run.Targeted
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Stats
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Types
+
+executable rbac-locality-check
+  import: rbac-runtime-executable
+  main-is: RbacLocalityCheckMain.hs
+  other-modules:
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Config
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Print
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Run.Checks
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Run.Locality
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Run.Snapshot
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Stats
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Types
+
+executable rbac-setup-probe
+  import: rbac-runtime-executable
+  main-is: RbacSetupProbeMain.hs
+  other-modules:
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Config
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Run.Probe
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Stats
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Types
+
+executable rbac-reproducer
+  import: rbac-runtime-executable
+  main-is: RbacReproducerMain.hs
+  other-modules:
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Config
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Print
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Run.Reproducer
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Stats
+    Moonlight.Flow.Bench.Runtime.RbacEntitlement.Types

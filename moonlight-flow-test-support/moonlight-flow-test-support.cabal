@@ -1,0 +1,384 @@
+cabal-version:       3.0
+name:                moonlight-flow-test-support
+version:             0.1.0.0
+synopsis:            Shared relational test programs and oracles.
+description:
+  Shared semantic test programs, production interpreters, and structurally independent oracles for moonlight-flow test surfaces.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Test.Moonlight.Flow.Execution.BoundedPessimism
+    Test.Moonlight.Flow.Execution.StructuralCutoff
+    Test.Moonlight.Flow.Execution.Prepared.CacheProgram
+    Test.Moonlight.Flow.Execution.Prepared.CacheChurnModel
+    Test.Moonlight.Flow.Execution.RelProgram
+    Test.Moonlight.Flow.Gen.Carrier
+    Test.Moonlight.Flow.Gen.Execution
+    Test.Moonlight.Flow.Gen.Model
+    Test.Moonlight.Flow.Gen.Plan
+    Test.Moonlight.Flow.Gen.Storage
+    Test.Moonlight.Flow.Literal
+    Test.Moonlight.Flow.Oracle.Carrier
+    Test.Moonlight.Flow.Oracle.Execution
+    Test.Moonlight.Flow.Oracle.Model
+    Test.Moonlight.Flow.Oracle.Plan
+    Test.Moonlight.Flow.Oracle.Runtime
+    Test.Moonlight.Flow.Oracle.Storage
+    Test.Moonlight.Flow.Property.Carrier
+    Test.Moonlight.Flow.Property.Execution
+    Test.Moonlight.Flow.Property.Model
+    Test.Moonlight.Flow.Property.Plan
+    Test.Moonlight.Flow.Property.Carrier.Restrict
+    Test.Moonlight.Flow.Property.Carrier.RestrictionChain
+    Test.Moonlight.Flow.Property.Carrier.Visible.CacheAccounting
+    Test.Moonlight.Flow.Trace
+    Test.Moonlight.Flow.Verify
+    Test.Moonlight.Flow.Workload
+  build-depends:
+    QuickCheck >= 2.14
+    , base >= 4.18 && < 5
+    , bytestring
+    , containers >= 0.6 && < 0.9
+    , directory
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-delta:moonlight-delta-patch
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-plan-rewrite
+    , moonlight-flow-storage
+    , filepath
+    , hashable
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-pale:test
+    , moonlight-pale:test-surface
+    , primitive
+    , unordered-containers
+    , moonlight-saturation:core
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck >= 0.10
+    , time
+    , vector
+    , data-fix >= 0.3 && < 0.4
+
+    , moonlight-algebra:finite-lattice
+test-suite moonlight-flow-model-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test-model
+    test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Flow.Model.ModelSpec
+  build-depends:
+    QuickCheck >= 2.14
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-test-support
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , vector
+
+    , moonlight-algebra:finite-lattice
+test-suite moonlight-flow-storage-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test-storage
+    test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Flow.Storage.StorageSpec
+    Test.Moonlight.Flow.Property.Storage
+  build-depends:
+    QuickCheck >= 2.14
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-test-support
+    , moonlight-flow-storage
+    , moonlight-flow-test-support
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck >= 0.10
+    , vector
+
+    , moonlight-algebra:finite-lattice
+test-suite moonlight-sheaf-relational-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test-sheaf-relational
+    test
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    Moonlight.Sheaf.Relational.Carrier.FactSpec
+  build-depends:
+    QuickCheck >= 2.14
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+    , moonlight-flow-storage
+    , moonlight-sheaf
+    , moonlight-sheaf-flow:relational
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , unordered-containers
+    , vector
+
+    , moonlight-algebra:finite-lattice
+test-suite moonlight-flow-execution-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Flow.Execution.Dense.WCOJ.DeltaAgreementSpec
+    Moonlight.Flow.Execution.MatchingSpec
+    Moonlight.Flow.Execution.Prepared.MatchingSpec
+    Test.Moonlight.Flow.Execution.Prepared.Matching
+  build-depends:
+    QuickCheck >= 2.14
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-storage
+    , moonlight-flow-test-support
+    , moonlight-saturation:core
+    , moonlight-saturation:protocol
+    , primitive
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck >= 0.10
+    , unordered-containers
+    , vector
+
+    , moonlight-algebra:finite-lattice
+test-suite moonlight-flow-plan-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test-plan
+    test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Flow.Plan.PlanSpec
+    Moonlight.Flow.Plan.ResidualSpec
+  build-depends:
+    QuickCheck >= 2.14
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hedgehog >= 1.2
+    , moonlight-core
+    , moonlight-egraph-core
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-test-support
+    , tasty >= 1.4
+    , tasty-hedgehog >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , vector
+
+    , moonlight-algebra:finite-lattice
+test-suite moonlight-flow-carrier-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test-carrier
+    test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Flow.Carrier.Morphism.AmalgamationSpec
+    Moonlight.Flow.Carrier.Boundary.CoverageAtomRowsSpec
+    Moonlight.Flow.Carrier.CarrierSpec
+    Moonlight.Flow.Carrier.Store.Engine.ReplaySpec
+    Moonlight.Flow.Carrier.Morphism.RestrictionSpec
+    Moonlight.Flow.Carrier.Morphism.SubsumptionCoverageSpec
+    Test.Moonlight.Flow.Carrier.Boundary.Coverage
+  build-depends:
+    QuickCheck >= 2.14
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-storage
+    , moonlight-flow-test-support
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , unordered-containers
+    , vector
+
+    , moonlight-algebra:finite-lattice
+test-suite moonlight-flow-runtime-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test-runtime
+    test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Flow.Runtime.IndexedJoinSpec
+    Moonlight.Flow.Runtime.RuntimeAuthorityBoundarySpec
+    Moonlight.Flow.Runtime.RbacDataflowFixtureSpec
+    Moonlight.Flow.Runtime.RbacEntitlementSpec
+    Moonlight.Flow.Runtime.RbacIncrementalStatsSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , filepath
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+    , moonlight-flow-runtime:moonlight-flow-runtime-dataflow
+    , moonlight-flow-rbac-fixture:moonlight-flow-rbac-fixture-core
+    , moonlight-flow-rbac-fixture:moonlight-flow-rbac-fixture-dataflow
+    , moonlight-flow-storage
+    , moonlight-pale:test
+    , moonlight-pale:test-surface
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , unordered-containers
+    , vector
+
+
+    , moonlight-algebra:finite-lattice
+executable moonlight-flow-prepared-cache-churn-soak
+  import: shared-properties
+  hs-source-dirs: test
+  main-is: Moonlight/Flow/Execution/Prepared/CacheChurnSoakMain.hs
+  other-modules:
+    Test.Moonlight.Flow.Execution.Prepared.Cache.Invariant
+  ghc-options:
+    -O2
+    -rtsopts
+    -threaded
+    -with-rtsopts=-T
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-storage
+    , moonlight-flow-test-support
+    , time
+
+    , moonlight-algebra:finite-lattice
+executable bounded-pessimism-soak
+  import: shared-properties
+  hs-source-dirs: test
+  main-is: Moonlight/Flow/Execution/BoundedPessimismSoakMain.hs
+  ghc-options:
+    -O2
+    -rtsopts
+    -threaded
+    -with-rtsopts=-T
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-flow-test-support
+    , moonlight-algebra:finite-lattice

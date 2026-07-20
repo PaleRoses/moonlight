@@ -1,0 +1,90 @@
+cabal-version:       3.0
+name:                moonlight-flow-rbac-fixture
+version:             0.1.0.0
+synopsis:            Shared RBAC runtime fixture substrate.
+description:
+  Stable RBAC workload, model, patch, and dataflow fixture substrate shared by relational tests and benchmarks.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+library moonlight-flow-rbac-fixture-core
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Flow.Runtime.RbacFixture.Config
+    Moonlight.Flow.Runtime.RbacFixture.Patch
+    Moonlight.Flow.Runtime.RbacFixture.Plans
+    Moonlight.Flow.Runtime.RbacFixture.Truth
+    Moonlight.Flow.Runtime.RbacFixture.Types
+  other-modules:
+    Moonlight.Flow.Runtime.RbacFixture.Rows
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+
+library moonlight-flow-rbac-fixture-dataflow
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-dataflow
+  exposed-modules:
+    Moonlight.Flow.Runtime.RbacDataflowFixture
+  build-depends:
+    base >= 4.18 && < 5
+    , bytestring
+    , containers >= 0.6 && < 0.9
+    , moonlight-core
+    , moonlight-differential
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-rbac-fixture:moonlight-flow-rbac-fixture-core
+    , moonlight-flow-runtime:moonlight-flow-runtime-contract
+    , moonlight-flow-runtime:moonlight-flow-runtime-engine
+    , moonlight-flow-runtime:moonlight-flow-runtime-dataflow
+
+executable moonlight-rbac-runtime-dataflow-fixture
+  import: shared-properties
+  hs-source-dirs: app
+  main-is: RbacRuntimeDataflowFixture.hs
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-flow-rbac-fixture:moonlight-flow-rbac-fixture-dataflow
+
+executable moonlight-rbac-runtime-dataflow-stream
+  import: shared-properties
+  hs-source-dirs: app
+  main-is: RbacRuntimeDataflowStream.hs
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-flow-rbac-fixture:moonlight-flow-rbac-fixture-core
+    , moonlight-flow-rbac-fixture:moonlight-flow-rbac-fixture-dataflow

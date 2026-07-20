@@ -1,0 +1,48 @@
+# Public Moonlight mirror: the active Moonlight package family plus
+# melusine-nebula.
+#
+# josh assembles a flat, self-contained public repository from the private
+# Pale-Meridian monorepo: each line maps an output directory in the mirror to a
+# subtree of the monorepo.
+#
+# Regenerate with mirror/regenerate.sh; see mirror/MIRRORING.md.
+
+moonlight-core                     = :/compiler/foundation/moonlight-core
+moonlight-delta                    = :/compiler/foundation/moonlight-delta
+moonlight-differential             = :/compiler/foundation/moonlight-differential
+moonlight-algebra                  = :/compiler/foundation/moonlight-algebra
+moonlight-category                 = :/compiler/foundation/moonlight-category
+moonlight-discrete                 = :/compiler/foundation/moonlight-discrete
+moonlight-linalg                   = :/compiler/foundation/moonlight-linalg
+moonlight-geometry                 = :/compiler/foundation/moonlight-geometry
+moonlight-derived                  = :/compiler/foundation/moonlight-derived
+moonlight-analysis                 = :/compiler/foundation/moonlight-analysis
+moonlight-probability              = :/compiler/foundation/moonlight-probability
+moonlight-rewrite                  = :/compiler/foundation/moonlight-rewrite
+moonlight-homology                 = :/compiler/foundation/moonlight-homology
+moonlight-sheaf                    = :/compiler/foundation/moonlight-sheaf:exclude[::src-flow]
+moonlight-sheaf-flow               = :/compiler/foundation/moonlight-sheaf/src-flow
+moonlight-stochastic-sheaf         = :/compiler/foundation/moonlight-stochastic-sheaf
+moonlight-sketch                   = :/compiler/foundation/moonlight-sketch
+moonlight-saturation               = :/compiler/foundation/moonlight-saturation
+moonlight-control                  = :/compiler/foundation/moonlight-control
+moonlight-flow-key                 = :/compiler/foundation/moonlight-flow/key
+moonlight-flow-model               = :/compiler/foundation/moonlight-flow/model
+moonlight-flow-plan                = :/compiler/foundation/moonlight-flow/plan
+moonlight-flow-plan-rewrite        = :/compiler/foundation/moonlight-flow/plan-rewrite
+moonlight-flow-storage             = :/compiler/foundation/moonlight-flow/storage
+moonlight-flow-carrier             = :/compiler/foundation/moonlight-flow/carrier
+moonlight-flow-carrier-reuse       = :/compiler/foundation/moonlight-flow/carrier-reuse
+moonlight-flow-execution           = :/compiler/foundation/moonlight-flow/execution
+moonlight-flow-test-support        = :/compiler/foundation/moonlight-flow/test-support
+moonlight-flow-rbac-fixture        = :/compiler/foundation/moonlight-flow/rbac-fixture
+moonlight-flow-runtime             = :/compiler/foundation/moonlight-flow/runtime
+moonlight-flow-bench               = :/compiler/foundation/moonlight-flow/bench
+moonlight-egraph-core              = :/compiler/foundation/moonlight-egraph/core
+moonlight-egraph                   = :/compiler/foundation/moonlight-egraph:exclude[::core]
+moonlight-egraph-fuzzy             = :/compiler/foundation/moonlight-egraph-fuzzy
+moonlight-egraph-saturation        = :/compiler/foundation/moonlight-egraph-saturation
+moonlight-egraph-introspection     = :/compiler/foundation/moonlight-egraph-introspection
+moonlight-surface                  = :/compiler/foundation/moonlight-surface
+moonlight-pale                     = :/compiler/foundation/moonlight-pale
+melusine-nebula                    = :/compiler/engine/melusine-nebula

@@ -1,0 +1,164 @@
+cabal-version:       3.0
+name:                moonlight-flow-carrier
+version:             0.1.0.0
+synopsis:            Relational carrier algebra.
+description:
+  Carrier addresses, coverage, deltas, visibility, indexes, restriction, projection, amalgamation, obstruction, and facts.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    QuantifiedConstraints
+    StrictData
+    UndecidableInstances
+
+library moonlight-flow-carrier-contract
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-contract
+  ghc-options:
+    -fomit-interface-pragmas
+  exposed-modules:
+    Moonlight.Flow.Carrier.Core.Address
+    Moonlight.Flow.Carrier.Core.Delta
+    Moonlight.Flow.Carrier.Core.Delta.Emit
+    Moonlight.Flow.Carrier.Core.Frontier
+    Moonlight.Flow.Carrier.Core.Origin
+    Moonlight.Flow.Carrier.Core.Reuse
+    Moonlight.Flow.Carrier.Core.Time
+    Moonlight.Flow.Carrier.Core.Topology
+    Moonlight.Flow.Carrier.Core.Topology.Validate
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-algebra:finite-lattice
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+
+library moonlight-flow-carrier-engine
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Flow.Carrier.Boundary.Restrict
+    Moonlight.Flow.Carrier.Core.Coverage
+    Moonlight.Flow.Carrier.Core.Obstruction.Types
+    Moonlight.Flow.Carrier.Core.Summary
+    Moonlight.Flow.Carrier.Diagnostics.Obstruction
+    Moonlight.Flow.Carrier.Engine.Project
+    Moonlight.Flow.Carrier.Fact
+    Moonlight.Flow.Carrier.Fact.Internal.Compare
+    Moonlight.Flow.Carrier.Fact.Internal.LedgerIndex
+    Moonlight.Flow.Carrier.Fact.Internal.Reconcile
+    Moonlight.Flow.Carrier.Fact.Internal.Restrict
+    Moonlight.Flow.Carrier.Fact.Ledger
+    Moonlight.Flow.Carrier.Fact.Section
+    Moonlight.Flow.Carrier.Morphism.Amalgamation
+    Moonlight.Flow.Carrier.Morphism.Compile
+    Moonlight.Flow.Carrier.Morphism.Config
+    Moonlight.Flow.Carrier.Morphism.Core.Program
+    Moonlight.Flow.Carrier.Morphism.Core.Types
+    Moonlight.Flow.Carrier.Morphism.Engine
+    Moonlight.Flow.Carrier.Morphism.Internal.Apply
+    Moonlight.Flow.Carrier.Morphism.Internal.Digest
+    Moonlight.Flow.Carrier.Morphism.Internal.Glue
+    Moonlight.Flow.Carrier.Morphism.Internal.Projection
+    Moonlight.Flow.Carrier.Morphism.Internal.RestrictionGraph
+    Moonlight.Flow.Carrier.Morphism.Internal.Reuse
+    Moonlight.Flow.Carrier.Morphism.Restriction
+    Moonlight.Flow.Carrier.Morphism.Result
+    Moonlight.Flow.Carrier.Morphism.Subsumption
+    Moonlight.Flow.Carrier.Store
+    Moonlight.Flow.Carrier.Store.Core.Error
+    Moonlight.Flow.Carrier.Store.Core.Read
+    Moonlight.Flow.Carrier.Store.Core.Runtime
+    Moonlight.Flow.Carrier.Store.Core.State
+    Moonlight.Flow.Carrier.Store.Engine.Commit
+    Moonlight.Flow.Carrier.Store.Engine.Compact
+    Moonlight.Flow.Carrier.Store.Engine.Read
+    Moonlight.Flow.Carrier.Store.Engine.Replay
+    Moonlight.Flow.Carrier.Store.Journal.Trace
+    Moonlight.Flow.Carrier.Store.Projection.Current
+    Moonlight.Flow.Carrier.View.Cache
+    Moonlight.Flow.Carrier.View.Query
+    Moonlight.Flow.Carrier.View.Section
+  build-depends:
+    base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , hashable
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-algebra:finite-lattice
+    , algebraic-graphs >= 0.8 && < 0.9
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-storage
+    , unordered-containers
+    , vector
+
+test-suite moonlight-flow-carrier-internal-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
+  other-modules:
+    Moonlight.Flow.Carrier.Morphism.SubsumptionProjectionFixtures
+    Moonlight.Flow.Carrier.Morphism.SubsumptionProjectionSpec
+    Moonlight.Flow.Carrier.Store.TraceCharacterizationSpec
+  build-depends:
+    QuickCheck >= 2.14
+    , base >= 4.18 && < 5
+    , containers >= 0.6 && < 0.9
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-delta:moonlight-delta-core
+    , moonlight-differential
+    , moonlight-differential:moonlight-differential-runtime
+    , moonlight-differential:moonlight-differential-index
+    , moonlight-differential:moonlight-differential-join
+    , moonlight-differential:moonlight-differential-test-support
+    , moonlight-algebra:finite-lattice
+    , moonlight-flow-carrier:moonlight-flow-carrier-contract
+    , moonlight-flow-carrier:moonlight-flow-carrier-engine
+    , moonlight-flow-execution:moonlight-flow-execution-contract
+    , moonlight-flow-execution:moonlight-flow-execution-engine
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-flow-storage
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10

@@ -1,0 +1,351 @@
+cabal-version:       3.0
+name:                moonlight-differential
+version:             0.1.0.0
+homepage:            https://github.com/PaleRoses/moonlight
+bug-reports:         https://github.com/PaleRoses/moonlight/issues
+synopsis:            Differential maintenance substrate for Moonlight runtimes.
+description:
+  Runtime-neutral differential maintenance vocabulary: proposition keys,
+  runtime time/frontiers, local facts, context restriction registries,
+  arrow indexes, generic deltas, update batches, traces, projection work,
+  and context-row cache machinery.
+license:             MIT
+license-file:        LICENSE
+author:              Blue Rose
+maintainer:          rosaliafialkova@gmail.com
+category:            Foundation
+build-type:          Simple
+tested-with:         GHC == 9.14.1
+extra-doc-files:
+  README.md
+  THIRD_PARTY_NOTICES.md
+
+common shared-properties
+  default-language: GHC2024
+  build-depends:
+    base >= 4.22 && < 5
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    StrictData
+
+library moonlight-differential-raw
+  import: shared-properties
+  visibility: private
+  hs-source-dirs: src-raw
+  exposed-modules:
+    Moonlight.Differential.Internal.Index.IndexedRows
+    Moonlight.Differential.Internal.Index.Registry
+    Moonlight.Differential.Internal.Index.RowId
+    Moonlight.Differential.Internal.Index.RowIdSet
+    Moonlight.Differential.Internal.Trace.Id
+    Moonlight.Differential.Internal.Trace.Indexed
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , moonlight-core >= 0.1 && < 0.2
+    , primitive >= 0.8 && < 0.10
+
+library
+  import: shared-properties
+  hs-source-dirs: src-public
+  ghc-options:
+    -fomit-interface-pragmas
+  exposed-modules:
+    Moonlight.Differential
+    Moonlight.Differential.Algebra.FiniteMap
+    Moonlight.Differential.Algebra.ZSet
+    Moonlight.Differential.Arrangement
+    Moonlight.Differential.Batch
+    Moonlight.Differential.Cursor
+    Moonlight.Differential.Delta
+    Moonlight.Differential.Frontier
+    Moonlight.Differential.Order.LocallyFinite
+    Moonlight.Differential.Operator.Aggregate
+    Moonlight.Differential.Operator.Fixpoint
+    Moonlight.Differential.Operator.Join
+    Moonlight.Differential.Operator.Linear
+    Moonlight.Differential.Operator.SupportedView
+    Moonlight.Differential.Projection.Delta
+    Moonlight.Differential.Projection.Maintenance
+    Moonlight.Differential.Projection.Propagation
+    Moonlight.Differential.Projection.Work
+    Moonlight.Differential.Proposition
+    Moonlight.Differential.Stream
+    Moonlight.Differential.Time
+    Moonlight.Differential.Trace
+    Moonlight.Differential.Trace.Compact
+    Moonlight.Differential.Trace.Description
+    Moonlight.Differential.Trace.Id
+    Moonlight.Differential.Trace.Indexed
+    Moonlight.Differential.Trace.ReadIndex
+    Moonlight.Differential.Update
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-epoch >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-raw >= 0.1 && < 0.2
+    , vector >= 0.13 && < 0.14
+    , vector-algorithms >= 0.9 && < 0.10
+
+library moonlight-differential-index
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-index
+  ghc-options:
+    -fomit-interface-pragmas
+  exposed-modules:
+    Moonlight.Differential.Index.Arrow
+    Moonlight.Differential.Index.IndexedRows
+    Moonlight.Differential.Index.IntSet
+    Moonlight.Differential.Index.Registry
+    Moonlight.Differential.Index.Reverse
+    Moonlight.Differential.Index.Reverse.Batch
+    Moonlight.Differential.Row.Block
+    Moonlight.Differential.Row.Delta
+    Moonlight.Differential.Row.Patch
+    Moonlight.Differential.Row.Tuple
+    Moonlight.Differential.Index.RowArrangement
+    Moonlight.Differential.Index.RowId
+    Moonlight.Differential.Index.RowIdSet
+    Moonlight.Differential.Index.RowProjection
+    Moonlight.Differential.Index.RowSet
+    Moonlight.Differential.Index.SmallIntArray
+    Moonlight.Differential.Relation
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , hashable >= 1.4 && < 1.6
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-patch >= 0.1 && < 0.2
+    , moonlight-differential >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-raw >= 0.1 && < 0.2
+    , primitive >= 0.8 && < 0.10
+    , unordered-containers >= 0.2 && < 0.3
+    , vector >= 0.13 && < 0.14
+    , vector-algorithms >= 0.9 && < 0.10
+    , vector-th-unbox >= 0.2 && < 0.3
+
+library moonlight-differential-runtime
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-runtime
+  exposed-modules:
+    Moonlight.Differential.Carrier.Address
+    Moonlight.Differential.Carrier.Topology
+    Moonlight.Differential.Context.Restriction
+    Moonlight.Differential.Context.RowsCache
+    Moonlight.Differential.Fact.Local
+    Moonlight.Differential.Runtime.Error
+    Moonlight.Differential.Runtime.Schedule
+    Moonlight.Differential.Runtime.Settle
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-differential >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-index >= 0.1 && < 0.2
+    , moonlight-algebra:finite-lattice >= 0.1 && < 0.2
+    , transformers >= 0.6 && < 0.7
+
+library moonlight-differential-join
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-join
+  exposed-modules:
+    Moonlight.Differential.Join.WCOJ
+    Moonlight.Differential.Join.WCOJ.Delta
+    Moonlight.Differential.Join.WCOJ.Dense.BitSet
+    Moonlight.Differential.Join.WCOJ.Dense.Descent
+    Moonlight.Differential.Join.WCOJ.Dense.Executor
+    Moonlight.Differential.Join.WCOJ.Dense.Triangle
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , deepseq >= 1.4 && < 1.6
+    , hashable >= 1.4 && < 1.6
+    , moonlight-differential:moonlight-differential-index >= 0.1 && < 0.2
+    , primitive >= 0.8 && < 0.10
+    , unordered-containers >= 0.2 && < 0.3
+    , vector >= 0.13 && < 0.14
+
+library moonlight-differential-circuit
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-circuit
+  exposed-modules:
+    Moonlight.Differential.Circuit
+    Moonlight.Differential.Circuit.Advance
+    Moonlight.Differential.Circuit.Build
+    Moonlight.Differential.Circuit.Denotation
+    Moonlight.Differential.Circuit.Foreign
+    Moonlight.Differential.Circuit.Types
+  other-modules:
+    Moonlight.Differential.Circuit.Carrier
+    Moonlight.Differential.Circuit.Eval
+    Moonlight.Differential.Circuit.Handle
+    Moonlight.Differential.Circuit.Kernel
+    Moonlight.Differential.Circuit.Slot
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-differential >= 0.1 && < 0.2
+
+library moonlight-differential-test-support
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-test-support
+  exposed-modules:
+    Test.Moonlight.Differential.Index.IndexedRows
+    Test.Moonlight.Differential.Index.Registry
+    Test.Moonlight.Differential.Trace.Indexed
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , moonlight-differential >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-raw >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-index >= 0.1 && < 0.2
+
+library moonlight-differential-laws
+  import: shared-properties
+  visibility: public
+  hs-source-dirs: src-laws
+  exposed-modules:
+    Moonlight.Differential.Effect.Harness
+    Moonlight.Differential.Effect.Harness.Algebra
+    Moonlight.Differential.Effect.Harness.Arrangement
+    Moonlight.Differential.Effect.Harness.Circuit
+    Moonlight.Differential.Effect.Harness.Index
+    Moonlight.Differential.Effect.Harness.Operator
+    Moonlight.Differential.Effect.Harness.Projection
+    Moonlight.Differential.Effect.Harness.Runtime
+    Moonlight.Differential.Effect.Harness.Stream
+    Moonlight.Differential.Effect.Harness.TimeFrontier
+    Moonlight.Differential.Effect.Harness.Trace
+    Moonlight.Differential.Effect.Harness.WCOJ
+    Moonlight.Differential.Effect.LawNames
+    Moonlight.Differential.Effect.Laws
+  other-modules:
+    Moonlight.Differential.Effect.Laws.Algebra
+    Moonlight.Differential.Effect.Laws.Arrangement
+    Moonlight.Differential.Effect.Laws.Circuit
+    Moonlight.Differential.Effect.Laws.Index
+    Moonlight.Differential.Effect.Laws.Operator
+    Moonlight.Differential.Effect.Laws.Projection
+    Moonlight.Differential.Effect.Laws.Runtime
+    Moonlight.Differential.Effect.Laws.Stream
+    Moonlight.Differential.Effect.Laws.TimeFrontier
+    Moonlight.Differential.Effect.Laws.Trace
+    Moonlight.Differential.Effect.Laws.WCOJ
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-epoch >= 0.1 && < 0.2
+    , moonlight-differential >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-runtime >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-index >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-join >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-circuit >= 0.1 && < 0.2
+    , moonlight-algebra:finite-lattice >= 0.1 && < 0.2
+    , moonlight-pale:test >= 0.1 && < 0.2
+    , moonlight-pale:test-laws >= 0.1 && < 0.2
+    , QuickCheck >= 2.14 && < 2.17
+    , tasty >= 1.4 && < 1.6
+    , tasty-hunit >= 0.10 && < 0.11
+    , tasty-quickcheck >= 0.10 && < 0.12
+    , transformers >= 0.6 && < 0.7
+    , vector >= 0.13 && < 0.14
+
+test-suite moonlight-differential-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test test/core test/index test/runtime test/join test/circuit
+  main-is: Main.hs
+  other-modules:
+    BatchDenseSpec
+    CircuitSpec
+    RowsCacheSpec
+    AlgebraSpec
+    ArrangementSpec
+    BatchTraceSpec
+    WCOJDeltaSpec
+    IndexSpec
+    OperatorSpec
+    SupportedViewSpec
+    ScheduleSpec
+    ProjectionSpec
+    RowSpec
+    StreamSpec
+    WCOJSpec
+    TraceCompactionLawSpec
+  ghc-options: -rtsopts
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-epoch >= 0.1 && < 0.2
+    , moonlight-differential >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-runtime >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-index >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-circuit >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-join >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-laws >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-test-support >= 0.1 && < 0.2
+    , moonlight-algebra:finite-lattice >= 0.1 && < 0.2
+    , QuickCheck >= 2.14 && < 2.17
+    , tasty >= 1.4 && < 1.6
+    , tasty-hunit >= 0.10 && < 0.11
+    , tasty-quickcheck >= 0.10 && < 0.12
+    , transformers >= 0.6 && < 0.7
+    , vector >= 0.13 && < 0.14
+
+benchmark moonlight-differential-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: bench bench/core bench/index bench/runtime bench/join bench/circuit bench/support
+  main-is: Main.hs
+  other-modules:
+    Allocation
+    ArrangementJoin
+    CircuitFixpoint
+    Common
+    Groups
+    Operator
+    Projection
+    Relation
+    RowIndex
+    RowProjection
+    RuntimeSettle
+    Storage
+    Stream
+    TraceCompact
+    TraceRead
+    WCOJ
+  ghc-options: -O2 -rtsopts
+  build-depends:
+    containers >= 0.6 && < 0.9
+    , deepseq >= 1.4 && < 1.6
+    , moonlight-delta:moonlight-delta-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-epoch >= 0.1 && < 0.2
+    , moonlight-differential >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-circuit >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-index >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-join >= 0.1 && < 0.2
+    , moonlight-differential:moonlight-differential-runtime >= 0.1 && < 0.2
+    , tasty-bench >= 0.3 && < 0.5
+    , transformers >= 0.6 && < 0.7
+
+source-repository head
+  type:     git
+  location: https://github.com/PaleRoses/moonlight.git
+  subdir:   moonlight-differential

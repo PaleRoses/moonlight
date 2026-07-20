@@ -1,0 +1,224 @@
+cabal-version:       3.0
+name:                moonlight-egraph-saturation
+version:             0.1.0.0
+synopsis:            Advanced saturation engines for Moonlight e-graphs.
+description:         Egraph-specific cohomological saturation backend instantiation over canonical sheaf obstruction and saturation replay primitives.
+license:             MIT
+author:              Blue Rose
+maintainer:          bluerose@example.com
+category:            Foundation
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+
+common shared-deps
+  build-depends:
+    base >= 4.18 && < 5
+    , bytestring >= 0.11 && < 0.13
+    , containers >= 0.6 && < 0.9
+    , deepseq >= 1.4 && < 1.6
+    , dependent-map >= 0.4 && < 0.5
+    , dependent-sum >= 0.7 && < 0.8
+    , foldl >= 1.4 && < 1.5
+    , vector >= 0.13 && < 0.14
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-discrete:constraint
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-core >= 0.1 && < 0.2
+    , moonlight-analysis >= 0.1 && < 0.2
+    , moonlight-derived >= 0.1 && < 0.2
+    , moonlight-egraph-core
+    , moonlight-egraph:relational
+    , moonlight-egraph:context
+    , moonlight-egraph:extraction
+    , moonlight-egraph:rewrite
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph-introspection >= 0.1 && < 0.2
+    , moonlight-pale:ghc-surface >= 0.1 && < 0.2
+    , moonlight-homology >= 0.1 && < 0.2
+    , moonlight-flow-key
+    , moonlight-flow-model:moonlight-flow-model-delta
+    , moonlight-flow-model:moonlight-flow-model-schema
+    , moonlight-flow-plan
+    , moonlight-saturation:core
+    , moonlight-saturation
+    , moonlight-saturation:protocol
+    , moonlight-control
+    , moonlight-control:moonlight-control-support
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-control:moonlight-control-homology
+    , moonlight-saturation:obstruction
+    , moonlight-sheaf:core
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:runtime
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:site
+    , moonlight-sheaf:obstruction
+    , moonlight-pale:diagnostic
+
+-- Canonical cohomological egraph backend instantiation.
+library
+  import: shared-properties, shared-deps
+  hs-source-dirs:
+    src
+    src-core
+  exposed-modules:
+    Moonlight.EGraph.Saturation.Cohomological.Types
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Modality
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Matching
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Seed
+  other-modules:
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Matching.Internal.Analysis
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Matching.Internal.Frontier
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Matching.Internal.Region
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Construction
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Evidence
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Frontier
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Prepared
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Site
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Modality.Internal.Constraint
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Modality.Internal.Projection
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Modality.Internal.Proof
+  build-depends:
+    moonlight-rewrite:algebra
+    , moonlight-rewrite:core
+    , moonlight-rewrite:system
+    , moonlight-rewrite:front
+    , moonlight-rewrite:proof-context
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:relational-front
+    , moonlight-sheaf:obstruction
+
+test-suite moonlight-egraph-saturation-test
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs:
+    test
+    src
+    src-core
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat -rtsopts -with-rtsopts=-T
+  other-modules:
+    Moonlight.EGraph.Saturation.Cohomological.Types
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Construction
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Evidence
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Frontier
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Prepared
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Instance.Internal.Site
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Matching
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Matching.Internal.Analysis
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Matching.Internal.Frontier
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Matching.Internal.Region
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Modality
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Modality.Internal.Constraint
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Modality.Internal.Projection
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Modality.Internal.Proof
+    Moonlight.EGraph.Saturation.Cohomological.Backend.Seed
+    Moonlight.EGraph.Saturation.CohomologicalSpec
+    Moonlight.EGraph.Saturation.CohomologicalSpec.Fixture
+    Moonlight.EGraph.Saturation.CohomologicalSpec.Fixture.Section
+    Moonlight.EGraph.Saturation.CohomologicalSpec.Prelude
+    Moonlight.EGraph.Saturation.CohomologicalSpec.Site
+    Moonlight.EGraph.Saturation.CohomologicalSpec.Bench
+    Moonlight.EGraph.Saturation.GoldenPathSpec
+    Moonlight.EGraph.Saturation.GoldenPathSpec.Prelude
+    Moonlight.EGraph.Saturation.GoldenPathSpec.Fixture
+    Moonlight.EGraph.Saturation.GoldenPathSpec.Cohomological
+    Moonlight.EGraph.Saturation.GoldenPathSpec.Pruning
+    Moonlight.EGraph.Saturation.GoldenPathSpec.Sheaf
+    Moonlight.EGraph.Saturation.ChimeraSpec
+    Moonlight.EGraph.Saturation.Atlas.Chimera
+    Moonlight.EGraph.Saturation.Atlas.Scoped
+    Moonlight.EGraph.Saturation.Atlas.SDF
+  build-depends:
+    base >= 4.18 && < 5
+    , bytestring >= 0.11 && < 0.13
+    , containers >= 0.6 && < 0.9
+    , deepseq >= 1.4 && < 1.6
+    , foldl >= 1.4 && < 1.5
+    , dependent-map >= 0.4 && < 0.5
+    , dependent-sum >= 0.7 && < 0.8
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-discrete:constraint
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-delta:moonlight-delta-core >= 0.1 && < 0.2
+    , moonlight-derived >= 0.1 && < 0.2
+    , moonlight-egraph-core
+    , moonlight-egraph:relational
+    , moonlight-egraph:context
+    , moonlight-egraph:extraction
+    , moonlight-egraph:rewrite
+    , moonlight-egraph:pure-saturation
+    , moonlight-egraph:test-algebras
+    , moonlight-egraph-introspection >= 0.1 && < 0.2
+    , moonlight-pale:ghc-surface >= 0.1 && < 0.2
+    , moonlight-homology >= 0.1 && < 0.2
+    , moonlight-rewrite:core
+    , moonlight-rewrite:system
+    , moonlight-rewrite:front
+    , moonlight-rewrite:relational
+    , moonlight-rewrite:relational-front
+    , moonlight-rewrite:algebra
+    , moonlight-rewrite:proof-context
+    , moonlight-saturation
+    , moonlight-saturation:core
+    , moonlight-saturation:protocol
+    , moonlight-control
+    , moonlight-control:moonlight-control-support
+    , moonlight-control:moonlight-control-diagnostics
+    , moonlight-control:moonlight-control-homology
+    , moonlight-saturation:obstruction
+    , moonlight-flow-storage
+    , moonlight-egraph-saturation
+    , moonlight-sheaf:core
+    , moonlight-sheaf:cochain
+    , moonlight-sheaf:runtime
+    , moonlight-sheaf:descent
+    , moonlight-sheaf:site
+    , moonlight-sheaf:obstruction
+    , moonlight-pale:diagnostic
+    , moonlight-pale:test
+    , moonlight-pale:test-laws
+    , QuickCheck >= 2.14
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
+    , vector >= 0.13 && < 0.14
+    , data-fix >= 0.3 && < 0.4
+    , moonlight-algebra:finite-lattice
+
+benchmark moonlight-egraph-saturation-bench
+  import: shared-properties
+  type: exitcode-stdio-1.0
+  hs-source-dirs: bench
+  main-is: Main.hs
+  other-modules:
+    Moonlight.EGraph.Saturation.Bench.Egglog
+    Moonlight.EGraph.Saturation.Bench.Front
+  ghc-options: -O2 -rtsopts
+  build-depends:
+    base >= 4.18 && < 5
+    , deepseq >= 1.4 && < 1.6
+    , directory >= 1.3 && < 1.4
+    , moonlight-algebra
+    , moonlight-core
+    , moonlight-egraph:context
+    , moonlight-egraph-core
+    , moonlight-egraph:pure-saturation
+    , moonlight-algebra:finite-lattice
+    , moonlight-rewrite:front
+    , moonlight-saturation
+    , process >= 1.6 && < 1.7
+    , tasty >= 1.4
+    , tasty-bench

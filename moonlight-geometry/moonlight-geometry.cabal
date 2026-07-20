@@ -1,0 +1,103 @@
+cabal-version:       3.0
+name:                moonlight-geometry
+version:             0.1.0.0
+synopsis:            Certificate-bearing SDF algebra and rewrite lawfulness for Pale Meridian geometry.
+description:         Discrete differential geometry — metrics, connections, curvature, geodesics, holonomy — with robust predicates, tetrahedral meshing, and space-filling layouts over a certified signed-distance-field and gluing-rewrite algebra.
+license:             MIT
+author:              Blue Rose
+maintainer:          rosaliafialkova@gmail.com
+category:            Math
+build-type:          Simple
+
+common shared-properties
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wno-missing-import-lists
+  default-extensions:
+    DeriveFoldable
+    DeriveFunctor
+    DeriveTraversable
+    DerivingStrategies
+    LambdaCase
+    TypeFamilies
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules:
+    Moonlight.Geometry
+    Moonlight.Geometry.Discrete
+    Moonlight.Geometry.Discrete.Chart
+    Moonlight.Geometry.Discrete.Connection
+    Moonlight.Geometry.Discrete.Curvature
+    Moonlight.Geometry.Discrete.Geodesic
+    Moonlight.Geometry.Discrete.Holonomy
+    Moonlight.Geometry.Discrete.Metric
+    Moonlight.Geometry.Discrete.Surface
+    Moonlight.Geometry.Site.Primitive
+    Moonlight.Geometry.Site.Token
+    Moonlight.Geometry.Site.Semantics
+    Moonlight.Geometry.Site.Parameters
+    Moonlight.Geometry.Section.Analysis
+    Moonlight.Geometry.Section.Propagation
+    Moonlight.Geometry.Section.Jet
+    Moonlight.Geometry.Gluing.Rewrite
+    Moonlight.Geometry.Gluing.Safety
+    Moonlight.Geometry.Gluing.Laws
+    Moonlight.Geometry.Global.Cost
+    Moonlight.Geometry.Global.Acceleration
+    Moonlight.Geometry.Intersection
+    Moonlight.Geometry.Predicate
+    Moonlight.Geometry.SpaceFilling
+    Moonlight.Geometry.Tetrahedralization
+    Moonlight.Geometry.Tetrahedralization.Core
+    Moonlight.Geometry.Tetrahedralization.Facet
+    Moonlight.Geometry.Tetrahedralization.Intersection
+    Moonlight.Geometry.Triangulation
+    Moonlight.Geometry.MeshRefinement
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-linalg >= 0.1 && < 0.2
+    , moonlight-homology >= 0.1 && < 0.2
+    , moonlight-rewrite:core
+    , moonlight-rewrite:system
+    , moonlight-egraph-core
+    , moonlight-egraph:extraction
+    , containers
+    , array
+    , vector >= 0.13 && < 0.14
+    , time
+
+test-suite moonlight-geometry-test
+  type: exitcode-stdio-1.0
+  default-language: GHC2024
+  hs-source-dirs: test
+  main-is: Main.hs
+  ghc-options: -Wall -Wcompat
+  other-modules:
+    Moonlight.Geometry.Site.PrimitiveSpec
+    Moonlight.Geometry.Site.TokenSpec
+    Moonlight.Geometry.Section.AnalysisSpec
+    Moonlight.Geometry.Gluing.RewriteSpec
+    Moonlight.Geometry.Gluing.SafetySpec
+    Moonlight.Geometry.Gluing.LawsSpec
+  build-depends:
+    base >= 4.18 && < 5
+    , moonlight-geometry
+    , moonlight-core >= 0.1 && < 0.2
+    , moonlight-algebra >= 0.1 && < 0.2
+    , moonlight-rewrite:system
+    , moonlight-egraph-core
+    , moonlight-egraph:extraction
+    , moonlight-linalg >= 0.1 && < 0.2
+    , tasty >= 1.4
+    , tasty-hunit >= 0.10
+    , tasty-quickcheck >= 0.10
