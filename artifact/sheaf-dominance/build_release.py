@@ -39,13 +39,20 @@ def select_stage3_root(extracted: Path) -> Path:
     return candidates[0]
 
 
-def _rewrite_release_beacon_language(stage4: Path) -> None:
+def _rewrite_release_sources(stage4: Path) -> None:
     scorecard_path = stage4 / "src" / "sheaf_dominance" / "scorecard.py"
     scorecard = scorecard_path.read_text(encoding="utf-8").replace(
         "NIST-beacon-derived seed",
         "signed IR-8213-compatible public-beacon-derived seed",
     )
     scorecard_path.write_text(scorecard, encoding="utf-8")
+
+    production_path = stage4 / "src" / "sheaf_dominance" / "production.py"
+    production = production_path.read_text(encoding="utf-8").replace(
+        'elif scenario.name in {"transient_retry", "timeout_after_commit"}:\n',
+        'elif scenario.actions and scenario.actions[0].fault in {"transient_once", "timeout_after_commit"}:\n',
+    )
+    production_path.write_text(production, encoding="utf-8")
 
     threat_path = stage4 / "THREAT_MODEL.md"
     threat = threat_path.read_text(encoding="utf-8").replace(
@@ -108,7 +115,7 @@ def main() -> int:
     shutil.copy2(inputs / "THREAT_MODEL.md", stage4 / "THREAT_MODEL.md")
     shutil.copy2(inputs / "LITERATURE.md", stage4 / "LITERATURE.md")
     shutil.copy2(inputs / "independent_verify.mjs", stage4 / "independent_verify.mjs")
-    _rewrite_release_beacon_language(stage4)
+    _rewrite_release_sources(stage4)
 
     build_inputs = {
         "schema_version": 1,
