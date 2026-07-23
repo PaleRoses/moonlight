@@ -50,9 +50,9 @@ jobs:
           value = json.loads(path.read_text())
           print('SCALE_TOP_KEYS', sorted(value))
           print('SCALE_PASSED', value.get('passed'))
-          print('SCALE_ROWS', len(value.get('rows', [])))
-          for index, row in enumerate(value.get('rows', [])):
-              print('SCALE_ROW', index, {key: row.get(key) for key in sorted(row)})
+          print('SCALE_CASES', len(value.get('cases', [])))
+          for index, case in enumerate(value.get('cases', [])):
+              print('SCALE_CASE', index, {key: case.get(key) for key in sorted(case)})
           PY
       - name: Run concise stage-four tests
         env:
