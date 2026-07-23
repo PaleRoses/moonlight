@@ -1,0 +1,39 @@
+name: Sheaf dominance release
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/sheaf-dominance-release.yml'
+      - 'artifact/sheaf-dominance/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download staged inputs and print digests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sheaf-inputs
+          download() {
+            local id="$1" name="$2"
+            curl --fail --location --retry 5 --retry-all-errors \
+              "https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t" \
+              --output "/tmp/sheaf-inputs/${name}"
+          }
+          download 1qymeghRSZ7t6eUSRA9pERGOZk7jYJsko stage3.zip
+          download 1ER9j9-GQnT4-O-lHv4_xPKu_CMxEnDMH CLAIMS.md
+          download 14m9BrDhaUBmKJ3A0hDAzuNOQ9JWe9kPB FORMAL_ARGUMENT.md
+          download 1VcQ1PBfclp9CqIr7K-fw5qiuZdiHLB1Z locality.py
+          download 1-kmZwCkQzq86WjCF3r0ZnZ3LzYMa3Jng test_locality.py
+          download 1h-J5H-FBTanXEDbF942mTjBbufpLfOdO THREAT_MODEL.md
+          download 1Gnh7iYX_GQuRwkSZJHUCg0ChLifLlgBQ LITERATURE.md
+          download 1wtrWcEe3VUz6ZStAImMfdto7R-I1nbQJ independent_verify.mjs
+          sha256sum /tmp/sheaf-inputs/*
+          test "$(sha256sum /tmp/sheaf-inputs/stage3.zip | awk '{print $1}')" = "c3f090a1532542890f0d31559d40cbf5eedd1e516d6b7299cba7cc7c4337330"
