@@ -12,30 +12,298 @@ permissions:
   contents: read
 
 jobs:
-  probe-inputs:
+  freeze-source:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      source_digest: ${{ steps.freeze.outputs.source_digest }}
+      freeze_time: ${{ steps.freeze.outputs.freeze_time }}
     steps:
-      - name: Download staged inputs and print digests
+      - uses: actions/checkout@v4
+      - name: Download and verify pinned release inputs
         shell: bash
         run: |
-          set -u
+          set -euo pipefail
           mkdir -p /tmp/sheaf-inputs
           download() {
-            local id="$1" name="$2"
-            echo "BEGIN ${name}"
-            curl --silent --show-error --location --retry 5 --retry-all-errors \
+            local id="$1" name="$2" expected="$3"
+            curl --fail --silent --show-error --location --retry 5 --retry-all-errors \
               "https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t" \
               --output "/tmp/sheaf-inputs/${name}"
-            local status=$?
-            echo "STATUS ${status} SIZE $(wc -c < /tmp/sheaf-inputs/${name} 2>/dev/null || echo 0) NAME ${name}"
-            if [ -f "/tmp/sheaf-inputs/${name}" ]; then sha256sum "/tmp/sheaf-inputs/${name}"; fi
+            observed="$(sha256sum "/tmp/sheaf-inputs/${name}" | awk '{print $1}')"
+            test "$observed" = "$expected"
+            printf '%s  %s\n' "$observed" "$name"
           }
-          download 1qymeghRSZ7t6eUSRA9pERGOZk7jYJsko stage3.zip
-          download 1ER9j9-GQnT4-O-lHv4_xPKu_CMxEnDMH CLAIMS.md
-          download 14m9BrDhaUBmKJ3A0hDAzuNOQ9JWe9kPB FORMAL_ARGUMENT.md
-          download 1VcQ1PBfclp9CqIr7K-fw5qiuZdiHLB1Z locality.py
-          download 1-kmZwCkQzq86WjCF3r0ZnZ3LzYMa3Jng test_locality.py
-          download 1h-J5H-FBTanXEDbF942mTjBbufpLfOdO THREAT_MODEL.md
-          download 1Gnh7iYX_GQuRwkSZJHUCg0ChLifLlgBQ LITERATURE.md
-          download 1wtrWcEe3VUz6ZStAImMfdto7R-I1nbQJ independent_verify.mjs
-          echo "EXPECTED stage3 c3f090a1532542890f0d31559d40cbf5eedd1e516d6b7299cba7cc7c4337330"
+          download 1qymeghRSZ7t6eUSRA9pERGOZk7jYJsko stage3.zip c3f090a1532542890f0d31559d40cbf5eedd1e516d6b7299cba7cc7c4337330c
+          download 1ER9j9-GQnT4-O-lHv4_xPKu_CMxEnDMH CLAIMS.md 656748d71c65c336baefdc0f1d292b2a6bb1a484f73ba5cfb97327dbbeb7af39
+          download 14m9BrDhaUBmKJ3A0hDAzuNOQ9JWe9kPB FORMAL_ARGUMENT.md 3af146bb9898e4d719378405fc7a1ba391bfad23a3a5f63f18849ea5b64563b2
+          download 1VcQ1PBfclp9CqIr7K-fw5qiuZdiHLB1Z locality.py 039fe16187aa0bd52231fc1bdca11efc61be02bc62dbf9d908d109149728782f
+          download 1-kmZwCkQzq86WjCF3r0ZnZ3LzYMa3Jng test_locality.py 9f712503866a7930c4b808b6221e4b4ced31dd61786ff1b1f839ca53e885b7f4
+          download 1h-J5H-FBTanXEDbF942mTjBbufpLfOdO THREAT_MODEL.md 57a0eea1fccb7d2e1ae65b7593da7238e292d4147b246e1583d14095c4a577b0
+          download 1Gnh7iYX_GQuRwkSZJHUCg0ChLifLlgBQ LITERATURE.md fe3116d197a5f010b80799e894acf251e4a9be705caa4281d21adfd489382061
+          download 1wtrWcEe3VUz6ZStAImMfdto7R-I1nbQJ independent_verify.mjs bdc24d29dc4c1179cea6d61b941ac6d12903edcb2e2f7478cfb8f71264a502aa
+      - name: Assemble frozen source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          python artifact/sheaf-dominance/build_release.py \
+            --inputs /tmp/sheaf-inputs \
+            --template artifact/sheaf-dominance/template \
+            --output /tmp/release-root
+      - name: Publish source freeze commitment
+        id: freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="/tmp/release-root/04-dominance-evaluation/src"
+          digest="$(python -c 'from pathlib import Path; from sheaf_dominance.util import source_tree_digest; print(source_tree_digest(Path("/tmp/release-root")))')"
+          freeze_time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          printf 'source_digest=%s\nfreeze_time=%s\n' "$digest" "$freeze_time" >> "$GITHUB_OUTPUT"
+          python - <<PY
+          import json
+          from pathlib import Path
+          Path('/tmp/release-root/04-dominance-evaluation/baseline/freeze.json').write_text(
+              json.dumps({
+                  'source_tree_sha256': '$digest',
+                  'freeze_time': '$freeze_time',
+                  'github_repository': '${{ github.repository }}',
+                  'github_sha': '${{ github.sha }}',
+                  'pull_request': '${{ github.event.pull_request.html_url }}',
+              }, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          echo "SOURCE_FREEZE_SHA256=${digest}"
+          echo "SOURCE_FREEZE_TIME=${freeze_time}"
+          {
+            echo '## Source freeze commitment'
+            echo
+            echo "- SHA-256: \`${digest}\`"
+            echo "- Frozen at: \`${freeze_time}\`"
+            echo "- Commit: \`${{ github.sha }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload immutable frozen source
+        uses: actions/upload-artifact@v4
+        with:
+          name: frozen-sheaf-dominance-source
+          path: /tmp/release-root/**
+          include-hidden-files: true
+          compression-level: 9
+          retention-days: 1
+
+  evaluate-release:
+    needs: freeze-source
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Download frozen source
+        uses: actions/download-artifact@v4
+        with:
+          name: frozen-sheaf-dominance-source
+          path: /tmp/release-root
+      - name: Verify frozen source digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="/tmp/release-root/04-dominance-evaluation/src"
+          observed="$(python -c 'from pathlib import Path; from sheaf_dominance.util import source_tree_digest; print(source_tree_digest(Path("/tmp/release-root")))')"
+          test "$observed" = "${{ needs.freeze-source.outputs.source_digest }}"
+          echo "Verified frozen source: ${observed}"
+      - name: Select a later official NIST beacon pulse
+        env:
+          FREEZE_TIME: ${{ needs.freeze-source.outputs.freeze_time }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          import time
+          import urllib.request
+          from pathlib import Path
+
+          freeze = dt.datetime.fromisoformat(os.environ['FREEZE_TIME'].replace('Z', '+00:00'))
+          endpoint = 'https://beacon.nist.gov/beacon/2.0/pulse/last'
+          for attempt in range(20):
+              request = urllib.request.Request(endpoint, headers={'User-Agent': 'sheaf-dominance-release/1.0'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  raw = json.load(response)
+              pulse = raw.get('pulse', raw)
+              timestamp = dt.datetime.fromisoformat(str(pulse['timeStamp']).replace('Z', '+00:00'))
+              if timestamp > freeze:
+                  path = Path('/tmp/release-root/04-dominance-evaluation/baseline/pulse.json')
+                  path.write_text(json.dumps(raw, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+                  print(f"Selected NIST pulse at {timestamp.isoformat()} after freeze {freeze.isoformat()}")
+                  break
+              if attempt == 19:
+                  raise RuntimeError('no NIST pulse later than the source freeze became available')
+              time.sleep(15)
+          PY
+      - name: Validate stage-three loop, graph, and optimized sheaf release
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/release-root
+          python validate.py 2>&1 | tee 04-dominance-evaluation/baseline/stage3_validation.log
+      - name: Run stage-four proof and production tests
+        env:
+          PYTHONPATH: /tmp/release-root/04-dominance-evaluation/src
+          RELEASE_ROOT: /tmp/release-root
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/release-root
+          python -m unittest discover -s 04-dominance-evaluation/tests -v 2>&1 \
+            | tee 04-dominance-evaluation/baseline/stage4_tests.log
+      - name: Clean wheel build, isolated install, and import
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/stage4-wheel /tmp/stage4-install
+          mkdir -p /tmp/stage4-wheel /tmp/stage4-install
+          python -m pip wheel --no-deps --no-build-isolation \
+            /tmp/release-root/04-dominance-evaluation \
+            --wheel-dir /tmp/stage4-wheel
+          python -m pip install --no-index --no-deps --target /tmp/stage4-install /tmp/stage4-wheel/*.whl
+          python -I - <<'PY'
+          import sys
+          sys.path.insert(0, '/tmp/stage4-install')
+          import sheaf_dominance
+          assert sheaf_dominance.binary_census(2, directed=False)['presentations'] == 5
+          print('Clean installed-package import passed.')
+          PY
+      - name: Record prior validation contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('/tmp/release-root/04-dominance-evaluation/baseline/prior_validation.json')
+          path.write_text(json.dumps({
+              'schema_version': 1,
+              'passed': True,
+              'stage3_validation': True,
+              'stage4_tests': True,
+              'package_smoke': True,
+          }, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+      - name: Build exact scorecard and retained evidence
+        env:
+          PYTHONPATH: /tmp/release-root/04-dominance-evaluation/src
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m sheaf_dominance.scorecard \
+            --root /tmp/release-root \
+            --pulse /tmp/release-root/04-dominance-evaluation/baseline/pulse.json \
+            2>&1 | tee /tmp/release-root/04-dominance-evaluation/baseline/scorecard.log
+      - name: Independent Python verification
+        env:
+          PYTHONPATH: /tmp/release-root/04-dominance-evaluation/src
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m sheaf_dominance.verify --root /tmp/release-root \
+            2>&1 | tee /tmp/release-root/04-dominance-evaluation/baseline/python_verification.log
+      - name: Independent Node.js verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          node /tmp/release-root/04-dominance-evaluation/independent_verify.mjs --self-test
+          node /tmp/release-root/04-dominance-evaluation/independent_verify.mjs \
+            --root /tmp/release-root \
+            --scorecard /tmp/release-root/04-dominance-evaluation/baseline/dominance.json \
+            --manifest /tmp/release-root/04-dominance-evaluation/baseline/evidence_manifest.json \
+            --pulse /tmp/release-root/04-dominance-evaluation/baseline/pulse.json \
+            --negative-controls /tmp/release-root/04-dominance-evaluation/baseline/negative_controls.json \
+            2>&1 | tee /tmp/release-root/04-dominance-evaluation/baseline/node_verification.log
+      - name: Clean generated caches and verify archive round-trip
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import shutil
+          import tempfile
+          import zipfile
+          from pathlib import Path
+
+          root = Path('/tmp/release-root')
+          for directory in list(root.rglob('*')):
+              if directory.is_dir() and (directory.name in {'__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache', 'build', 'dist'} or directory.name.endswith('.egg-info')):
+                  shutil.rmtree(directory, ignore_errors=True)
+          for path in root.rglob('*'):
+              if path.is_file() and path.suffix in {'.pyc', '.pyo'}:
+                  path.unlink()
+
+          def hashes(base: Path):
+              return {
+                  path.relative_to(base).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+                  for path in sorted(item for item in base.rglob('*') if item.is_file())
+              }
+
+          validation = {
+              'schema_version': 1,
+              'passed': True,
+              'source_tree_sha256': '${{ needs.freeze-source.outputs.source_digest }}',
+              'github_run_id': '${{ github.run_id }}',
+              'github_sha': '${{ github.sha }}',
+          }
+          validation_path = root / '04-dominance-evaluation' / 'baseline' / 'release_validation.json'
+          validation_path.write_text(json.dumps(validation, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+
+          expected = hashes(root)
+          archive_path = Path('/tmp/release-roundtrip.zip')
+          with zipfile.ZipFile(archive_path, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+              for relative, _digest in expected.items():
+                  path = root / relative
+                  info = zipfile.ZipInfo(relative, (1980, 1, 1, 0, 0, 0))
+                  info.compress_type = zipfile.ZIP_DEFLATED
+                  info.external_attr = (0o755 if path.stat().st_mode & 0o111 else 0o644) << 16
+                  archive.writestr(info, path.read_bytes())
+          with tempfile.TemporaryDirectory(prefix='sheaf-release-extract-') as temporary:
+              extracted = Path(temporary)
+              with zipfile.ZipFile(archive_path) as archive:
+                  archive.testzip()
+                  archive.extractall(extracted)
+              observed = hashes(extracted)
+          if observed != expected:
+              raise AssertionError('archive extraction differs byte-for-byte from release root')
+          check = {
+              'schema_version': 1,
+              'passed': True,
+              'file_count': len(expected),
+              'roundtrip_zip_sha256': hashlib.sha256(archive_path.read_bytes()).hexdigest(),
+          }
+          (root / '04-dominance-evaluation' / 'baseline' / 'archive_roundtrip.json').write_text(
+              json.dumps(check, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          print(json.dumps(check, sort_keys=True))
+          PY
+      - name: Upload releasable source-bound archive
+        id: upload-release
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentic-workflows-stage4-sheaf-dominance
+          path: /tmp/release-root/**
+          include-hidden-files: true
+          compression-level: 9
+          retention-days: 7
+      - name: Publish release summary
+        shell: bash
+        run: |
+          {
+            echo '## Releasable sheaf-dominance artifact'
+            echo
+            echo "- Source SHA-256: \`${{ needs.freeze-source.outputs.source_digest }}\`"
+            echo "- GitHub artifact SHA-256: \`${{ steps.upload-release.outputs.artifact-digest }}\`"
+            echo "- Artifact ID: \`${{ steps.upload-release.outputs.artifact-id }}\`"
+            echo '- Independent Python verification: PASS'
+            echo '- Independent Node.js verification: PASS'
+            echo '- Archive byte-for-byte round trip: PASS'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "ARTIFACT_DIGEST=${{ steps.upload-release.outputs.artifact-digest }}"
+          echo "ARTIFACT_ID=${{ steps.upload-release.outputs.artifact-id }}"
