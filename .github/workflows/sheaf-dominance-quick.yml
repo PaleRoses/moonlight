@@ -43,8 +43,17 @@ jobs:
             --inputs /tmp/sheaf-inputs \
             --template artifact/sheaf-dominance/template \
             --output /tmp/release-root
-          echo '--- SCALE AND SCORECARD FILES ---'
-          find /tmp/release-root -type f \( -iname '*scale*' -o -iname '*scorecard*.json' -o -iname '*locality*.json' \) -print | sort
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('/tmp/release-root/03-sheaf-based/adversarial/scale_report.json')
+          value = json.loads(path.read_text())
+          print('SCALE_TOP_KEYS', sorted(value))
+          print('SCALE_PASSED', value.get('passed'))
+          print('SCALE_ROWS', len(value.get('rows', [])))
+          for index, row in enumerate(value.get('rows', [])):
+              print('SCALE_ROW', index, {key: row.get(key) for key in sorted(row)})
+          PY
       - name: Run concise stage-four tests
         env:
           PYTHONPATH: /tmp/release-root/04-dominance-evaluation/src
