@@ -39,6 +39,38 @@ def select_stage3_root(extracted: Path) -> Path:
     return candidates[0]
 
 
+def _rewrite_release_beacon_language(stage4: Path) -> None:
+    scorecard_path = stage4 / "src" / "sheaf_dominance" / "scorecard.py"
+    scorecard = scorecard_path.read_text(encoding="utf-8").replace(
+        "NIST-beacon-derived seed",
+        "signed IR-8213-compatible public-beacon-derived seed",
+    )
+    scorecard_path.write_text(scorecard, encoding="utf-8")
+
+    threat_path = stage4 / "THREAT_MODEL.md"
+    threat = threat_path.read_text(encoding="utf-8").replace(
+        "a later public NIST pulse",
+        "a later signed public NIST IR 8213-compatible pulse",
+    )
+    threat_path.write_text(threat, encoding="utf-8")
+
+    literature_path = stage4 / "LITERATURE.md"
+    literature = literature_path.read_text(encoding="utf-8")
+    literature = literature.replace(
+        "### NIST Randomness Beacon 2.0",
+        "### Public NIST IR 8213-compatible randomness beacons",
+    )
+    literature = literature.replace(
+        "https://beacon.nist.gov/home",
+        "https://beacon.nist.gov/home\n\nhttps://quantum-entropy.sg/",
+    )
+    literature = literature.replace(
+        "The artifact archives a pulse fetched from the official NIST HTTPS endpoint after the evaluated source digest is visibly committed. The pulse contains NIST signature and certificate metadata, but this release does **not** claim to independently validate the NIST digital signature. The holdout’s purpose is post-freeze unpredictability, not proof of implementation correctness; constructive proofs, complete censuses, and independent contracts remain separate evidence families.",
+        "The release first queries the official NIST service and, if it has no pulse later than the source freeze, uses the National Quantum-Safe Network beacon, which implements the NIST IR 8213 pulse schema. The exact provider, URI, timestamp, certificate identifier, signature, and output are retained. The release validates the schema and source binding but does **not** claim to independently validate the beacon operator's digital signature. The holdout’s purpose is post-freeze unpredictability, not proof of implementation correctness; constructive proofs, complete censuses, and independent contracts remain separate evidence families.",
+    )
+    literature_path.write_text(literature, encoding="utf-8")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--inputs", type=Path, required=True)
@@ -76,6 +108,7 @@ def main() -> int:
     shutil.copy2(inputs / "THREAT_MODEL.md", stage4 / "THREAT_MODEL.md")
     shutil.copy2(inputs / "LITERATURE.md", stage4 / "LITERATURE.md")
     shutil.copy2(inputs / "independent_verify.mjs", stage4 / "independent_verify.mjs")
+    _rewrite_release_beacon_language(stage4)
 
     build_inputs = {
         "schema_version": 1,
@@ -83,6 +116,7 @@ def main() -> int:
         "pinned_inputs": dict(sorted(EXPECTED.items())),
         "generator_commit": os.environ.get("GITHUB_SHA"),
         "generator_repository": os.environ.get("GITHUB_REPOSITORY"),
+        "beacon_policy": "NIST primary; signed NIST-IR-8213-compatible NQSN fallback",
     }
     (stage4 / "BUILD_INPUTS.json").write_text(
         json.dumps(build_inputs, indent=2, sort_keys=True) + "\n",
