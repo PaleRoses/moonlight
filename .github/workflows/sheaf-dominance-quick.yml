@@ -43,6 +43,8 @@ jobs:
             --inputs /tmp/sheaf-inputs \
             --template artifact/sheaf-dominance/template \
             --output /tmp/release-root
+          echo '--- SCALE AND SCORECARD FILES ---'
+          find /tmp/release-root -type f \( -iname '*scale*' -o -iname '*scorecard*.json' -o -iname '*locality*.json' \) -print | sort
       - name: Run concise stage-four tests
         env:
           PYTHONPATH: /tmp/release-root/04-dominance-evaluation/src
