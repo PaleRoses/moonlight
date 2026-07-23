@@ -109,7 +109,7 @@ jobs:
           observed="$(python -c 'from pathlib import Path; from sheaf_dominance.util import source_tree_digest; print(source_tree_digest(Path("/tmp/release-root")))')"
           test "$observed" = "${{ needs.freeze-source.outputs.source_digest }}"
           echo "Verified frozen source: ${observed}"
-      - name: Select a later official NIST beacon pulse
+      - name: Select a later signed public IR-8213-compatible beacon pulse
         env:
           FREEZE_TIME: ${{ needs.freeze-source.outputs.freeze_time }}
         shell: bash
@@ -120,25 +120,77 @@ jobs:
           import json
           import os
           import time
+          import urllib.error
+          import urllib.parse
           import urllib.request
           from pathlib import Path
 
-          freeze = dt.datetime.fromisoformat(os.environ['FREEZE_TIME'].replace('Z', '+00:00'))
-          endpoint = 'https://beacon.nist.gov/beacon/2.0/pulse/last'
-          for attempt in range(20):
-              request = urllib.request.Request(endpoint, headers={'User-Agent': 'sheaf-dominance-release/1.0'})
+          def parse_timestamp(value):
+              return dt.datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+
+          def fetch_json(url):
+              request = urllib.request.Request(url, headers={'User-Agent': 'sheaf-dominance-release/1.0'})
               with urllib.request.urlopen(request, timeout=30) as response:
-                  raw = json.load(response)
-              pulse = raw.get('pulse', raw)
-              timestamp = dt.datetime.fromisoformat(str(pulse['timeStamp']).replace('Z', '+00:00'))
-              if timestamp > freeze:
-                  path = Path('/tmp/release-root/04-dominance-evaluation/baseline/pulse.json')
-                  path.write_text(json.dumps(raw, indent=2, sort_keys=True) + '\n', encoding='utf-8')
-                  print(f"Selected NIST pulse at {timestamp.isoformat()} after freeze {freeze.isoformat()}")
+                  value = json.load(response)
+              if not isinstance(value, dict):
+                  raise ValueError('beacon response is not an object')
+              return value
+
+          freeze_text = os.environ['FREEZE_TIME']
+          freeze = parse_timestamp(freeze_text)
+          freeze_ms = int(freeze.timestamp() * 1000)
+          providers = [
+              (
+                  'NIST Randomness Beacon 2.0',
+                  f'https://beacon.nist.gov/beacon/2.0/pulse/time/next/{freeze_ms}',
+              ),
+              (
+                  'National Quantum-Safe Network beacon',
+                  'https://quantum-entropy.sg/beacon/2.0/pulse?'
+                  + urllib.parse.urlencode({'timeGT': freeze.isoformat().replace('+00:00', 'Z')}),
+              ),
+          ]
+          failures = []
+          selected = None
+          for attempt in range(12):
+              for provider, url in providers:
+                  try:
+                      raw = fetch_json(url)
+                      pulse = raw.get('pulse', raw)
+                      if not isinstance(pulse, dict):
+                          raise ValueError('pulse is not an object')
+                      timestamp = parse_timestamp(pulse['timeStamp'])
+                      if timestamp <= freeze:
+                          raise ValueError('response is not later than source freeze')
+                  except (OSError, ValueError, KeyError, urllib.error.HTTPError) as error:
+                      failures.append({'provider': provider, 'url': url, 'error': f'{type(error).__name__}: {error}'})
+                      continue
+                  selected = (provider, url, raw, pulse, timestamp)
                   break
-              if attempt == 19:
-                  raise RuntimeError('no NIST pulse later than the source freeze became available')
+              if selected is not None:
+                  break
+              if attempt == 11:
+                  raise RuntimeError('no signed public IR-8213-compatible pulse became available after source freeze')
               time.sleep(15)
+
+          provider, request_url, raw, pulse, timestamp = selected
+          baseline = Path('/tmp/release-root/04-dominance-evaluation/baseline')
+          (baseline / 'pulse.json').write_text(json.dumps(raw, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          (baseline / 'beacon_provenance.json').write_text(
+              json.dumps({
+                  'schema_version': 1,
+                  'provider': provider,
+                  'request_url': request_url,
+                  'pulse_uri': pulse['uri'],
+                  'pulse_timestamp': pulse['timeStamp'],
+                  'freeze_time': freeze_text,
+                  'later_than_freeze': True,
+                  'signature_validation_claimed': False,
+                  'failed_attempts': failures,
+              }, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print(f'Selected {provider} pulse at {timestamp.isoformat()} after freeze {freeze.isoformat()}')
           PY
       - name: Validate stage-three loop, graph, and optimized sheaf release
         shell: bash
@@ -239,7 +291,7 @@ jobs:
               if path.is_file() and path.suffix in {'.pyc', '.pyo'}:
                   path.unlink()
 
-          def hashes(base: Path):
+          def hashes(base):
               return {
                   path.relative_to(base).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
                   for path in sorted(item for item in base.rglob('*') if item.is_file())
