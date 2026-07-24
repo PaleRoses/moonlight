@@ -16,10 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-        with:
-          show-progress: false
+      - name: Clone the exact source branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          ref="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git clone --quiet --depth 1 --branch "$ref" \
+            https://github.com/PaleRoses/moonlight.git /tmp/moonlight
       - name: Assemble and validate documented release surface
+        working-directory: /tmp/moonlight
         run: bash artifact/sheaf-dominance/assemble_quick_release.sh /tmp/release-root
       - name: Run concise stage-four tests
         env:
