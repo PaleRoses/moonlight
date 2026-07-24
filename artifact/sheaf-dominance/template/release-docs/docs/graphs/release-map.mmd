@@ -1,0 +1,36 @@
+flowchart LR
+  U[User or environment]
+
+  subgraph RuntimeSystems[Executable agent orchestration runtimes]
+    L[01 Loop runtime<br/>canonical state: direct runner state]
+    G[02 Graph runtime<br/>canonical state: shared graph state]
+    S[03 Sheaf runtime<br/>canonical state: certified global section]
+  end
+
+  subgraph IndependentChecks[Independent checks; not orchestrators]
+    C[Conformance tests]
+    E[Mechanism scorecard]
+    D[04 Dominance evaluation]
+  end
+
+  U --> L
+  U --> G
+  U --> S
+
+  L --> LO[Output, effects, trace]
+  G --> GO[Output, effects, trace]
+  S --> SO[Output, effects, trace]
+
+  LO -. observed .-> C
+  GO -. observed .-> C
+  SO -. observed .-> C
+
+  LO -. observed .-> E
+  GO -. observed .-> E
+  SO -. observed .-> E
+
+  L -. comparison class .-> D
+  G -. comparison class .-> D
+  S -. candidate system .-> D
+
+  D --> R[Source-bound evidence and release archive]
