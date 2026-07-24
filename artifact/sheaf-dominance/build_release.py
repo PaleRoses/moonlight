@@ -39,6 +39,23 @@ def select_stage3_root(extracted: Path) -> Path:
     return candidates[0]
 
 
+def _copy_overlay(source_root: Path, destination_root: Path) -> None:
+    """Copy the release-documentation overlay without creating another owner.
+
+    The overlay contains only explanatory and verification surfaces. Runtime
+    semantics remain owned by the three independent implementation packages.
+    """
+
+    for source in sorted(source_root.rglob("*")):
+        relative = source.relative_to(source_root)
+        destination = destination_root / relative
+        if source.is_dir():
+            destination.mkdir(parents=True, exist_ok=True)
+            continue
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+
+
 def _rewrite_release_sources(stage4: Path) -> None:
     scorecard_path = stage4 / "src" / "sheaf_dominance" / "scorecard.py"
     scorecard = scorecard_path.read_text(encoding="utf-8").replace(
@@ -138,6 +155,11 @@ def main() -> int:
         "for the claim boundary.\n",
         encoding="utf-8",
     )
+
+    # Documentation is the last overlay so every public README and graph describes
+    # the assembled release rather than the pre-assembly input archive.
+    _copy_overlay(template / "release-docs", output)
+
     print(json.dumps({"output": str(output), "files": sum(1 for item in output.rglob("*") if item.is_file())}, sort_keys=True))
     return 0
 
