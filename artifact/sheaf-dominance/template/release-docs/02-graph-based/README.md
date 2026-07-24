@@ -1,6 +1,6 @@
 # Graph-based agent orchestration runtime
 
-**This directory is an executable graph-native agent orchestration runtime.** It owns a shared state value, executable nodes, fixed and conditional edges, parallel supersteps, reducers, joins, cycles, checkpoints, and recovery. It does not wrap the loop runner and it does not use the sheaf runtime as a validator.
+**This directory is an executable agent orchestration runtime with graph-native semantics.** It owns a shared state value, executable nodes, fixed and conditional edges, parallel supersteps, reducers, joins, cycles, checkpoints, and recovery. It does not wrap the loop runner and it does not use the sheaf runtime as a validator.
 
 ## What it owns
 
