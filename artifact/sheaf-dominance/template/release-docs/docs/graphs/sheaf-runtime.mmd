@@ -1,0 +1,29 @@
+flowchart LR
+  S[Canonical state: certified global section]
+  Q[Dirty-cell trigger index and scheduler]
+  R[Execute enabled local rules]
+  P[Stage local proposals]
+  J[Merge writes through stalk algebras]
+  X[Propagate affected restrictions]
+  C[Check covers, overlaps, and anchors]
+  G{Global section certified?}
+  O[Typed obstruction]
+  N[Commit one new section revision]
+  T{Terminal predicate}
+  F[Final output and committed effects]
+  K[Topology-bound checkpoint]
+
+  S --> Q
+  Q --> R
+  R --> P
+  P --> J
+  J --> X
+  X --> C
+  C --> G
+  G -->|no| O
+  G -->|yes| N
+  N --> S
+  S --> T
+  T -->|continue| Q
+  T -->|done| F
+  S -. checkpoint / resume .-> K
