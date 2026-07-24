@@ -1,0 +1,19 @@
+flowchart LR
+  S[Canonical state: direct runner state and transcript]
+  M[Invoke current model]
+  D{Interpret model result}
+  H[Apply handoff]
+  T[Execute structured tool calls]
+  R[Append ordered tool results]
+  F[Final output]
+  X[Bounded failure]
+
+  S --> M
+  M --> D
+  D -->|handoff| H
+  H --> S
+  D -->|tool calls| T
+  T --> R
+  R --> S
+  D -->|final| F
+  M -. turn, retry, timeout, cancellation limits .-> X
