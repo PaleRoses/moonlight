@@ -1,0 +1,22 @@
+flowchart LR
+  S[Canonical state: shared graph state]
+  A[Execute selected node]
+  E{Fixed or conditional edges}
+  B[Parallel worker B]
+  C[Parallel worker C]
+  J[Reducers and join]
+  K[Checkpoint / recovery]
+  D{Terminal or cycle}
+  F[Final state and output]
+
+  S --> A
+  A --> E
+  E -->|fan out| B
+  E -->|fan out| C
+  B --> J
+  C --> J
+  J --> S
+  S -. durable execution state .-> K
+  S --> D
+  D -->|continue| A
+  D -->|done| F
