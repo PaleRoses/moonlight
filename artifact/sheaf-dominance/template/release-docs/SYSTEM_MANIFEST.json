@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "artifact_id": "agentic-workflows-stage-4-sheaf-dominance",
+  "artifact_kind": "comparative-agent-orchestration-release",
+  "is_agent_orchestration_system": true,
+  "summary": "Three independent executable agent orchestration runtimes plus independent conformance, evaluation, and proof packages.",
+  "canonical_statement": "01-loop-based, 02-graph-based, and 03-sheaf-based are executable agent orchestration runtimes. 04-dominance-evaluation is an evaluation and proof harness, not an orchestrator.",
+  "systems": [
+    {
+      "id": "loop",
+      "path": "01-loop-based",
+      "classification": "agent-orchestration-runtime",
+      "package": "loop-baselines",
+      "module": "loop_baselines",
+      "canonical_state_owner": "direct runner state and transcript",
+      "shared_runtime_with_other_systems": false,
+      "examples": [
+        "01-loop-based/examples/agent_runner_demo.py",
+        "01-loop-based/examples/autoresearch_demo.py"
+      ],
+      "test_directory": "01-loop-based/tests",
+      "capabilities": {
+        "sequencing": true,
+        "conditional_routing": true,
+        "agent_handoffs": true,
+        "structured_tool_calls": true,
+        "concurrent_tool_batches": true,
+        "retries_and_limits": true,
+        "final_output_termination": true,
+        "autoresearch_keep_reset": true,
+        "typed_overlap_restrictions": false,
+        "global_section_certification": false,
+        "exact_obstruction_certificates": false
+      }
+    },
+    {
+      "id": "graph",
+      "path": "02-graph-based",
+      "classification": "agent-orchestration-runtime",
+      "package": "graph-baselines",
+      "module": "graph_baselines",
+      "canonical_state_owner": "shared graph state",
+      "shared_runtime_with_other_systems": false,
+      "examples": [
+        "02-graph-based/examples/agent_graph_demo.py",
+        "02-graph-based/examples/autoresearch_graph_demo.py",
+        "02-graph-based/examples/graph_patterns_demo.py"
+      ],
+      "test_directory": "02-graph-based/tests",
+      "capabilities": {
+        "sequencing": true,
+        "conditional_routing": true,
+        "agent_handoffs": true,
+        "structured_tool_calls": true,
+        "concurrent_tool_batches": true,
+        "retries_and_limits": true,
+        "parallel_supersteps": true,
+        "fan_out_fan_in": true,
+        "cycles": true,
+        "checkpoint_recovery": true,
+        "autoresearch_keep_reset": true,
+        "typed_overlap_restrictions": false,
+        "global_section_certification": false,
+        "exact_obstruction_certificates": false
+      }
+    },
+    {
+      "id": "sheaf",
+      "path": "03-sheaf-based",
+      "classification": "agent-orchestration-runtime",
+      "package": "sheaf-workflows",
+      "module": "sheaf_workflows",
+      "canonical_state_owner": "certified global section over local stalks",
+      "shared_runtime_with_other_systems": false,
+      "semantic_graph_owner": false,
+      "compiled_execution_indexes_are_semantic_owners": false,
+      "examples": [
+        "03-sheaf-based/examples/agent_sheaf_demo.py",
+        "03-sheaf-based/examples/autoresearch_sheaf_demo.py",
+        "03-sheaf-based/examples/linear_obstruction_demo.py",
+        "03-sheaf-based/examples/sheaf_primitives_demo.py",
+        "03-sheaf-based/examples/topology_refinement_demo.py"
+      ],
+      "test_directory": "03-sheaf-based/tests",
+      "capabilities": {
+        "sequencing": true,
+        "conditional_routing": true,
+        "agent_handoffs": true,
+        "structured_tool_calls": true,
+        "concurrent_tool_batches": true,
+        "retries_and_limits": true,
+        "transactional_fan_out_fan_in": true,
+        "dirty_cell_scheduling": true,
+        "checkpoint_recovery": true,
+        "autoresearch_keep_reset": true,
+        "typed_overlap_restrictions": true,
+        "anchors_as_boundary_conditions": true,
+        "global_section_certification": true,
+        "incremental_repair": true,
+        "exact_obstruction_certificates": true
+      }
+    }
+  ],
+  "non_runtime_components": [
+    {
+      "id": "dominance-evaluation",
+      "path": "04-dominance-evaluation",
+      "classification": "evaluation-and-proof-harness",
+      "is_agent_orchestration_runtime": false,
+      "purpose": "Execute the independent runtimes against registered proof classes, finite censuses, holdouts, production contracts, contention tests, performance gates, and independent verification."
+    },
+    {
+      "id": "conformance",
+      "path": "conformance",
+      "classification": "cross-runtime-test-suite",
+      "is_agent_orchestration_runtime": false
+    },
+    {
+      "id": "evaluation",
+      "path": "evaluation",
+      "classification": "mechanism-scorecard",
+      "is_agent_orchestration_runtime": false
+    }
+  ],
+  "required_orchestration_mechanisms": [
+    "sequencing",
+    "conditional_routing",
+    "agent_handoffs",
+    "structured_tool_calls",
+    "concurrent_tool_batches",
+    "retries_and_limits",
+    "final_output_termination",
+    "autoresearch_keep_reset"
+  ],
+  "documentation": {
+    "architecture": "docs/ARCHITECTURE.md",
+    "checkability": "docs/CHECKABILITY.md",
+    "documentation_checker": "docs/check_documentation.py",
+    "graph_directory": "docs/graphs",
+    "graphs": [
+      "docs/graphs/release-map.mmd",
+      "docs/graphs/loop-runtime.mmd",
+      "docs/graphs/graph-runtime.mmd",
+      "docs/graphs/sheaf-runtime.mmd",
+      "docs/graphs/evidence-pipeline.mmd"
+    ]
+  },
+  "verification_commands": [
+    {
+      "id": "all-validation",
+      "command": "python validate.py",
+      "checks": "All runtime tests, conformance, scorecards, examples, and clean packaging."
+    },
+    {
+      "id": "documentation",
+      "command": "python docs/check_documentation.py",
+      "checks": "Manifest, classification statements, graph sources, referenced files, and verification commands."
+    },
+    {
+      "id": "dominance-tests",
+      "command": "python -m unittest discover -s 04-dominance-evaluation/tests -v",
+      "checks": "Proof kernels, production parity, locality, contention, and documentation contract."
+    },
+    {
+      "id": "python-evidence-verifier",
+      "command": "PYTHONPATH=04-dominance-evaluation/src python -m sheaf_dominance.verify --root .",
+      "checks": "Source-bound retained evidence with the independent Python verifier."
+    },
+    {
+      "id": "node-evidence-verifier",
+      "command": "node 04-dominance-evaluation/independent_verify.mjs --root . --scorecard 04-dominance-evaluation/baseline/dominance.json --manifest 04-dominance-evaluation/baseline/evidence_manifest.json --pulse 04-dominance-evaluation/baseline/pulse.json --negative-controls 04-dominance-evaluation/baseline/negative_controls.json",
+      "checks": "The same source-bound evidence with a dependency-free Node.js verifier."
+    }
+  ],
+  "retained_evidence": [
+    "04-dominance-evaluation/baseline/dominance.json",
+    "04-dominance-evaluation/baseline/dominance.md",
+    "04-dominance-evaluation/baseline/evidence_manifest.json",
+    "04-dominance-evaluation/baseline/negative_controls.json",
+    "04-dominance-evaluation/baseline/freeze.json",
+    "04-dominance-evaluation/baseline/beacon_provenance.json",
+    "04-dominance-evaluation/baseline/python_verification.log",
+    "04-dominance-evaluation/baseline/node_verification.log",
+    "04-dominance-evaluation/baseline/archive_roundtrip.json"
+  ],
+  "claim_boundary": {
+    "class_conditional_dominance": "The sheaf strictly separates from the registered full-shared-state, pairwise-only, bounded-radius anonymous-local, and full-rescan classes.",
+    "equivalence_requirement": "Projection-factor and indexed graph systems that encode all sheaf semantics must match the sheaf.",
+    "universal_dominance": false,
+    "reason_universal_dominance_is_false": "An arbitrary graph can encode every stalk, restriction, anchor, global solver, and incremental index, becoming an equivalent execution presentation."
+  }
+}
