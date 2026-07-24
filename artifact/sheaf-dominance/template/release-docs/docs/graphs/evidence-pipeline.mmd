@@ -1,0 +1,24 @@
+flowchart LR
+  A[Assemble source from pinned inputs]
+  F[Freeze source-tree SHA-256]
+  P[Select a later public beacon pulse]
+  H[Derive post-freeze holdout seed]
+  T[Run proofs, finite censuses, production contracts, contention, and performance gates]
+  N[Run evaluator negative controls]
+  M[Write source and evidence manifest]
+  V1[Independent Python verifier]
+  V2[Independent dependency-free Node.js verifier]
+  Z[Build release ZIP]
+  R[Extract and compare byte-for-byte]
+
+  A --> F
+  F --> P
+  P --> H
+  H --> T
+  T --> N
+  N --> M
+  M --> V1
+  M --> V2
+  V1 --> Z
+  V2 --> Z
+  Z --> R
