@@ -16,13 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - uses: actions/checkout@v4
       - name: Assemble pinned release source
         shell: bash
         run: |
           set -euo pipefail
-          git clone --quiet --depth 1 --branch artifact/sheaf-dominance-release-20260723 \
-            https://github.com/PaleRoses/moonlight.git /tmp/moonlight
-          cd /tmp/moonlight
           mkdir -p /tmp/sheaf-inputs
           download() {
             local id="$1" name="$2" expected="$3"
