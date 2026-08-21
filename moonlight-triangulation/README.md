@@ -1,0 +1,598 @@
+# moonlight-triangulation
+
+> Part of **Moonlight**, the sheaf-theoretic computation layer beneath
+> [Melusine](https://bluerose.blue) and Pale Meridian.
+
+`moonlight-triangulation` carries Delaunay and constrained Delaunay
+triangulations as a lawful finite-set algebra under canonical observation: a
+mesh represents its site set, a join returns a valid Delaunay representative,
+and the result is a triangulation again — so the operations close, compose, and
+fold. Operations return typed obstructions where the finite arena cannot
+represent a result.
+
+Delaunay triangulation, constrained Delaunay (CDT), exact rational planar
+regions and labelled overlay, intrinsic valuations, polygonal Minkowski
+morphology, the Voronoi dual, natural-neighbour interpolation, Ruppert
+refinement, walk point location, convex hull, exact Shewchuk predicates,
+incremental insertion and removal, and versioned binary serialization.
+
+## Operations
+
+| Operation | Role | What it returns |
+| --- | --- | --- |
+| `union` | join | A valid Delaunay representative of both site sets; overlapping annotations glue through `JoinSemilattice`. |
+| `unions` | balanced fold | The same join over a list, associated for the tournament rather than the left. |
+| `siteRelation` | support order | Exact equality, proper-subset, disjointness or partial-overlap classification. |
+| `intersection` | geometry-only meet | The sites both meshes hold. |
+| `intersectionWith` | annotated meet | Shared sites with a left-then-right annotation combiner. |
+| `difference` | relative complement | The left's sites and annotations, less the right's support. |
+| `symmetricDifference` | exclusive or | The sites and annotations carried by exactly one mesh. |
+| `canonicalize` | physical normal form | Construction-independent dense numbering, derived explicitly when required. |
+| `refine` | quality | Steiner insertion, composed *after* any of the above — never a second kind of mesh. |
+| `constrainedDelaunay` | boundary | Sites plus segments, after which interiority is computable. |
+| `overlayLayers` | exact common refinement | One provenance-bearing arrangement whose bounded cells carry both source labels. |
+| `overlayClosedUnion` / `overlayClosedIntersection` / `overlayRegularizedDifference` | planar Boolean selection | A closed exact cell set retaining point- and edge-only results; difference is regularized from selected faces. |
+| `overlaySelectedRegion` | polygon publication | Selected bounded faces with internal arrangement edges dissolved through the existing boundary walker. |
+| `cellValuations` / `regionValuations` | intrinsic measurement | Exact Euler characteristic and rational area plus symbolic radical length with certified bounds. |
+| `minkowskiSum` | polygonal convolution | Exact convex or general polygonal Minkowski addition, with work recorded in a receipt. |
+| `erodeBy` / `openWith` / `closeWith` | regularized morphology | Full-dimensional polygonal erosion and its opening/closing compositions for an origin-anchored convex kernel. |
+
+### Choose the operation
+
+| What you need | Use | Do not substitute |
+| --- | --- | --- |
+| Build a geometry-only mesh from coordinates | `delaunayGeometry` | Do not manufacture unit annotations and erase them afterward. |
+| Build from separate coordinates and annotations | `delaunayFromCoordinates` | Do not fabricate a `HasPosition` instance for an annotation that does not own geometry. |
+| Combine two unconstrained meshes | `union` | Do not concatenate vertices and rebuild manually; `union` owns overlap annotations and the measured schedule. |
+| Combine many unconstrained meshes | `unions` | Do not left-fold `union`; `unions` owns balanced association. |
+| Classify coordinate support without constructing a mesh | `siteRelation` | Do not compare vertex counts or resident `Eq`; neither answers support order. |
+| Keep coordinates present in both geometry-only meshes | `intersection` | Use `intersectionWith` instead when annotations must survive or be recomputed. |
+| Keep shared coordinates and choose their annotation | `intersectionWith combine` | For a left annotation-preserving mask, use `intersectionWith const left mask`. |
+| Remove a coordinate mask from a mesh | `difference source mask` | Do not remove by stale `VertexId`; removal compacts arenas while coordinates remain stable. |
+| Keep coordinates present in exactly one mesh | `symmetricDifference` | Do not spell it as two differences plus `union`; the direct operation owns the persistent toggle schedule. |
+| Build the first constrained mesh | `constrainedDelaunay` | Do not build unconstrained and treat a rendered outline as topology. |
+| Canonically combine arbitrary constrained meshes | `unionConstrainedWith` or geometry-only `unionConstrained` | Do not use unconstrained `union`; constrained union owns complete conflict witnesses and constraint recovery. |
+| Join two strictly x-separated constrained meshes | `joinSeparatedConstrained` | Separation means annotations are copied, never combined; use the general constrained union when separation is not proved. |
+| Append one constrained section to an authoritative constrained base | `extendConstrainedWith` | Do not use symmetric constrained union when base identity and already-solved constraints must remain resident. |
+| Insert one site persistently | `BulkLoad.insert` or `BulkLoad.insertAt` | Do not open a manual transaction; the singleton entry owns the dense/copy-on-write crossover. |
+| Insert a vector of sites | `BulkLoad.insertMany` | Do not fold singleton insertion; one batch thaws and publishes once. |
+| Compose insertions and removals | one `Session.withSession` | Do not publish every intermediate mesh. Use coordinate-keyed removal after the first compaction. |
+| Refine the whole mesh | `refine` | Do not manufacture a domain witness merely to reach the local API. |
+| Refine a proved face section without changing protected faces | `refineWithinDomain` | Supply its exact permitted faces and interface edges; a guessed boundary is a typed refusal, not a hint. |
+| Partition bounded faces by any caller-owned label | `faceComponents mesh labelFace` | Do not rebuild adjacency outside the DCEL or collapse disconnected regions sharing a label. |
+| Recover one component's polygonal boundary | `componentBoundary mesh component` | Do not emit one polygon per triangle; outer and hole loops have canonical winding and exact collinear simplification. |
+| Combine two labelled polygon layers | `overlayLayers left right` | Do not run separate clipping engines for union, intersection, and difference; select cells from the one common refinement. |
+| Preserve a point- or edge-only Boolean result | `overlayClosedUnion`, `overlayClosedIntersection`, or `overlayRegularizedDifference` | Do not publish immediately as `PlanarRegion`; that carrier is deliberately full-dimensional. |
+| Publish a selected polygonal region | `overlaySelectedRegion predicate overlay` | Do not collect arrangement cells independently; selection must precede boundary descent so internal seams disappear. |
+| Measure a closed exact selection or region | `cellValuations` or `regionValuations` | Do not coerce irrational perimeter to an allegedly exact `Double`; inspect its radical expression and certified interval. |
+| Expand a polygon by another polygon | `minkowskiSum` or `polygonOffset` | Do not add resident mesh vertices pairwise and rebuild; morphology acts on the represented continuum. |
+| Erode, open, or close a polygonal region | `erodeBy`, `openWith`, or `closeWith` | Do not infer a hidden universe or invent lower-dimensional polygons; the result is regularized to representable 2D area. |
+| Keep Delaunay faces below an alpha threshold | `alphaShapeContainsFace threshold mesh` | This is the filled-face filtration, not palette logic and not a claim to expose every simplex of a full alpha-complex carrier. |
+| Require construction-independent numbering | `canonicalize` at the observation boundary | Do not canonicalize every intermediate value; it is intentionally global work. |
+
+## Foreign bindings
+
+The `moonlight-triangulation-c` foreign-library component exposes opaque
+immutable geometry meshes, admitted exact planar regions, and reusable
+polygonal structuring elements through ABI version 2. Mesh `site_*` operations
+combine Delaunay sites; region operations perform actual polygonal Boolean
+selection through the exact overlay owner. Regions cross in one bulk call as
+coordinates plus loop/component counts and project back as components, loops,
+and binary64 rendering points. Exact area remains lossless as a reduced ratio;
+Euler is integral and perimeter carries certified bounds. Python, TypeScript,
+and Rust bindings live beneath [`bindings/`](bindings/README.md) and descend
+through that same ABI; none restates overlay, publication, valuation, or
+morphology.
+
+For the Haskell mesh algebra, `union a a` is `a`; commutativity and associativity hold after explicit
+`canonicalize`; and a join adds no sites: the result carries
+`|A| + |B| − |A ∩ B|` of them. Structural `Eq` remains exact resident equality
+for caches and serialization rather than secretly rebuilding the mesh.
+
+### Persistent publication schedules
+
+The algebraic result is independent of the execution schedule. These are the
+currently measured publication choices; `canonicalize` remains the explicit
+global observation when construction-independent numbering is required.
+
+| Operation context | Publication schedule |
+| --- | --- |
+| `siteRelation left right` | Index the smaller support in one transient exact open-addressed section, scan the other operand, then discard the index; no support maps or published cache state. |
+| `difference mesh empty`, `symmetricDifference mesh empty`, `symmetricDifference empty mesh` | Return the surviving representative verbatim. |
+| `difference left right` with `size right <= (size left - size right) / 128` | Remove the right support through one local copy-on-write session; return `left` verbatim when the supports are disjoint. Larger masks rebuild. |
+| Geometry-only `intersection left right` | Return an existing operand for equality or subset, return the empty mesh for disjoint supports, and locally remove the smaller complement when it is at most `overlap / 128`. Other partial overlaps rebuild. |
+| `intersectionWith` | Rebuild, because the annotation combiner may rewrite every surviving payload even when topology changes locally. |
+| `symmetricDifference left right` with `small <= (large - small) / 128` | Toggle the smaller operand through one local session. Comparable operands and small-output, large-input cases rebuild. |
+| Comparable `symmetricDifference left right` | Partition through one transient exact index and a matched bitset, then rebuild only the exclusive output section. |
+| `BulkLoad.insert` / `BulkLoad.insertAt` | Dense publication below 10,000 resident sites; copy-on-write publication at 10,000 and above. A sequence still belongs in one `Session`. |
+| `extendConstrainedWith` | Copy-on-write only for a base of at least 200,000 sites, at most 128 incoming sites, exactly one incoming segment, and a pre-thaw corridor with no resident intersection. Every unmeasured or resident-corridor case stays dense. |
+| `refineWithinDomain` | Dense publication. The local transaction candidate preserved semantics but did not improve wall time, so it was removed. |
+
+### Benchmark highlights
+
+Fresh source build on 2026-08-12. The comparison binaries passed exact
+canonical-output agreement before seven interleaved fresh-process timing
+rounds; brackets are the observed range. Lower is better.
+
+| Operation | Workload | Moonlight | Spade 2.15.1 | Result |
+| --- | ---: | ---: | ---: | ---: |
+| Removal | remove 125k / 500k sites | 522.067 ms [514.481–539.392] | 16.576 s [15.304–17.308] | **31.75× faster** |
+| Removal | remove 25k / 100k sites | 72.164 ms [67.604–78.116] | 360.899 ms [264.639–406.783] | **5.00× faster** median |
+| Natural-neighbour interpolation | 2k queries / 400k sites | 192.792 ms [178.064–201.805] | 233.688 ms [214.695–250.986] | **1.21× faster** |
+| Incremental insertion | 500k sites | 33.403 s [32.592–36.813] | 30.506 s [28.809–31.688] | within **1.09×** |
+
+### Package-owned Delaunay construction board
+
+The Haskell-owned port of Spade's construction matrix lives with the
+triangulation library at [`bench/delaunay-compare`](bench/delaunay-compare/README.md).
+It appends Moonlight to Spade, Spade hierarchy, `cdt`, and `delaunator`, checks
+all 24 fixture summaries across all five implementations before timing, and
+derives both pictures from the retained 120-case CSV.
+
+![Moonlight Delaunay construction over the small Spade fixtures](https://raw.githubusercontent.com/PaleRoses/moonlight/main/moonlight-triangulation/bench/delaunay-compare/results/moonlight-delaunay-compare-small.svg)
+
+Two boards were run, on 2026-08-16 and 2026-08-17, over an unchanged
+construction path. Moonlight's mean is below plain Spade on 12 of
+24 fixtures in both. Local insertion is the strength — 11.3% under plain Spade
+at 4,000 points and 5.1% under it at 250,000 — and uniform input is the
+standing residual, 21.4% over at 14,000 points decaying to 1.7% over at
+250,000. `delaunator` holds the lowest mean on 23 of 24 fixtures.
+
+The strict non-overlapping-spread rule admits one win over plain Spade and six
+over the hierarchy on the quieter 08-16 board, and none and one on 08-17.
+Moonlight's own median reported spread widened from 6.49% to 7.86% of the mean
+between the two runs while Spade's narrowed, so the second board separates
+fewer pairs despite marginally better means. Both are published rather than the
+flattering one, with the [full receipts, the circle-sweep repair that produced
+the 08-16 improvement, and the big-point
+picture](bench/delaunay-compare/README.md) beside the benchmark. This is a
+measurement board, not a trophy cabinet with the inconvenient lines sanded off.
+
+Spade exposes no public triangulation set algebra corresponding to these
+operations. Their independently witnessed Moonlight publication costs are:
+
+| Operation | Workload | Moonlight |
+| --- | ---: | ---: |
+| `siteRelation` | 1m sites vs 995k retained | **96.759 ms** |
+| `intersection` | retain 995k / 1m sites | **109.513 ms** |
+| `symmetricDifference` | publish the 5k-site exclusive result | **119.298 ms** |
+| `difference` | remove 5k / 1m sites | **129.820 ms** |
+| `union` | add 5k / 5m sites | **130.295 ms** |
+
+These are raw publication measurements. `canonicalize` remains a separate,
+explicit observation when construction-independent numbering is required.
+
+```haskell
+union :: JoinSemilattice annotation
+      => Triangulation 'Unconstrained annotation () () ()
+      -> Triangulation 'Unconstrained annotation () () ()
+      -> Either BuildError (Triangulation 'Unconstrained annotation () () ())
+
+unions :: JoinSemilattice annotation
+       => [Triangulation 'Unconstrained annotation () () ()]
+       -> Either BuildError (Triangulation 'Unconstrained annotation () () ())
+
+siteRelation
+      :: Triangulation leftMode leftAnnotation leftDirected leftUndirected leftFace
+      -> Triangulation rightMode rightAnnotation rightDirected rightUndirected rightFace
+      -> SiteRelation
+
+intersection
+      :: Triangulation 'Unconstrained () () () ()
+      -> Triangulation 'Unconstrained () () () ()
+      -> Either BuildError (Triangulation 'Unconstrained () () () ())
+
+intersectionWith
+      :: (leftAnnotation -> rightAnnotation -> annotation)
+      -> Triangulation 'Unconstrained leftAnnotation () () ()
+      -> Triangulation 'Unconstrained rightAnnotation () () ()
+      -> Either BuildError (Triangulation 'Unconstrained annotation () () ())
+
+difference
+      :: Triangulation 'Unconstrained leftAnnotation () () ()
+      -> Triangulation 'Unconstrained rightAnnotation () () ()
+      -> Either BuildError (Triangulation 'Unconstrained leftAnnotation () () ())
+
+symmetricDifference
+      :: Triangulation 'Unconstrained annotation () () ()
+      -> Triangulation 'Unconstrained annotation () () ()
+      -> Either BuildError (Triangulation 'Unconstrained annotation () () ())
+```
+
+## Constraints
+
+* No `Semigroup`, no `Monoid`, no `<>`. A join the finite arena cannot
+  represent is a `Left`; a partial class instance would lie about totality.
+* `union` and `unions` glue overlapping annotations through
+  `JoinSemilattice`. `intersectionWith` supplies the corresponding explicit
+  overlap combiner. `difference` preserves the left annotation and
+  `symmetricDifference` preserves the annotation of whichever exclusive site
+  survives. Plain `intersection` remains the geometry-only specialization.
+  Annotation-preserving restriction is derived rather than stored as a second
+  operator: `intersectionWith const left mask`.
+* `refine` composes after an operation. It is not a mode, a flag, or a second
+  triangulation type.
+* Mutation lives in `ST` behind `Moonlight.Triangulation.Internal.Mutable` and
+  never escapes.
+* `serialize` is absent from the facade by design; import
+  `Moonlight.Triangulation.Serialization` to reach it. Its canonical decoder
+  requires both a `DecodingBudget` and explicit `TrustedPayloadDecoders`; wire
+  format 6 validates one structural count prefix before decoding defaults,
+  payloads, or allocating a section, and preserves the vertex payload plane's
+  optional fill. The budget covers the input envelope and every module-owned
+  container. `trustedBinaryPayloadDecoders` records the separate caller
+  decision that the selected executable `Binary` decoders have an acceptable
+  internal resource policy. Version 5 is intentionally unsupported.
+* Resident triangulation coordinates are binary64. Exact planar-region APIs use
+  normalized rational `ExactPoint`s; an admitted `OverlayResult` seals those
+  authoritative coordinates beside one certified binary64 DCEL projection.
+  `vertexPoints` and `innerFaceVertexTriples` still project the resident DCEL
+  directly; callers do not reconstruct a sibling mesh DTO.
+* One half-edge mesh underneath. `Cdt` is a mode index on it, not a second
+  structure.
+
+The Haskell facade is the authority for exact region, overlay, valuation, and
+morphology. `ExactCellSet` preserves closed point, edge, and face selections;
+`PlanarRegion` is its full-dimensional polygonal publication. ABI version 2
+retains that admitted region behind an opaque handle; foreign binary64 points
+are authoring/rendering boundaries, not a competing exact representation.
+
+## Use
+
+A triangulation is a value of its site set: construction returns `Either` with
+typed obstructions, `union` returns the same typed refusal when the finite arena
+cannot represent its result, and mesh quality is a
+composition over the result rather than a second operation. This program
+compiles against the facade alone; `fromList` is `GHC.Exts`, so nothing beyond
+`base` and `moonlight-triangulation` is in scope.
+
+```haskell
+module Main where
+
+import GHC.Exts (fromList)
+import Moonlight.Triangulation
+
+main :: IO ()
+main = do
+  let build :: [(Double, Double)] -> IO (DelaunayTriangulation ())
+      build coords =
+        either (fail . show) pure (delaunayGeometry (fromList [Point x y | (x, y) <- coords]))
+  a <- build [(x, y) | x <- [0 .. 9], y <- [0 .. 9]]
+  b <- build [(x + 6, y) | x <- [0 .. 9], y <- [0 .. 9]]
+
+  -- valid Delaunay representative of the union of sites
+  joined <- either (fail . show) pure (union a b)
+
+  -- meet and differences return typed obstructions, never partial results
+  met <- either (fail . show) pure (intersection a b)
+
+  -- mesh quality is a composition, not a second operation
+  parameters <- either (fail . show) pure (withMinimumAngle 14 defaultRefinementParameters)
+  result <- either (fail . show) pure (refine (const ()) parameters joined)
+  let healed = refinedTriangulation result
+
+  print (numVertices joined, numVertices met, numVertices healed, refinementComplete result)
+```
+
+Output: `(160,40,160,True)` — the union carries 160 sites, the meet 40, and
+refinement inserts nothing because every triangle already clears the 14° bar;
+`refinementComplete` states that sufficiency. Where operands leave concavities,
+the same composition places Steiner sites exactly at the slivers it dissolves.
+
+`delaunayGeometry` constructs the unit-annotated carrier directly. Payloads can
+instead enter with their coordinates through `delaunay`, or independently
+through `delaunayFromCoordinates`; annotation-preserving restriction is
+available through `intersectionWith`, `difference`, and `symmetricDifference`. Constraints enter through
+`constrainedDelaunay`; bulk incremental work names the machine-room module
+directly (`Moonlight.Triangulation.BulkLoad` for `insertMany`,
+`Moonlight.Triangulation.Session` for the owned editing transaction —
+`withSession`: thaw once, insert and remove freely, publish once).
+
+### Interior without hull-fill
+
+A point set has no boundary, so `delaunay` necessarily meshes the convex hull:
+concavities and holes are spanned by faces that belong to the hull, not to any
+intended region. The region becomes real the moment its boundary is authored:
+`constrainedDelaunay` takes the sites plus constraint segments as input-index
+pairs, and interiority is then computable — `facesAtEvenBarrierDepth` runs a
+0–1 BFS from the outer face and returns every face at even barrier depth,
+which is exactly the outside (depth 0) plus anything nested behind a second
+loop. The interior is the complement. `refine` consumes the same parity
+through `refineExcludeOuterFaces`, so Steiner sites respect the boundary too.
+
+```haskell
+module Main where
+
+import GHC.Exts (fromList)
+import Moonlight.Triangulation
+
+ring :: Double -> Int -> [(Double, Double)]
+ring radius n =
+  [ (radius * cos t, radius * sin t)
+  | k <- [0 .. n - 1]
+  , let t = 2 * pi * fromIntegral k / fromIntegral n
+  ]
+
+main :: IO ()
+main = do
+  let outer = ring 4 32
+      inner = ring 2 16
+      middle = ring 3 24
+      pts = fromList [Point x y | (x, y) <- outer <> inner <> middle]
+      loop base count = [(base + k, base + (k + 1) `mod` count) | k <- [0 .. count - 1]]
+      constraints = fromList (loop 0 32 <> loop 32 16)
+  annulus <- case constrainedDelaunay unitElementDefaults pts constraints of
+    Left err -> fail (show err)
+    Right result -> pure (buildTriangulation result)
+  let outside =
+        [ fromIntegral raw :: Int
+        | FaceId raw <- facesAtEvenBarrierDepth annulus (isConstraintEdge annulus)
+        ]
+      interior =
+        [ FaceId (fromIntegral k)
+        | k <- [0 .. numFaces annulus - 1]
+        , not (k `elem` outside)
+        ]
+  print (numFaces annulus, length interior)
+```
+
+Output: `(111,97)` — the annulus band is the 97 interior faces; the 14
+excluded faces are the hole's hull-fill and the outer region. Rendering the
+interior list draws the ring with a genuine void: no crop, no edge-length
+heuristic, the engine's own verdict. `faceVertices` walks each interior face
+for display, and a nested loop flips parity again, so islands inside holes
+come back automatically.
+
+### Deriving the boundary
+
+When no boundary is known, classify the Delaunay faces and let the DCEL descend
+them. `faceComponents` evaluates the caller's label once per bounded face and
+keeps disconnected regions distinct even when their labels compare equal.
+`componentBoundary` then returns one counter-clockwise outer loop and clockwise
+hole loops, dropping a boundary vertex only when the library's exact
+orientation predicate proves it collinear and the point lies on the closed
+neighbour segment. A point pinch is a typed `BoundaryPinch`, never an invented
+polygon.
+
+For alpha-shape work the supplied label is simply
+`alphaShapeContainsFace threshold mesh`. `mkRadiusSquared` admits the
+finite non-negative threshold and exact dyadic comparison makes membership
+closed at equality. This is the face, or 2-simplex, filtration; it does not manufacture a second mesh or
+pretend to own palette, colour-space, or rendering policy.
+
+```haskell
+module Main where
+
+import GHC.Exts (fromList)
+import Moonlight.Triangulation
+
+ring :: Double -> Int -> [(Double, Double)]
+ring radius n =
+  [ (radius * cos t, radius * sin t)
+  | k <- [0 .. n - 1]
+  , let t = 2 * pi * fromIntegral k / fromIntegral n
+  ]
+
+main :: IO ()
+main = do
+  let pts = ring 4 32 <> ring 2 16 <> ring 3 24
+  mesh <-
+    either
+      (fail . show)
+      pure
+      (delaunayGeometry (fromList [Point x y | (x, y) <- pts]))
+  threshold <- either (fail . show) pure (mkRadiusSquared 0.4)
+  let components = faceComponents mesh (alphaShapeContainsFace threshold mesh)
+      kept = [(label, component) | (label, component) <- components, label]
+  boundaries <-
+    traverse
+      (either (fail . show) pure . componentBoundary mesh . snd)
+      kept
+  print
+    [ ( length (boundaryLoopVertices (regionBoundaryOuterLoop boundary))
+      , length (regionBoundaryHoleLoops boundary)
+      )
+    | boundary <- boundaries
+    ]
+```
+
+The numeric threshold remains application policy; the circumradius calculation,
+face adjacency, loop extraction, winding, holes, and exact simplification do
+not. The derived boundary walks through data sites, so it is as jagged as the
+sampling; an authored boundary stays smooth at any pitch and wins where the
+generator is known.
+
+### Exact overlay, valuations, and morphology
+
+Author polygonal regions with rational coordinates, refine labelled layers
+once, and select every Boolean from that common arrangement. Closed selection
+retains zero- and one-dimensional intersections; polygon publication dissolves
+all arrangement edges internal to the selected faces.
+
+Valuations read either carrier. Euler characteristic and area remain exact,
+while Euclidean length is a normalized radical expression with certified
+binary64 bounds. Minkowski addition, offset, erosion, opening, and closing then
+compose over the same admitted `PlanarRegion`.
+
+```haskell
+module Main where
+
+import Data.List.NonEmpty (NonEmpty (..))
+import qualified Data.Map.Strict as Map
+import Moonlight.Triangulation
+
+admit :: Show obstruction => Either obstruction value -> IO value
+admit = either (fail . show) pure
+
+rectangleLoop :: Integer -> Integer -> Integer -> Integer -> IO ExactLoop
+rectangleLoop minimumX minimumY maximumX maximumY =
+  admit
+    ( exactLoop
+        ( exactPoint (fromInteger minimumX) (fromInteger minimumY)
+            :| [ exactPoint (fromInteger maximumX) (fromInteger minimumY)
+               , exactPoint (fromInteger maximumX) (fromInteger maximumY)
+               , exactPoint (fromInteger minimumX) (fromInteger maximumY)
+               ]
+        )
+    )
+
+rectangleRegion :: Integer -> Integer -> Integer -> Integer -> IO PlanarRegion
+rectangleRegion minimumX minimumY maximumX maximumY = do
+  outer <- rectangleLoop minimumX minimumY maximumX maximumY
+  component <- admit (polygonComponent outer [])
+  admit (planarRegion [component])
+
+insideLayer :: PlanarRegion -> IO (PlanarLayer Bool)
+insideLayer region = admit (planarLayer False (Map.singleton True region))
+
+cellSummary :: ExactCellSet -> IO (Int, Integer, Integer, CertifiedInterval)
+cellSummary cells = do
+  values <- admit (cellValuations cells)
+  perimeter <- admit (cellSetPerimeter cells)
+  let area = exactAreaValue (valuationArea values)
+  pure
+    ( eulerCharacteristicValue (valuationEuler values)
+    , exactRationalNumerator area
+    , exactRationalDenominator area
+    , exactLengthBounds perimeter
+    )
+
+regionArea :: PlanarRegion -> IO (Integer, Integer)
+regionArea region = do
+  values <- admit (regionValuations region)
+  let area = exactAreaValue (valuationArea values)
+  pure (exactRationalNumerator area, exactRationalDenominator area)
+
+main :: IO ()
+main = do
+  left <- rectangleRegion 0 0 4 4
+  right <- rectangleRegion 2 1 6 3
+  leftLayer <- insideLayer left
+  rightLayer <- insideLayer right
+  overlay <- admit (overlayLayers leftLayer rightLayer)
+
+  unionCells <- admit (overlayClosedUnion id id overlay)
+  intersectionCells <- admit (overlayClosedIntersection id id overlay)
+  differenceCells <- admit (overlayRegularizedDifference id id overlay)
+  traverse cellSummary [unionCells, intersectionCells, differenceCells]
+    >>= print
+
+  kernelLoop <- rectangleLoop (-1) (-1) 1 1
+  kernel <- admit (convexPolygon (exactLoopPoints kernelLoop)) >>= admit . structuringElement
+  (sumRegion, _) <- admit (minkowskiSum left right)
+  (offsetRegion, _) <- admit (polygonOffset kernel left)
+  (insetRegion, _) <- admit (polygonInset kernel left)
+  (openedRegion, _) <- admit (openWith kernel left)
+  (closedRegion, _) <- admit (closeWith kernel left)
+  traverse regionArea [sumRegion, offsetRegion, insetRegion, openedRegion, closedRegion]
+    >>= print
+```
+
+The Boolean summaries are union `(χ = 1, area = 20, perimeter = 20)`,
+intersection `(1, 4, 8)`, and regularized difference `(1, 12, 20)`. The
+morphology areas are `(48, 36, 4, 16, 16)`: Minkowski sum, one-unit square
+offset, inset, opening, and closing respectively.
+
+## The growing city
+
+A triangulation is a value so that a large one can be extended without being
+rebuilt or locked: a city mesh a district is added to, and then another.
+
+`union` rebuilds last. `planPair` classifies the pair first — an empty or
+repeated operand returns the other verbatim, separable operands merge along
+their seam, a subset inserts into its superset, skewed sizes insert the smaller
+into the larger.
+
+```haskell
+insertionIsCheaper addition base = addition <= 64 || addition <= base `quot` 8
+```
+
+A district is small against a city, so it inserts through a local copy-on-write
+transaction. Publication scales with the insertion work and pages dirtied
+rather than copying and renumbering the whole city.
+
+The mesh being read is never the mesh being written. A render or pathfinding
+thread queries the published value while the next is built: no lock, no
+defensive copy, no interval in which the world and the mesh disagree. Mutation
+offers only the choice between stalling in place and answering from a clone
+that does not yet know what was built, and both are visible from the frame.
+
+The same fact makes a failed union a `Left` over an untouched operand,
+reverting an edit a selection, and a preview a second value rather than a copy.
+
+`Moonlight.Triangulation.Parallel` reads the operation the other way: regions
+triangulated apart, folded up a balanced tournament, each node's sides
+concurrent.
+
+## Representation
+
+Structure-of-arrays over paged, copy-on-write storage. Half-edge twins are index
+complements (`e xor 1`), so traversal is arithmetic rather than indirection.
+Local insertion transactions copy only the pages they touch; mutation is
+confined to `ST` behind `Moonlight.Triangulation.Internal.Mutable` and never
+escapes.
+
+## Predicates
+
+`Moonlight.Triangulation.Internal.Dyadic` carries the exact layer: mantissas are
+decoded and aligned to a common exponent, with bounded predicates evaluated in
+machine words and larger cases over `Integer`. Floating approximations are
+trusted only inside proved error bounds and fall through to exact evaluation
+otherwise.
+
+## Public sublibraries
+
+Depend on the sublibrary you actually use, not on the facade. The footprint is
+the interface: each row states what the token costs you, and a build that pulls
+more than the row says is a bug in this table or in the cabal.
+
+| Sublibrary | Surface |
+| --- | --- |
+| `core` | Exact-arithmetic scalars (`Scalar`, `LineSideInfo`) over paged, copy-on-write storage (`Internal.Dyadic`, `.Paged`, `.BoxedPaged`, `.PageDirectory`, `.Growable`, `.PackedIndex`, `.FaceQueue`). Depends only on `base`/`containers`/`deepseq`/`vector` — no other sublibrary. |
+| `dcel` | The finite half-edge mesh and its whole read surface: `Types`, `Math`, exact geometry, closed `CellSet`, `Region`, `Valuation`, `Interop`, `Dcel`, `Payload`, `JoinSemilattice`, `Handles` with its iterator family, `PointLocation`, `Validation`, `FloodFillIterator`, `IntersectionIterator`. Adds `primitive` and `vector-algorithms` over `core`. |
+| `build` | The construction kernel: `BulkLoad`, `Session`, `Removal`, typed `SetAlgebra`, `Cdt` constraint recovery, and `Refinement`. Adds no external dependency over `core` and `dcel`. |
+| `parallel` | Concurrent evaluation of the pure union plan. Adds `async` at this effect boundary rather than below it. |
+| `serialize` | `Serialization` — the versioned binary envelope, and the only sublibrary that costs you `binary`, `bytestring`, and `transformers`. Deliberately absent from the facade. |
+| `dual` | The dcel-only Voronoi dual and its readers: `Voronoi`, `Voronoi.Handles`, and `Interpolation` (natural-neighbour). It can compile concurrently with `build`. |
+| facade (`moonlight-triangulation`) | The equational surface plus the two real overlaps: exact `Overlay`/`Minkowski` operations that descend through `build`, and `HintGenerator`, which glues construction to the dual. It re-exports the theory and deliberately excludes `serialize`; there is no duplicate facade implementation beneath it. |
+
+### Fast local feedback
+
+Run exact components through the repository build guard so a local edit never
+silently expands into the complete package. From the repository's `compiler/`
+directory, the optimized construction kernel is:
+
+    ../scripts/safe-cabal.sh build moonlight-triangulation:lib:build \
+      --project-file=cabal.project.triangulation-dev \
+      --builddir=dist-newstyle-triangulation-dev
+
+For type-and-interface feedback where no benchmarkable artifact is required,
+use the same component and cache at `-O0`:
+
+    ../scripts/safe-cabal.sh build moonlight-triangulation:lib:build \
+      --project-file=cabal.project.triangulation-dev \
+      --builddir=dist-newstyle-triangulation-fast \
+      --disable-optimization
+
+The full facade is still an admitted five-component closure. Release and
+runtime claims use the optimized profile; the `-O0` command is deliberately a
+different feedback workload, not counterfeit evidence of a faster production
+build.
+
+## Surface
+
+* `Moonlight.Triangulation` — the apex facade.
+* `.BulkLoad` — circle-sweep construction and incremental insertion.
+* `.Cdt` — constraint recovery by conflict strip, with requeue on re-intersection.
+* `.PointLocation`, `.HintGenerator` — walk location and Delaunay hierarchy hints.
+* `.IntersectionIterator`, `.FloodFillIterator` — ordered line traversal,
+  barrier fill, labelled face components, boundary loops, and alpha-face
+  filtration.
+* `.Exact`, `.CellSet`, `.Region`, `.Valuation` — exact rational geometry,
+  closed cell selections, admitted polygonal regions, and intrinsic measures.
+* `.Overlay`, `.Minkowski` — labelled common refinement, planar Booleans,
+  polygonal convolution, offset, erosion, opening, and closing.
+* `.Voronoi`, `.Interpolation` — dual cells and natural-neighbour interpolation.
+* `.Refinement` — Ruppert-style angle and area refinement.
+* `.Validation` — structural and Delaunay-property audits.
+* `.Serialization` (sublibrary `serialize`) — versioned binary envelope.
