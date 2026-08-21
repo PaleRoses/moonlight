@@ -1,0 +1,12 @@
+-- Build project for the public Moonlight mirror.
+-- Keep this package set aligned with workspace.josh, the canonical public cut.
+
+packages:
+  moonlight-core
+  moonlight-pale
+  moonlight-algebra
+  moonlight-category
+  moonlight-delta
+  moonlight-triangulation
+
+allow-newer: all

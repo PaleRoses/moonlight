@@ -1,0 +1,121 @@
+Name,Mean (ps),2*Stdev (ps)
+All.comparison: creation benchmark (small).spade 2.local insertion.2000,295630761,24969280
+All.comparison: creation benchmark (small).spade 2.local insertion.4000,747536132,66361430
+All.comparison: creation benchmark (small).spade 2.local insertion.6000,1245210546,58588474
+All.comparison: creation benchmark (small).spade 2.local insertion.8000,1736183593,109217944
+All.comparison: creation benchmark (small).spade 2.local insertion.10000,2208963281,145225626
+All.comparison: creation benchmark (small).spade 2.local insertion.12000,2698892187,221496508
+All.comparison: creation benchmark (small).spade 2.local insertion.14000,3209410937,225011326
+All.comparison: creation benchmark (small).spade 2.uniform.2000,296824609,8366474
+All.comparison: creation benchmark (small).spade 2.uniform.4000,692681640,49145454
+All.comparison: creation benchmark (small).spade 2.uniform.6000,1118564843,66694220
+All.comparison: creation benchmark (small).spade 2.uniform.8000,1552200000,65071324
+All.comparison: creation benchmark (small).spade 2.uniform.10000,1999517187,123825758
+All.comparison: creation benchmark (small).spade 2.uniform.12000,2463524218,166035034
+All.comparison: creation benchmark (small).spade 2.uniform.14000,2959024218,130851902
+All.comparison: creation benchmark (small).spade 2 hierarchy.local insertion.2000,315608300,14657600
+All.comparison: creation benchmark (small).spade 2 hierarchy.local insertion.4000,784376953,77511200
+All.comparison: creation benchmark (small).spade 2 hierarchy.local insertion.6000,1320347265,76730322
+All.comparison: creation benchmark (small).spade 2 hierarchy.local insertion.8000,1824275000,162268658
+All.comparison: creation benchmark (small).spade 2 hierarchy.local insertion.10000,2318199218,129097986
+All.comparison: creation benchmark (small).spade 2 hierarchy.local insertion.12000,2837650000,214613610
+All.comparison: creation benchmark (small).spade 2 hierarchy.local insertion.14000,3349539062,233214902
+All.comparison: creation benchmark (small).spade 2 hierarchy.uniform.2000,301097753,26687820
+All.comparison: creation benchmark (small).spade 2 hierarchy.uniform.4000,728841796,58225112
+All.comparison: creation benchmark (small).spade 2 hierarchy.uniform.6000,1194383593,110028518
+All.comparison: creation benchmark (small).spade 2 hierarchy.uniform.8000,1652558593,136312800
+All.comparison: creation benchmark (small).spade 2 hierarchy.uniform.10000,2159500000,193472286
+All.comparison: creation benchmark (small).spade 2 hierarchy.uniform.12000,2659851562,243347084
+All.comparison: creation benchmark (small).spade 2 hierarchy.uniform.14000,3170504687,296341896
+All.comparison: creation benchmark (small).cdt.local insertion.2000,181128027,14035256
+All.comparison: creation benchmark (small).cdt.local insertion.4000,456559570,24452626
+All.comparison: creation benchmark (small).cdt.local insertion.6000,769270703,69753092
+All.comparison: creation benchmark (small).cdt.local insertion.8000,1130853125,111467988
+All.comparison: creation benchmark (small).cdt.local insertion.10000,1454835937,127752852
+All.comparison: creation benchmark (small).cdt.local insertion.12000,1807841406,134866342
+All.comparison: creation benchmark (small).cdt.local insertion.14000,2174645312,134785984
+All.comparison: creation benchmark (small).cdt.uniform.2000,179021484,16809814
+All.comparison: creation benchmark (small).cdt.uniform.4000,464956445,25085014
+All.comparison: creation benchmark (small).cdt.uniform.6000,814474414,64259002
+All.comparison: creation benchmark (small).cdt.uniform.8000,1222257031,106031548
+All.comparison: creation benchmark (small).cdt.uniform.10000,1602478906,120272506
+All.comparison: creation benchmark (small).cdt.uniform.12000,1923622656,184087790
+All.comparison: creation benchmark (small).cdt.uniform.14000,2269296875,136679654
+All.comparison: creation benchmark (small).delaunator.local insertion.2000,149368750,14177194
+All.comparison: creation benchmark (small).delaunator.local insertion.4000,333224072,29015492
+All.comparison: creation benchmark (small).delaunator.local insertion.6000,616683398,30023578
+All.comparison: creation benchmark (small).delaunator.local insertion.8000,929394921,70170608
+All.comparison: creation benchmark (small).delaunator.local insertion.10000,1292242187,65964004
+All.comparison: creation benchmark (small).delaunator.local insertion.12000,1614664843,140634700
+All.comparison: creation benchmark (small).delaunator.local insertion.14000,1946600000,183378536
+All.comparison: creation benchmark (small).delaunator.uniform.2000,153655712,8566934
+All.comparison: creation benchmark (small).delaunator.uniform.4000,334095751,7730810
+All.comparison: creation benchmark (small).delaunator.uniform.6000,627805468,44889938
+All.comparison: creation benchmark (small).delaunator.uniform.8000,946367773,84984558
+All.comparison: creation benchmark (small).delaunator.uniform.10000,1370235937,113658636
+All.comparison: creation benchmark (small).delaunator.uniform.12000,1564216015,56153256
+All.comparison: creation benchmark (small).delaunator.uniform.14000,1968073437,178389310
+All.comparison: creation benchmark (small).moonlight-triangulation.local insertion.2000,300159179,14593400
+All.comparison: creation benchmark (small).moonlight-triangulation.local insertion.4000,663249218,55388102
+All.comparison: creation benchmark (small).moonlight-triangulation.local insertion.6000,1120853515,106248166
+All.comparison: creation benchmark (small).moonlight-triangulation.local insertion.8000,1551642968,122602908
+All.comparison: creation benchmark (small).moonlight-triangulation.local insertion.10000,2203012500,215773572
+All.comparison: creation benchmark (small).moonlight-triangulation.local insertion.12000,2851120312,272283202
+All.comparison: creation benchmark (small).moonlight-triangulation.local insertion.14000,3056118750,252382196
+All.comparison: creation benchmark (small).moonlight-triangulation.uniform.2000,287412060,11572742
+All.comparison: creation benchmark (small).moonlight-triangulation.uniform.4000,675974121,38786170
+All.comparison: creation benchmark (small).moonlight-triangulation.uniform.6000,1195790625,96662772
+All.comparison: creation benchmark (small).moonlight-triangulation.uniform.8000,1573744531,142779928
+All.comparison: creation benchmark (small).moonlight-triangulation.uniform.10000,2156668750,204698046
+All.comparison: creation benchmark (small).moonlight-triangulation.uniform.12000,3003821484,120571230
+All.comparison: creation benchmark (small).moonlight-triangulation.uniform.14000,3591350000,229951640
+All.comparison: creation benchmark (big).spade 2.local insertion.50000,13385881250,1151770664
+All.comparison: creation benchmark (big).spade 2.local insertion.100000,27906725000,2443966396
+All.comparison: creation benchmark (big).spade 2.local insertion.150000,43190837500,2407909800
+All.comparison: creation benchmark (big).spade 2.local insertion.200000,57665087500,2889055728
+All.comparison: creation benchmark (big).spade 2.local insertion.250000,71674850000,4956580082
+All.comparison: creation benchmark (big).spade 2.uniform.50000,12412218750,1061573272
+All.comparison: creation benchmark (big).spade 2.uniform.100000,26017812500,1838606894
+All.comparison: creation benchmark (big).spade 2.uniform.150000,40907037500,2452742964
+All.comparison: creation benchmark (big).spade 2.uniform.200000,56283250000,3797681950
+All.comparison: creation benchmark (big).spade 2.uniform.250000,72076425000,6350321252
+All.comparison: creation benchmark (big).spade 2 hierarchy.local insertion.50000,14427300000,1048743832
+All.comparison: creation benchmark (big).spade 2 hierarchy.local insertion.100000,30327412500,1820494742
+All.comparison: creation benchmark (big).spade 2 hierarchy.local insertion.150000,46604787500,2427028182
+All.comparison: creation benchmark (big).spade 2 hierarchy.local insertion.200000,61697100000,2656951872
+All.comparison: creation benchmark (big).spade 2 hierarchy.local insertion.250000,76207925000,6644923208
+All.comparison: creation benchmark (big).spade 2 hierarchy.uniform.50000,13164081250,1164460350
+All.comparison: creation benchmark (big).spade 2 hierarchy.uniform.100000,28107162500,2144892304
+All.comparison: creation benchmark (big).spade 2 hierarchy.uniform.150000,43560237500,2773730522
+All.comparison: creation benchmark (big).spade 2 hierarchy.uniform.200000,59275500000,5300599140
+All.comparison: creation benchmark (big).spade 2 hierarchy.uniform.250000,76447450000,6329302212
+All.comparison: creation benchmark (big).cdt.local insertion.50000,9028006250,847665418
+All.comparison: creation benchmark (big).cdt.local insertion.100000,19073050000,1816972936
+All.comparison: creation benchmark (big).cdt.local insertion.150000,29917825000,2505122856
+All.comparison: creation benchmark (big).cdt.local insertion.200000,41203650000,2198837444
+All.comparison: creation benchmark (big).cdt.local insertion.250000,51614762500,4266864914
+All.comparison: creation benchmark (big).cdt.uniform.50000,9818243750,765168486
+All.comparison: creation benchmark (big).cdt.uniform.100000,21504775000,2094413070
+All.comparison: creation benchmark (big).cdt.uniform.150000,33133025000,2346417932
+All.comparison: creation benchmark (big).cdt.uniform.200000,45469375000,4514621246
+All.comparison: creation benchmark (big).cdt.uniform.250000,57142387500,2655777936
+All.comparison: creation benchmark (big).delaunator.local insertion.50000,8738156250,600314374
+All.comparison: creation benchmark (big).delaunator.local insertion.100000,17979293750,1044635056
+All.comparison: creation benchmark (big).delaunator.local insertion.150000,29373750000,2274640150
+All.comparison: creation benchmark (big).delaunator.local insertion.200000,39690562500,2131531798
+All.comparison: creation benchmark (big).delaunator.local insertion.250000,48461050000,2571086862
+All.comparison: creation benchmark (big).delaunator.uniform.50000,8728668750,493723808
+All.comparison: creation benchmark (big).delaunator.uniform.100000,19701462500,1678504426
+All.comparison: creation benchmark (big).delaunator.uniform.150000,31878712500,2457382804
+All.comparison: creation benchmark (big).delaunator.uniform.200000,44595300000,4099383422
+All.comparison: creation benchmark (big).delaunator.uniform.250000,57885087500,3576367122
+All.comparison: creation benchmark (big).moonlight-triangulation.local insertion.50000,13327481250,968329236
+All.comparison: creation benchmark (big).moonlight-triangulation.local insertion.100000,27389737500,2194533014
+All.comparison: creation benchmark (big).moonlight-triangulation.local insertion.150000,41351750000,3615162902
+All.comparison: creation benchmark (big).moonlight-triangulation.local insertion.200000,55559600000,4341661388
+All.comparison: creation benchmark (big).moonlight-triangulation.local insertion.250000,68016550000,3919156344
+All.comparison: creation benchmark (big).moonlight-triangulation.uniform.50000,14036881250,894371288
+All.comparison: creation benchmark (big).moonlight-triangulation.uniform.100000,28805625000,1989820990
+All.comparison: creation benchmark (big).moonlight-triangulation.uniform.150000,43518475000,4299176096
+All.comparison: creation benchmark (big).moonlight-triangulation.uniform.200000,59284250000,4046724022
+All.comparison: creation benchmark (big).moonlight-triangulation.uniform.250000,73328950000,3485023746
