@@ -1,0 +1,130 @@
+{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
+-- | The join of two triangulations: a Delaunay representative of the union of
+-- their sites.
+module Moonlight.Triangulation.Internal.Join
+  ( joinNormalForm
+  , joinBalanced
+  , executeTournamentPlan
+  , TournamentPlan (..)
+  , planTournament
+  ) where
+
+import Data.Foldable (traverse_)
+import Data.List.NonEmpty (NonEmpty (..))
+import Moonlight.Triangulation.BulkLoad (empty)
+import Moonlight.Triangulation.Internal.Join.Plan
+  ( PairPlan (..)
+  , TournamentPlan (..)
+  , planPair
+  , planTournament
+  )
+import Moonlight.Triangulation.Internal.Join.Seam (executeSeam)
+import Moonlight.Triangulation.Internal.Join.Rebuild (rebuildCanonicalSiteSet)
+import Moonlight.Triangulation.Internal.Join.SiteSet
+  ( SiteSet
+  , siteSetAssocs
+  , siteSetSize
+  )
+import Moonlight.Triangulation.JoinSemilattice
+  ( JoinSemilattice (joinAnnotations)
+  )
+import Moonlight.Triangulation.Session
+  ( insertVertexAtCombining
+  , withLocalSession
+  )
+import Moonlight.Triangulation.Types
+
+-- | A Delaunay representative of the union of two site sets.
+--
+-- Skewed operands descend through the existing local copy-on-write session, so
+-- the larger operand's vertex handles and untouched pages survive. Comparable
+-- operands may merge along a separating seam or rebuild from their combined
+-- site set. Every schedule returns valid topology;
+-- 'Moonlight.Triangulation.Dcel.canonicalize' is the
+-- separate physical observation when construction-independent numbering is
+-- required.
+--
+-- Empty and structurally identical operands return an existing value verbatim.
+-- Algebraic agreement between all schedules is stated by equal canonical
+-- observations; structural equality continues to describe exact resident
+-- representation.
+joinNormalForm
+  :: JoinSemilattice annotation
+  => Triangulation 'Unconstrained annotation () () ()
+  -> Triangulation 'Unconstrained annotation () () ()
+  -> Either BuildError (Triangulation 'Unconstrained annotation () () ())
+joinNormalForm left right = executePairPlan (planPair left right) left right
+
+executePairPlan
+  :: JoinSemilattice annotation
+  => PairPlan annotation
+  -> Triangulation 'Unconstrained annotation () () ()
+  -> Triangulation 'Unconstrained annotation () () ()
+  -> Either BuildError (Triangulation 'Unconstrained annotation () () ())
+executePairPlan pairPlan left right =
+  case pairPlan of
+    ReturnLeftOperand -> Right left
+    ReturnRightOperand -> Right right
+    InsertLeftIntoRight sites -> insertSites sites right
+    InsertRightIntoLeft sites -> insertSites sites left
+    MergeSeparated seamPlan -> executeSeam seamPlan left right
+    RebuildCanonicalUnion sites -> rebuildCanonicalSiteSet sites
+
+insertSites
+  :: JoinSemilattice annotation
+  => SiteSet annotation
+  -> Triangulation 'Unconstrained annotation () () ()
+  -> Either BuildError (Triangulation 'Unconstrained annotation () () ())
+insertSites sites base = do
+  ((), inserted, _) <-
+    withLocalSession
+      base
+      (siteSetSize sites)
+      ( traverse_
+          (\(point, annotation) ->
+             () <$ insertVertexAtCombining joinAnnotations point annotation
+          )
+          (siteSetAssocs sites)
+      )
+  pure inserted
+
+-- | Combine by a balanced tournament rather than by a fold.
+--
+-- Associativity and commutativity make every bracketing canonically equivalent,
+-- so this is a cost choice and not a semantic one. A left fold republishes an
+-- accumulator that grows by one shard per step and so rebuilds @Θ(nk)@ sites
+-- over @k@ shards; halving the list rebuilds @Θ(n log k)@.
+--
+-- The specialization below is load-bearing rather than decorative. Without it
+-- this function is the only one on the path that stays polymorphic, and every
+-- join in the tournament pays for a dictionary while a caller's own fold at a
+-- known element type does not. That alone cost a factor of two and hid the
+-- advantage this function exists for.
+--
+-- The tournament retains the binary operation's shortcut and annotation-gluing
+-- semantics rather than inventing a second n-ary implementation.
+joinBalanced
+  :: JoinSemilattice annotation
+  => [Triangulation 'Unconstrained annotation () () ()]
+  -> Either BuildError (Triangulation 'Unconstrained annotation () () ())
+joinBalanced [] = Right (empty unitElementDefaults)
+joinBalanced (first : rest) =
+  executeTournamentPlan (planTournament (first :| rest))
+{-# SPECIALIZE joinBalanced
+  :: [Triangulation 'Unconstrained () () () ()]
+  -> Either BuildError (Triangulation 'Unconstrained () () () ()) #-}
+
+executeTournamentPlan
+  :: JoinSemilattice annotation
+  => TournamentPlan (Triangulation 'Unconstrained annotation () () ())
+  -> Either BuildError (Triangulation 'Unconstrained annotation () () ())
+executeTournamentPlan tournament =
+  case tournament of
+    TournamentLeaf mesh -> Right mesh
+    TournamentNode left right -> do
+      leftMesh <- executeTournamentPlan left
+      rightMesh <- executeTournamentPlan right
+      joinNormalForm leftMesh rightMesh
