@@ -1,0 +1,56 @@
+cabal-version:       3.0
+name:                moonlight-triangulation-spade-compare
+version:             0.1.0.0
+synopsis:            moonlight-triangulation side of the cross-language spade referent harness.
+description:         Matched-semantics workloads against the spade crate, with canonical egress for agreement gating.
+license:             LicenseRef-AllRightsReserved
+copyright:           (c) 2026 Blue Rose
+author:              Blue Rose
+maintainer:          rosaliafialkova@gmail.com
+category:            Math
+build-type:          Simple
+
+executable moonlight-triangulation-spade-referent
+  default-language: GHC2024
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -O2
+    -rtsopts
+  default-extensions:
+    BangPatterns
+    LambdaCase
+    NumericUnderscores
+  hs-source-dirs: hs
+  main-is: Main.hs
+  -- Main is the entry and the lane dispatch; every workload, gate and
+  -- diagnostic sits in the domain module that owns it. The domains depend on
+  -- SpadeCompare.Support and on nothing else of each other, so they compile in
+  -- parallel and a lane edit rebuilds one slice.
+  other-modules:
+    Moonlight.Triangulation.Bench.SpadeCompare.Lane
+    Moonlight.Triangulation.Bench.SpadeCompare.Support
+    Moonlight.Triangulation.Bench.SpadeCompare.Delaunay
+    Moonlight.Triangulation.Bench.SpadeCompare.Removal
+    Moonlight.Triangulation.Bench.SpadeCompare.Hierarchy
+    Moonlight.Triangulation.Bench.SpadeCompare.Constraint
+    Moonlight.Triangulation.Bench.SpadeCompare.Interpolation
+    Moonlight.Triangulation.Bench.SpadeCompare.Voronoi
+    Moonlight.Triangulation.Bench.SpadeCompare.Dcel
+    Moonlight.Triangulation.Bench.SpadeCompare.Intersection
+    Moonlight.Triangulation.Bench.SpadeCompare.Gates
+  build-depends:
+    base >= 4.22 && < 5
+    , deepseq >= 1.4 && < 1.6
+    , directory >= 1.3 && < 1.4
+    , filepath >= 1.4 && < 1.6
+    , vector >= 0.13 && < 0.14
+    , primitive >= 0.9 && < 0.10
+    , moonlight-triangulation >= 1.3 && < 1.4
+    , moonlight-triangulation:dcel >= 1.3 && < 1.4
+    , moonlight-triangulation:build >= 1.3 && < 1.4
+    , moonlight-triangulation:dual >= 1.3 && < 1.4
